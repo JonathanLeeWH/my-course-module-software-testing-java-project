@@ -95,7 +95,7 @@ fabric.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.nar
 *.ear
@@ -107,8 +107,24 @@ fabric.properties
 hs_err_pid*
 
 
-# Created by https://www.gitignore.io/api/macos,windows
-# Edit at https://www.gitignore.io/?templates=macos,windows
+
+# Created by https://www.gitignore.io/api/linux,macos,windows
+# Edit at https://www.gitignore.io/?templates=linux,macos,windows
+
+### Linux ###
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
 
 ### macOS ###
 # General
@@ -164,7 +180,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.gitignore.io/api/macos,windows
+# End of https://www.gitignore.io/api/linux,macos,windows
 
 # Team 22 custom .gitignore
 .idea/
