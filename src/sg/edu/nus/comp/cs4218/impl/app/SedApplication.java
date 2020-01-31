@@ -89,10 +89,15 @@ public class SedApplication implements SedInterface {
         if (!node.canRead()) {
             throw new Exception(ERR_NO_PERM);
         }
-        InputStream input = IOUtils.openInputStream(fileName);
-        String result = replaceSubstringInStdin(regexp, replacement, replacementIndex, input);
-        IOUtils.closeInputStream(input);
-        return result;
+
+        try (InputStream input = IOUtils.openInputStream(fileName)) {
+            /**
+             * TODO: Need to check if this will affect return results.
+             */
+            String result = replaceSubstringInStdin(regexp, replacement, replacementIndex, input);
+            IOUtils.closeInputStream(input);
+            return result;
+        }
     }
 
     /**
