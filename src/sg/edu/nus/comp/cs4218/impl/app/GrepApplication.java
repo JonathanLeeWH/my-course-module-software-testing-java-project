@@ -165,8 +165,7 @@ public class GrepApplication implements GrepInterface {
         int count = 0;
         StringJoiner stringJoiner = new StringJoiner(STRING_NEWLINE);
 
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stdin));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stdin))) {
             String line;
             Pattern compiledPattern;
             if (isCaseInsensitive) {
@@ -181,7 +180,6 @@ public class GrepApplication implements GrepInterface {
                     count++;
                 }
             }
-            reader.close();
         } catch (PatternSyntaxException pse) {
             throw new GrepException(ERR_INVALID_REGEX);
         } catch (NullPointerException npe) {
