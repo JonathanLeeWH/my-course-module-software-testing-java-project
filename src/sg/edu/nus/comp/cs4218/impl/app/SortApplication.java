@@ -85,9 +85,10 @@ public class SortApplication implements SortInterface {
             if (!node.canRead()) {
                 throw new Exception(ERR_NO_PERM);
             }
-            InputStream input = IOUtils.openInputStream(file);
-            lines.addAll(IOUtils.getLinesFromInputStream(input));
-            IOUtils.closeInputStream(input);
+            try (InputStream input = IOUtils.openInputStream(file)) {
+                lines.addAll(IOUtils.getLinesFromInputStream(input));
+                IOUtils.closeInputStream(input);
+            }
         }
         sortInputString(isFirstWordNumber, isReverseOrder, isCaseIndependent, lines);
         return String.join(STRING_NEWLINE, lines);
