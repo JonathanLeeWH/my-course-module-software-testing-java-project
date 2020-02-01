@@ -131,7 +131,7 @@ public final class RegexArgument {
         return matches;
     }
 
-    public boolean isRegex() {
+    public boolean hasRegex() {
         return isRegex;
     }
 
