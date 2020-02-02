@@ -1,10 +1,9 @@
 package sg.edu.nus.comp.cs4218.impl;
 
 import sg.edu.nus.comp.cs4218.Command;
-import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
-import sg.edu.nus.comp.cs4218.exception.ExitException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.CommandBuilder;
@@ -23,22 +22,29 @@ public class ShellImpl implements Shell {
      * @param args List of strings arguments, unused.
      */
     public static void main(String... args) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        Shell shell = new ShellImpl();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            Shell shell = new ShellImpl();
 
-        try {
-            String currentDirectory = Environment.currentDirectory;
+            String currentDirectory = EnvironmentHelper.currentDirectory;
             String commandString;
-            try {
-                commandString = reader.readLine();
-            } catch (IOException e) {
-                break; // Streams are closed, terminate process
-            }
+
+            commandString = reader.readLine();
 
             if (!StringUtils.isBlank(commandString)) {
                 shell.parseAndEvaluate(commandString, System.out);
             }
+
+        } catch (IOException e) {
+            // Streams are auto closed using try with resources.
+            // Terminate process with non zero exit code.
+            /**
+             * TODO: Need to check if the system exit code is correct.
+             */
+            System.exit(1); // Streams are closed, terminate process
         } catch (Exception e) {
+            /**
+             * TODO: Might or might not need to change this to return non zero exit code and more specific exceptions.
+             */
             System.out.println(e.getMessage());
         }
     }

@@ -89,9 +89,11 @@ public class WcApplication implements WcInterface {
                 continue;
             }
 
-            InputStream input = IOUtils.openInputStream(file);
-            long[] count = getCountReport(input); // lines words bytes
-            IOUtils.closeInputStream(input);
+            long[] count;
+            try (InputStream input = IOUtils.openInputStream(file)) {
+                count = getCountReport(input); // lines words bytes
+                IOUtils.closeInputStream(input);
+            }
 
             // Update total count
             totalLines += count[0];

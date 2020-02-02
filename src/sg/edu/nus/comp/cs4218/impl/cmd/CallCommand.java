@@ -8,10 +8,12 @@ import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 import sg.edu.nus.comp.cs4218.impl.util.IORedirectionHandler;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_IO_EXCEPTION;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_SYNTAX;
 
 /**
@@ -41,14 +43,20 @@ public class CallCommand implements Command {
         IORedirectionHandler redirHandler = new IORedirectionHandler(argsList, stdin, stdout, argumentResolver);
         redirHandler.extractRedirOptions();
         List<String> noRedirArgsList = redirHandler.getNoRedirArgsList();
-        InputStream inputStream = redirHandler.getInputStream();
-        OutputStream outputStream = redirHandler.getOutputStream();
+        try (InputStream inputStream = redirHandler.getInputStream();
+             OutputStream outputStream = redirHandler.getOutputStream()) {
 
-        // Handle quoting + globing + command substitution
-        List<String> parsedArgsList = argumentResolver.parseArguments(noRedirArgsList);
-        if (parsedArgsList.isEmpty()) {
-            String app = parsedArgsList.remove(0);
-            appRunner.runApp(app, parsedArgsList.toArray(new String[0]), inputStream, outputStream);
+            // Handle quoting + globing + command substitution
+            List<String> parsedArgsList = argumentResolver.parseArguments(noRedirArgsList);
+            if (!parsedArgsList.isEmpty()) {
+                String app = parsedArgsList.remove(0);
+                appRunner.runApp(app, parsedArgsList.toArray(new String[0]), inputStream, outputStream);
+            }
+        } catch (IOException e) {
+            /**
+             * TODO: Need to check if the exception thrown is correct.
+             */
+            throw new ShellException(ERR_IO_EXCEPTION);
         }
 
     }

@@ -1,6 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.util;
 
-import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 import java.io.*;
@@ -9,8 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_CLOSING_STREAMS;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_FILE_NOT_FOUND;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 @SuppressWarnings("PMD.PreserveStackTrace")
 public final class IOUtils {
@@ -48,9 +47,11 @@ public final class IOUtils {
         String resolvedFileName = resolveFilePath(fileName).toString();
 
         FileOutputStream fileOutputStream;
-
-        fileOutputStream = new FileOutputStream(new File(resolvedFileName));
-
+        try {
+            fileOutputStream = new FileOutputStream(new File(resolvedFileName));
+        } catch (IOException e) {
+            throw new ShellException(ERR_FILE_NOT_FOUND);
+        }
         return fileOutputStream;
     }
 
@@ -91,7 +92,7 @@ public final class IOUtils {
     }
 
     public static Path resolveFilePath(String fileName) {
-        Path currentDirectory = Paths.get(Environment.currentDirectory);
+        Path currentDirectory = Paths.get(EnvironmentHelper.currentDirectory);
         return currentDirectory.resolve(fileName);
     }
 
@@ -103,12 +104,12 @@ public final class IOUtils {
      */
     public static List<String> getLinesFromInputStream(InputStream input) throws Exception {
         List<String> output = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            output.add(line);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.add(line);
+            }
         }
-        reader.close();
         return output;
     }
 }

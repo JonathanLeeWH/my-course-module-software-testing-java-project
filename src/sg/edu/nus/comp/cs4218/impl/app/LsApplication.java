@@ -1,6 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
-import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.app.LsInterface;
 import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
@@ -35,7 +35,7 @@ public class LsApplication implements LsInterface {
         List<Path> paths;
         if (folderName.length == 0 && isRecursive) {
             String[] directories = new String[1];
-            directories[0] = Environment.currentDirectory;
+            directories[0] = EnvironmentHelper.currentDirectory;
             paths = resolvePaths(directories);
         } else {
             paths = resolvePaths(folderName);
@@ -59,7 +59,7 @@ public class LsApplication implements LsInterface {
         try {
             parser.parse(args);
         } catch (InvalidArgsException e) {
-            throw new LsException(e.getMessage());
+            throw (LsException) new LsException(e.getMessage()).initCause(e);
         }
 
         Boolean foldersOnly = parser.isFoldersOnly();
@@ -72,7 +72,7 @@ public class LsApplication implements LsInterface {
             stdout.write(result.getBytes());
             stdout.write(StringUtils.STRING_NEWLINE.getBytes());
         } catch (Exception e) {
-            throw new LsException(ERR_WRITE_STREAM);
+            throw (LsException) new LsException(ERR_WRITE_STREAM).initCause(e);
         }
     }
 
@@ -84,11 +84,11 @@ public class LsApplication implements LsInterface {
      * @return
      */
     private String listCwdContent(Boolean isFoldersOnly) throws LsException {
-        String cwd = Environment.currentDirectory;
+        String cwd = EnvironmentHelper.currentDirectory;
         try {
             return formatContents(getContents(Paths.get(cwd), isFoldersOnly));
         } catch (InvalidDirectoryException e) {
-            throw new LsException("Unexpected error occurred!");
+            throw (LsException) new LsException("Unexpected error occurred!").initCause(e);
         }
     }
 
@@ -222,7 +222,7 @@ public class LsApplication implements LsInterface {
             return Paths.get(directory).normalize();
         }
 
-        return Paths.get(Environment.currentDirectory, directory).normalize();
+        return Paths.get(EnvironmentHelper.currentDirectory, directory).normalize();
     }
 
     /**
@@ -232,7 +232,7 @@ public class LsApplication implements LsInterface {
      * @return
      */
     private Path getRelativeToCwd(Path path) {
-        return Paths.get(Environment.currentDirectory).relativize(path);
+        return Paths.get(EnvironmentHelper.currentDirectory).relativize(path);
     }
 
     private class InvalidDirectoryException extends Exception {
