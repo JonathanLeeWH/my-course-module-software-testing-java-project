@@ -54,7 +54,9 @@ public class PipeCommand implements Command {
             } finally {
                 try {
                     nextInputStream.close();
-                    nextOutputStream.close();
+                    if (nextOutputStream != null) {
+                        nextOutputStream.close();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
