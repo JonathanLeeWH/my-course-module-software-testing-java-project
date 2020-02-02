@@ -8,6 +8,8 @@ import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 import java.io.*;
 import java.util.List;
 
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_IO_EXCEPTION;
+
 /**
  * A Pipe Command is a sub-command consisting of two Call Commands separated with a pipe,
  * or a Pipe Command and a Call Command separated with a pipe.
@@ -58,7 +60,7 @@ public class PipeCommand implements Command {
                         nextOutputStream.close();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw (ShellException) new ShellException(ERR_IO_EXCEPTION).initCause(e);
                 }
             }
         }
