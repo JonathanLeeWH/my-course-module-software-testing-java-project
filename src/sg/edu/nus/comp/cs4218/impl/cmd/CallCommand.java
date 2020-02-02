@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_IO_EXCEPTION;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_SYNTAX;
 
 /**
@@ -53,10 +54,9 @@ public class CallCommand implements Command {
             }
         } catch (IOException e) {
             /**
-             * TODO: Might need change depending but currently it returns a non zero exit value.
-             * Temporary I set it to return the exception message.
+             * TODO: Need to check if the exception thrown is correct.
              */
-            System.out.println(e.getMessage());
+            throw new ShellException(ERR_IO_EXCEPTION);
         }
 
     }
