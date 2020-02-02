@@ -56,7 +56,7 @@ public class CallCommand implements Command {
             /**
              * TODO: Need to check if the exception thrown is correct.
              */
-            throw new ShellException(ERR_IO_EXCEPTION);
+            throw (ShellException) new ShellException(ERR_IO_EXCEPTION).initCause(e);
         }
 
     }
