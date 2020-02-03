@@ -41,6 +41,7 @@ public class ShellImpl implements Shell {
             /**
              * TODO: Need to check if the system exit code is correct.
              */
+            System.err.println(e.getMessage());
             System.exit(1); // Streams are closed, terminate process
         } catch (Exception e) {
             /**
