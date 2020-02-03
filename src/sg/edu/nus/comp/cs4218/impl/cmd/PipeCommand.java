@@ -3,12 +3,12 @@ package sg.edu.nus.comp.cs4218.impl.cmd;
 import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
+
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_IO_EXCEPTION;
 
 /**
  * A Pipe Command is a sub-command consisting of two Call Commands separated with a pipe,
@@ -30,7 +30,7 @@ public class PipeCommand implements Command {
         ShellException shellException = null;
 
         InputStream nextInputStream = stdin;
-        OutputStream nextOutputStream;
+        OutputStream nextOutputStream = null;
 
         for (int i = 0; i < callCommands.size(); i++) {
             CallCommand callCommand = callCommands.get(i);
@@ -53,6 +53,15 @@ public class PipeCommand implements Command {
                 absAppException = e;
             } catch (ShellException e) {
                 shellException = e;
+            } finally {
+                try {
+                    nextInputStream.close();
+                    if (nextOutputStream != null) {
+                        nextOutputStream.close();
+                    }
+                } catch (IOException e) {
+                    throw (ShellException) new ShellException(ERR_IO_EXCEPTION).initCause(e);
+                }
             }
         }
 
@@ -62,6 +71,8 @@ public class PipeCommand implements Command {
         if (shellException != null) {
             throw shellException;
         }
+        IOUtils.closeInputStream(nextInputStream);
+        IOUtils.closeOutputStream(nextOutputStream);
     }
 
     @Override

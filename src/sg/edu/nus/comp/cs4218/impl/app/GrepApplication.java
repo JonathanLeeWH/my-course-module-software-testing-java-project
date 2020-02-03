@@ -81,25 +81,13 @@ public class GrepApplication implements GrepInterface {
                     continue;
                 }
                 reader = new BufferedReader(new FileReader(path));
-                String line;
                 Pattern compiledPattern;
                 if (isCaseInsensitive) {
                     compiledPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
                 } else {
                     compiledPattern = Pattern.compile(pattern);
                 }
-                count = 0;
-                while ((line = reader.readLine()) != null) {
-                    Matcher matcher = compiledPattern.matcher(line);
-                    if (matcher.find()) { // match
-                        if (isSingleFile) {
-                            lineResults.add(line);
-                        } else {
-                            lineResults.add(f + ": " + line);
-                        }
-                        count++;
-                    }
-                }
+                count = addMatchedPatternToLineResult(isSingleFile, reader, compiledPattern, f, lineResults);
                 if (isSingleFile) {
                     countResults.add("" + count);
                 } else {
@@ -114,6 +102,32 @@ public class GrepApplication implements GrepInterface {
                 }
             }
         }
+    }
+
+    /**
+     * Add lines that match pattern to an array of line result.
+     *
+     * @param isSingleFile a condition to check if there is only 1 file supplied by user.
+     * @param reader a reader with the file supplied by user to read the entire file
+     * @param compiledPattern which was compiled from pattern supplied by user
+     * @param fileName supplied by user
+     * @param lineResults a StringJoiner of the grep line results
+     */
+    private int addMatchedPatternToLineResult(boolean isSingleFile, BufferedReader reader, Pattern compiledPattern, String fileName, StringJoiner lineResults) throws IOException {
+        int count = 0;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            Matcher matcher = compiledPattern.matcher(line);
+            if (matcher.find()) { // match
+                if (isSingleFile) {
+                    lineResults.add(line);
+                } else {
+                    lineResults.add(fileName + ": " + line);
+                }
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
