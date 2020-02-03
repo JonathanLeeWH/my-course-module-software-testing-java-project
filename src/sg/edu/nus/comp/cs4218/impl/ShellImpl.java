@@ -26,6 +26,7 @@ public class ShellImpl implements Shell {
             Shell shell = new ShellImpl();
 
             String currentDirectory = EnvironmentHelper.currentDirectory;
+            System.out.print(currentDirectory + ">");
             String commandString;
 
             commandString = reader.readLine();
