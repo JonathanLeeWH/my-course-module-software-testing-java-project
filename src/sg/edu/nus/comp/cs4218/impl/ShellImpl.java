@@ -27,13 +27,15 @@ public class ShellImpl implements Shell {
 
             String currentDirectory = EnvironmentHelper.currentDirectory;
             System.out.print(currentDirectory + ">");
-            String commandString;
+            String commandString = "";
 
-            commandString = reader.readLine();
+            while((commandString = reader.readLine()) != null) {
+                if (!StringUtils.isBlank(commandString)) {
+                    shell.parseAndEvaluate(commandString, System.out);
+                }
 
-            if (!StringUtils.isBlank(commandString)) {
-                shell.parseAndEvaluate(commandString, System.out);
             }
+
 
         } catch (IOException e) {
             // Streams are auto closed using try with resources.

@@ -43,21 +43,35 @@ public class CallCommand implements Command {
         IORedirectionHandler redirHandler = new IORedirectionHandler(argsList, stdin, stdout, argumentResolver);
         redirHandler.extractRedirOptions();
         List<String> noRedirArgsList = redirHandler.getNoRedirArgsList();
-        try (InputStream inputStream = redirHandler.getInputStream();
-             OutputStream outputStream = redirHandler.getOutputStream()) {
 
-            // Handle quoting + globing + command substitution
-            List<String> parsedArgsList = argumentResolver.parseArguments(noRedirArgsList);
-            if (!parsedArgsList.isEmpty()) {
-                String app = parsedArgsList.remove(0);
-                appRunner.runApp(app, parsedArgsList.toArray(new String[0]), inputStream, outputStream);
-            }
-        } catch (IOException e) {
-            /**
-             * TODO: Need to check if the exception thrown is correct.
-             */
-            throw (ShellException) new ShellException(ERR_IO_EXCEPTION).initCause(e);
+        InputStream inputStream = redirHandler.getInputStream();
+        OutputStream outputStream = redirHandler.getOutputStream();
+
+        // Handle quoting + globing + command substitution
+        List<String> parsedArgsList = argumentResolver.parseArguments(noRedirArgsList);
+        if (!parsedArgsList.isEmpty()) {
+            String app = parsedArgsList.remove(0);
+            appRunner.runApp(app, parsedArgsList.toArray(new String[0]), inputStream, outputStream);
         }
+        IOUtils.closeInputStream(inputStream);
+        IOUtils.closeOutputStream(outputStream);
+
+//        try (InputStream inputStream = redirHandler.getInputStream();
+//             OutputStream outputStream = redirHandler.getOutputStream()) {
+//
+//            // Handle quoting + globing + command substitution
+//            List<String> parsedArgsList = argumentResolver.parseArguments(noRedirArgsList);
+//            if (!parsedArgsList.isEmpty()) {
+//                String app = parsedArgsList.remove(0);
+//                appRunner.runApp(app, parsedArgsList.toArray(new String[0]), inputStream, outputStream);
+//
+//            }
+//        } catch (IOException e) {
+//            /**
+//             * TODO: Need to check if the exception thrown is correct.
+//             */
+//            throw (ShellException) new ShellException(ERR_IO_EXCEPTION).initCause(e);
+//        }
 
     }
 
