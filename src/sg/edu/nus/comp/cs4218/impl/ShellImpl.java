@@ -36,7 +36,6 @@ public class ShellImpl implements Shell {
 
                 if (!StringUtils.isBlank(commandString)) {
                     shell.parseAndEvaluate(commandString, System.out);
-                    System.out.println();
                 }
 
 
