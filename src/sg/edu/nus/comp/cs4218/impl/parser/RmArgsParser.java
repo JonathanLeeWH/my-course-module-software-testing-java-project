@@ -4,23 +4,23 @@ import java.util.List;
 
 public class RmArgsParser extends ArgsParser {
     private final static char FLAG_IS_RECURSIVE = 'r';
-    private final static char FLAG_INCLUDE_FOLDERS = 'd';
+    private final static char FLAG_WITH_FOLDER = 'd';
 
     public RmArgsParser() {
         super();
         legalFlags.add(FLAG_IS_RECURSIVE);
-        legalFlags.add(FLAG_INCLUDE_FOLDERS);
+        legalFlags.add(FLAG_WITH_FOLDER);
     }
 
     public Boolean isEmptyFolder() {
-        return !flags.contains(FLAG_INCLUDE_FOLDERS);
+        return flags.contains(FLAG_WITH_FOLDER);
     }
 
     public Boolean isRecursive() {
         return flags.contains(FLAG_IS_RECURSIVE);
     }
 
-    public List<String> getFilesOrDirectories() {
+    public List<String> getFileNames() {
         return nonFlagArgs;
     }
 }
