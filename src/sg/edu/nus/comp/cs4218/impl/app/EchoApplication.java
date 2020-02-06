@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import sg.edu.nus.comp.cs4218.app.EchoInterface;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
+import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +54,7 @@ public class EchoApplication implements EchoInterface {
         String result = constructResult(args);
         try {
             stdout.write(result.getBytes());
+            stdout.write(StringUtils.STRING_NEWLINE.getBytes());
         } catch (IOException e) {
             throw (EchoException) new EchoException(ERR_IO_EXCEPTION).initCause(e);
         }
