@@ -2,9 +2,12 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import sg.edu.nus.comp.cs4218.app.CutInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.CutException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_ARGS;
 
 public class CutApplication implements CutInterface {
     @Override
@@ -19,7 +22,10 @@ public class CutApplication implements CutInterface {
 
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
-        System.out.println("Cut is called");
+        if (args == null) {
+            throw new CutException(ERR_NULL_ARGS);
+        }
+        System.out.println("Cut is called: " + args[0]);
         //cutFromFiles();
     }
 }
