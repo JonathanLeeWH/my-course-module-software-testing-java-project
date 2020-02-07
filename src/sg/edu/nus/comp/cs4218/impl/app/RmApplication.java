@@ -47,12 +47,8 @@ public class RmApplication implements RmInterface {
                 removeFileAndEmptyFolderOnly(node);
             }
 
-            if (!isEmptyFolder && isRecursive) { // -r but no -d flag
-                removeFilesAndFolderContent(node, false); // Need to ask about -r but no -d flag.
-            }
-
-            if (isEmptyFolder && isRecursive) {
-                removeFilesAndFolderContent(node, true);
+            if (isRecursive) { // if -r flag is present for example -r or -rd will call the same method.
+                removeFilesAndFolderContent(node);
             }
 
         }
@@ -78,23 +74,17 @@ public class RmApplication implements RmInterface {
         }
     }
 
-    public void removeFilesAndFolderContent(File fileName, boolean removeFolder) throws RmException {
+    public void removeFilesAndFolderContent(File fileName) throws RmException {
         if (fileName.isDirectory()) {
             File[] contents = fileName.listFiles();
             if (contents != null) {
                 for (File file : contents) {
-                    removeFilesAndFolderContent(file, removeFolder); // Recursive call
+                    removeFilesAndFolderContent(file); // Recursive call
                 }
             }
         }
 
-        if (removeFolder) {
-            fileName.delete(); // delete the file.
-        } else {
-            if (!fileName.isDirectory()) {
-                fileName.delete(); // delete the file.
-            }
-        }
+        fileName.delete(); // delete the file.
     }
 
     @Override
