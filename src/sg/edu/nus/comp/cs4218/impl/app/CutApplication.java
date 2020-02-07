@@ -2,29 +2,21 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import javafx.util.Pair;
 import sg.edu.nus.comp.cs4218.app.CutInterface;
-import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
 import sg.edu.nus.comp.cs4218.impl.parser.CutArgsParser;
+import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class CutApplication implements CutInterface {
     @Override
-    public String cutFromFiles(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, String... fileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public String cutFromStdin(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, InputStream stdin) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
+    public void run(String[] args, InputStream stdin, OutputStream stdout) throws CutException {
         if (args == null) {
             throw new CutException(ERR_NULL_ARGS);
         }
@@ -35,6 +27,7 @@ public class CutApplication implements CutInterface {
 
         // Parse arguments.
         CutArgsParser parser = new CutArgsParser();
+        StringBuilder output = new StringBuilder();
         try {
             parser.parse(args);
         } catch (InvalidArgsException e) {
@@ -48,10 +41,83 @@ public class CutApplication implements CutInterface {
         String[] files = parser.getFileNames();
 
         try {
-            //cutFromFiles(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), files);
-            //cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin);
+            if ((isCharPos) && (isBytePos)) {
+               //throw new CutException(ERR_INVALID_FLAG);
+            }
+            if (files == null) {
+                output.append(cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin));
+            }
+            else {
+                output.append(cutFromFiles(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), files));
+            }
+
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new CutException(e);
         }
+
+        try {
+            if (!output.toString().isEmpty()) {
+                stdout.write(output.toString().getBytes());
+                stdout.write(STRING_NEWLINE.getBytes());
+            }
+        } catch (IOException e) {
+            throw new CutException(e, ERR_WRITE_STREAM);
+        }
+    }
+
+    @Override
+    public String cutFromFiles(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, String... fileName) throws Exception {
+        if (fileName == null) {
+            throw new Exception(ERR_GENERAL);
+        }
+
+        List<String> lines = new ArrayList<>();
+        List<String> results = new ArrayList<>();
+        for (String file : fileName) {
+            File node = IOUtils.resolveFilePath(file).toFile();
+            if (!node.exists()) {
+                throw new CutException(ERR_FILE_NOT_FOUND);
+            }
+            if (node.isDirectory()) {
+                throw new CutException(ERR_IS_DIR);
+            }
+            if (!node.canRead()) {
+                throw new CutException(ERR_NO_PERM);
+            }
+
+            try (InputStream input = IOUtils.openInputStream(file)) {
+                lines.addAll(IOUtils.getLinesFromInputStream(input));
+                IOUtils.closeInputStream(input);
+            }
+        }
+
+        if (isCharPo) {
+            for (String line: lines) {
+                if (endIdx == 0) {
+                    char val = line.charAt(startIdx - 1);
+                    results.add(String.valueOf(val));
+                }
+                else if (isRange) {
+                    String val = line.substring(startIdx - 1, endIdx);
+                    results.add(val);
+                }
+                else {
+                    // This is assumed that size of list of comma separated numbers is 2.
+                    char startVal = line.charAt(startIdx - 1);
+                    char endVal = line.charAt(endIdx - 1);
+                    results.add(String.valueOf(startVal) + endVal);
+                }
+            }
+        }
+        else if (isBytePo) {
+
+        }
+
+        return String.join(STRING_NEWLINE, results);
+    }
+
+    @Override
+    public String cutFromStdin(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, InputStream stdin) throws Exception {
+        return null;
     }
 }

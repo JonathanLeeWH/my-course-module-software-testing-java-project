@@ -7,4 +7,10 @@ public class CutException extends AbstractApplicationException {
     public CutException(String message) {
         super("cut: " + message);
     }
+    public CutException(Exception exception) {
+        super("cut: " + exception.getMessage());
+    }
+    public CutException(Exception exception, String message) {
+        super("cut: " + exception.getClass() + message);
+    }
 }
