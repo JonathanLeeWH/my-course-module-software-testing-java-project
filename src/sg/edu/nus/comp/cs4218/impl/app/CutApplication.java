@@ -1,13 +1,16 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import javafx.util.Pair;
 import sg.edu.nus.comp.cs4218.app.CutInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CutException;
+import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
+import sg.edu.nus.comp.cs4218.impl.parser.CutArgsParser;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_ARGS;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 public class CutApplication implements CutInterface {
     @Override
@@ -25,7 +28,30 @@ public class CutApplication implements CutInterface {
         if (args == null) {
             throw new CutException(ERR_NULL_ARGS);
         }
-        System.out.println("Cut is called: " + args[0]);
-        //cutFromFiles();
+
+        if (stdout == null) {
+            throw new CutException(ERR_NO_OSTREAM);
+        }
+
+        // Parse arguments.
+        CutArgsParser parser = new CutArgsParser();
+        try {
+            parser.parse(args);
+        } catch (InvalidArgsException e) {
+            throw (CutException) new CutException(e.getMessage()).initCause(e);
+        }
+
+        Boolean isCharPos = parser.isCharPos();
+        Boolean isBytePos = parser.isBytePos();
+        Boolean isRange = parser.isRange();
+        Pair<Integer, Integer> position = parser.getPositions();
+        String[] files = parser.getFileNames();
+
+        try {
+            //cutFromFiles(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), files);
+            //cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
