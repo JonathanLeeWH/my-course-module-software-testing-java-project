@@ -92,25 +92,13 @@ public class CutApplication implements CutInterface {
         }
 
         if (isCharPo) {
-            for (String line: lines) {
-                if (endIdx == 0) {
-                    char val = line.charAt(startIdx - 1);
-                    results.add(String.valueOf(val));
-                }
-                else if (isRange) {
-                    String val = line.substring(startIdx - 1, endIdx);
-                    results.add(val);
-                }
-                else {
-                    // This is assumed that size of list of comma separated numbers is 2.
-                    char startVal = line.charAt(startIdx - 1);
-                    char endVal = line.charAt(endIdx - 1);
-                    results.add(String.valueOf(startVal) + endVal);
-                }
-            }
+            results = retrieveByCharPos(lines, isRange, startIdx, endIdx);
         }
         else if (isBytePo) {
-
+            results = retrieveByCharPos(lines, isRange, startIdx, endIdx);
+        }
+        else {
+            throw new CutException(ERR_MISSING_ARG);
         }
 
         return String.join(STRING_NEWLINE, results);
@@ -119,5 +107,49 @@ public class CutApplication implements CutInterface {
     @Override
     public String cutFromStdin(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, InputStream stdin) throws Exception {
         return null;
+    }
+
+    /**
+     * Retrieve selected portions of each line based on the position of the character.
+     *
+     * @param lines All lines supplied by user.
+     * @param isRange Boolean option to check if LIST is in the form of range.
+     * @param startIdx Starting position supplied by user.
+     * @param endIdx Ending position supplied by user.
+     * @return A list of results from cutting selected portions of each line.
+     */
+    private List<String> retrieveByCharPos(List<String> lines, Boolean isRange, int startIdx, int endIdx) {
+        List<String> results = new ArrayList<>();
+        for (String line: lines) {
+            if (endIdx == 0) {
+                char val = line.charAt(startIdx - 1);
+                results.add(String.valueOf(val));
+            }
+            else if (isRange) {
+                String val = line.substring(startIdx - 1, endIdx);
+                results.add(val);
+            }
+            else {
+                // This is assumed that size of list of comma separated numbers is 2.
+                char startVal = line.charAt(startIdx - 1);
+                char endVal = line.charAt(endIdx - 1);
+                results.add(String.valueOf(startVal) + endVal);
+            }
+        }
+        return results;
+    }
+
+    /**
+     * Retrieve selected portions of each line based on the position of the byte.
+     *
+     * @param lines All lines supplied by user.
+     * @param isRange Boolean option to check if LIST is in the form of range.
+     * @param startIdx Starting position supplied by user.
+     * @param endIdx Ending position supplied by user.
+     * @return A list of results from cutting selected portions of each line.
+     */
+    private List<String> retrieveByBytePos(List<String> lines, Boolean isRange, int startIdx, int endIdx) {
+        List<String> results = new ArrayList<>();
+        return results;
     }
 }
