@@ -72,7 +72,7 @@ public class CutApplication implements CutInterface {
         }
 
         List<String> lines = new ArrayList<>();
-        List<String> results = new ArrayList<>();
+        List<String> results;
         for (String file : fileName) {
             File node = IOUtils.resolveFilePath(file).toFile();
             if (!node.exists()) {
@@ -95,7 +95,7 @@ public class CutApplication implements CutInterface {
             results = retrieveByCharPos(lines, isRange, startIdx, endIdx);
         }
         else if (isBytePo) {
-            results = retrieveByCharPos(lines, isRange, startIdx, endIdx);
+            results = retrieveByBytePos(lines, isRange, startIdx, endIdx);
         }
         else {
             throw new CutException(ERR_MISSING_ARG);
@@ -106,7 +106,21 @@ public class CutApplication implements CutInterface {
 
     @Override
     public String cutFromStdin(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, InputStream stdin) throws Exception {
-        return null;
+        if (stdin == null) {
+            throw new Exception(ERR_NULL_STREAMS);
+        }
+        List<String> lines = IOUtils.getLinesFromInputStream(stdin);
+        List<String> results;
+        if (isCharPo) {
+            results = retrieveByCharPos(lines, isRange, startIdx, endIdx);
+        }
+        else if (isBytePo) {
+            results = retrieveByBytePos(lines, isRange, startIdx, endIdx);
+        }
+        else {
+            throw new CutException(ERR_MISSING_ARG);
+        }
+        return String.join(STRING_NEWLINE, results);
     }
 
     /**
@@ -158,6 +172,31 @@ public class CutApplication implements CutInterface {
      */
     private List<String> retrieveByBytePos(List<String> lines, Boolean isRange, int startIdx, int endIdx) {
         List<String> results = new ArrayList<>();
+        /*for (String line: lines) {
+            if (endIdx == 0) {
+                char val = line.charAt(startIdx - 1);
+                results.add(String.valueOf(val));
+            }
+            else if (isRange) {
+                String val = line.substring(startIdx - 1, endIdx);
+                results.add(val);
+            }
+            else {
+                // This is assumed that size of list of comma separated numbers is 2.
+                char startVal = line.charAt(startIdx - 1);
+                char endVal = line.charAt(endIdx - 1);
+                if (startIdx > endIdx) {
+                    results.add(String.valueOf(endVal) + startVal);
+                }
+                else if (startIdx == endIdx) {
+                    results.add(String.valueOf(startVal));
+                }
+                else {
+                    results.add(String.valueOf(startVal) + endVal);
+                }
+            }
+
+        }*/
         return results;
     }
 }
