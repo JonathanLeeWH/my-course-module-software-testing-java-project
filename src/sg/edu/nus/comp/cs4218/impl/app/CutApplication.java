@@ -133,7 +133,15 @@ public class CutApplication implements CutInterface {
                 // This is assumed that size of list of comma separated numbers is 2.
                 char startVal = line.charAt(startIdx - 1);
                 char endVal = line.charAt(endIdx - 1);
-                results.add(String.valueOf(startVal) + endVal);
+                if (startIdx > endIdx) {
+                    results.add(String.valueOf(endVal) + startVal);
+                }
+                else if (startIdx == endIdx) {
+                    results.add(String.valueOf(startVal));
+                }
+                else {
+                    results.add(String.valueOf(startVal) + endVal);
+                }
             }
         }
         return results;
