@@ -172,31 +172,56 @@ public class CutApplication implements CutInterface {
      */
     private List<String> retrieveByBytePos(List<String> lines, Boolean isRange, int startIdx, int endIdx) {
         List<String> results = new ArrayList<>();
-        /*for (String line: lines) {
+        for (String line: lines) {
+            int currBytePos = 1;
             if (endIdx == 0) {
-                char val = line.charAt(startIdx - 1);
-                results.add(String.valueOf(val));
-            }
-            else if (isRange) {
-                String val = line.substring(startIdx - 1, endIdx);
-                results.add(val);
+                for (char val: line.toCharArray()) {
+                    int byteLength = String.valueOf(val).getBytes().length;
+                    if ((startIdx == currBytePos) || ((startIdx > currBytePos) && (startIdx < (currBytePos + byteLength)))) {
+                        results.add(String.valueOf(val));
+                        break;
+                    }
+                    currBytePos += byteLength;
+                }
             }
             else {
-                // This is assumed that size of list of comma separated numbers is 2.
-                char startVal = line.charAt(startIdx - 1);
-                char endVal = line.charAt(endIdx - 1);
-                if (startIdx > endIdx) {
-                    results.add(String.valueOf(endVal) + startVal);
-                }
-                else if (startIdx == endIdx) {
-                    results.add(String.valueOf(startVal));
-                }
-                else {
-                    results.add(String.valueOf(startVal) + endVal);
-                }
+                results.add(getBytePosFromString(isRange, line, startIdx, endIdx));
             }
-
-        }*/
+        }
         return results;
+    }
+
+    /**
+     * Get byte position(s) from a line of string.
+     *
+     * @param isRange Boolean option to check if LIST is in the form of range.
+     * @param line The line supplied by user.
+     * @param startIdx Starting position supplied by user.
+     * @param endIdx Ending position supplied by user.
+     * @return A string based on the byte position supplied by user.
+     */
+    private String getBytePosFromString(Boolean isRange, String line, int startIdx, int endIdx) {
+        int currBytePos = 1;
+        StringBuilder result = new StringBuilder();
+        boolean hasStarted = false;
+        boolean isWithinRange = false;
+        for (char val : line.toCharArray()) {
+            int byteLength = String.valueOf(val).getBytes().length;
+            int nextBytePos = currBytePos + byteLength;
+            if ((!hasStarted) && ((startIdx == currBytePos) || ((startIdx > currBytePos) && (startIdx < (nextBytePos))))) {
+                if (isRange) {
+                    isWithinRange = true;
+                }
+                hasStarted = true;
+                result.append(val);
+            } else if ((endIdx == currBytePos) || ((endIdx > currBytePos) && (endIdx < (nextBytePos)))) {
+                result.append(val);
+                break;
+            } else if (isWithinRange) {
+                result.append(val);
+            }
+            currBytePos = nextBytePos;
+        }
+        return result.toString();
     }
 }
