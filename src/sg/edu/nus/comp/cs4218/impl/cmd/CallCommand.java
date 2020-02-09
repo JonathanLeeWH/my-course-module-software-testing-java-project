@@ -21,6 +21,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_SYNTAX;
  * <p>
  * Command format: (<non-keyword> or <quoted>) *
  */
+@SuppressWarnings("PMD.CloseResource")
 public class CallCommand implements Command {
     private final List<String> argsList;
     private final ApplicationRunner appRunner;
