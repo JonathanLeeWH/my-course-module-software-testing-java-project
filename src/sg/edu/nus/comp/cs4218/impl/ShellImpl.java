@@ -33,9 +33,12 @@ public class ShellImpl implements Shell {
                 System.out.print(currentDirectory + "> ");
 
                 commandString = reader.readLine();
-
-                if (!StringUtils.isBlank(commandString)) {
-                    shell.parseAndEvaluate(commandString, System.out);
+                try {
+                    if (!StringUtils.isBlank(commandString)) {
+                        shell.parseAndEvaluate(commandString, System.out);
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
 
 
@@ -50,11 +53,6 @@ public class ShellImpl implements Shell {
              */
             System.err.println(e.getMessage());
             System.exit(1); // Streams are closed, terminate process
-        } catch (Exception e) {
-            /**
-             * TODO: Might or might not need to change this to return non zero exit code and more specific exceptions.
-             */
-            System.out.println(e.getMessage());
         }
     }
 
