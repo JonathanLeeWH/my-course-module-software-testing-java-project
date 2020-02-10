@@ -49,13 +49,13 @@ public class PipeCommand implements Command {
                 if (i != callCommands.size() - 1) {
                     nextInputStream = new ByteArrayInputStream(((ByteArrayOutputStream) nextOutputStream).toByteArray());
                 }
-                nextOutputStream = null;
             } catch (AbstractApplicationException e) {
                 absAppException = e;
             } catch (ShellException e) {
                 shellException = e;
             } finally {
                 try {
+                    nextOutputStream = null;
                     nextInputStream.close();
                     if (nextOutputStream != null) {
                         nextOutputStream.close();
