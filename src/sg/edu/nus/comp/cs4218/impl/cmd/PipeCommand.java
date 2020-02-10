@@ -55,8 +55,11 @@ public class PipeCommand implements Command {
                 shellException = e;
             } finally {
                 try {
+                    nextInputStream = null;
                     nextOutputStream = null;
-                    nextInputStream.close();
+                    if (nextInputStream != null) {
+                        nextInputStream.close();
+                    }
                     if (nextOutputStream != null) {
                         nextOutputStream.close();
                     }
