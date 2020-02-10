@@ -25,14 +25,25 @@ public class ShellImpl implements Shell {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             Shell shell = new ShellImpl();
 
-            String currentDirectory = EnvironmentHelper.currentDirectory;
-            String commandString;
+            String commandString = "";
 
-            commandString = reader.readLine();
+            do {
 
-            if (!StringUtils.isBlank(commandString)) {
-                shell.parseAndEvaluate(commandString, System.out);
-            }
+                String currentDirectory = EnvironmentHelper.currentDirectory;
+                System.out.print(currentDirectory + "> ");
+
+                commandString = reader.readLine();
+                try {
+                    if (!StringUtils.isBlank(commandString)) {
+                        shell.parseAndEvaluate(commandString, System.out);
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+
+            } while (commandString != null);
+
 
         } catch (IOException e) {
             // Streams are auto closed using try with resources.
@@ -40,12 +51,8 @@ public class ShellImpl implements Shell {
             /**
              * TODO: Need to check if the system exit code is correct.
              */
+            System.err.println(e.getMessage());
             System.exit(1); // Streams are closed, terminate process
-        } catch (Exception e) {
-            /**
-             * TODO: Might or might not need to change this to return non zero exit code and more specific exceptions.
-             */
-            System.out.println(e.getMessage());
         }
     }
 
