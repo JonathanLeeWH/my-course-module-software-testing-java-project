@@ -16,21 +16,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RmApplicationTest {
 
-    @BeforeEach
-    void setUp() {
-
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
+//    @BeforeEach
+//    void setUp() {
+//
+//    }
+//
+//    @AfterEach
+//    void tearDown() {
+//    }
+//
+//    @Test
+//    void remove() {
+//    }
 
     @Test
-    void remove() {
-    }
-
-    @Test
-    void removeFileOnly_fileExists_fileIsDeleted(@TempDir Path tempDir) throws IOException, RmException {
+    void removeFileOnlyWhenFileExistsShouldDeleteFile(@TempDir Path tempDir) throws IOException, RmException {
         RmApplication rmApplication = new RmApplication();
         Path fileToBeDeleted = tempDir.resolve("1.txt");
         List<String> lines = Arrays.asList("1", "2", "3");
@@ -44,7 +44,7 @@ class RmApplicationTest {
     }
 
     @Test
-    void removeFileOnly_fileDoesNotExist_exceptionThrown(@TempDir Path tempDir) throws IOException, RmException {
+    void removeFileOnlyWhenFileAbsentShouldThrowRmException(@TempDir Path tempDir) throws IOException, RmException {
         RmApplication rmApplication = new RmApplication();
         Path fileToBeDeleted = tempDir.resolve("1.txt");
 
@@ -55,15 +55,15 @@ class RmApplicationTest {
         });
     }
 
-    @Test
-    void removeFileAndEmptyFolderOnly() {
-    }
-
-    @Test
-    void removeFilesAndFolderContent() {
-    }
-
-    @Test
-    void run() {
-    }
+//    @Test
+//    void removeFileAndEmptyFolderOnly() {
+//    }
+//
+//    @Test
+//    void removeFilesAndFolderContent() {
+//    }
+//
+//    @Test
+//    void run() {
+//    }
 }
