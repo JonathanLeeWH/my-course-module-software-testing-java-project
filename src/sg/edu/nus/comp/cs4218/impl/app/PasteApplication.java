@@ -78,7 +78,7 @@ public class PasteApplication implements PasteInterface {
      */
     public String mergeStdin(InputStream stdin) throws Exception{
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stdin));
-            return paste(bufferedReader); // implicit closing of bufferedReader
+            return paste(bufferedReader);
     }
 
     /**
@@ -93,7 +93,7 @@ public class PasteApplication implements PasteInterface {
         for (int i = 0; i < fileName.length; i++) {
             bufferedReaders[i] = new BufferedReader(new FileReader(fileName[i]));
         }
-        return paste(bufferedReaders); // implicit closing of bufferedReader
+        return paste(bufferedReaders);
     }
 
     /**
