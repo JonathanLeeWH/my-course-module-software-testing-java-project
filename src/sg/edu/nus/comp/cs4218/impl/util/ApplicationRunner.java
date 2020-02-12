@@ -76,6 +76,8 @@ public class ApplicationRunner {
                 break;
             case APP_CUT:
                 application = new CutApplication();
+            case APP_PASTE:
+                application = new PasteApplication();
                 break;
             default:
                 throw new ShellException(app + ": " + ERR_INVALID_APP);
