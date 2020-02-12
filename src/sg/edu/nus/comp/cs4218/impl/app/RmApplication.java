@@ -60,7 +60,7 @@ public class RmApplication implements RmInterface {
                 Files.delete(fileName.toPath());
             }
         } catch (IOException e) {
-            throw (RmException) new RmException(e.getMessage()).initCause(e);
+            throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
         }
     }
 
@@ -70,7 +70,7 @@ public class RmApplication implements RmInterface {
         } catch (DirectoryNotEmptyException e) {
             throw (RmException) new RmException(ERR_NON_EMPTY_DIR).initCause(e);
         } catch (IOException e) {
-            throw (RmException) new RmException(e.getMessage()).initCause(e);
+            throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
         }
     }
 
