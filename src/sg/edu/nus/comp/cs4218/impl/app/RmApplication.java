@@ -68,7 +68,7 @@ public class RmApplication implements RmInterface {
         try {
             Files.delete(fileName.toPath());
         } catch (DirectoryNotEmptyException e) {
-            throw (RmException) new RmException("Non empty directory").initCause(e);
+            throw (RmException) new RmException(ERR_NON_EMPTY_DIR).initCause(e);
         } catch (IOException e) {
             throw (RmException) new RmException(e.getMessage()).initCause(e);
         }
