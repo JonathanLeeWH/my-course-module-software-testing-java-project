@@ -29,7 +29,7 @@ public class RmApplication implements RmInterface {
      *
      */
     @Override
-    public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws RmException {
+    public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws Exception {
         for (String current : fileName) {
             File node = IOUtils.resolveFilePath(current).toFile();
             if (!node.exists()) {
@@ -54,7 +54,7 @@ public class RmApplication implements RmInterface {
         }
     }
 
-    public void removeFileOnly(File fileName) throws RmException {
+    public void removeFileOnly(File fileName) throws Exception {
         try {
             if (!fileName.isDirectory()) {
                 Files.delete(fileName.toPath());
@@ -64,7 +64,7 @@ public class RmApplication implements RmInterface {
         }
     }
 
-    public void removeFileAndEmptyFolderOnly(File fileName) throws RmException {
+    public void removeFileAndEmptyFolderOnly(File fileName) throws Exception {
         try {
             Files.delete(fileName.toPath());
         } catch (DirectoryNotEmptyException e) {
@@ -74,7 +74,7 @@ public class RmApplication implements RmInterface {
         }
     }
 
-    public void removeFilesAndFolderContent(File fileName) throws RmException {
+    public void removeFilesAndFolderContent(File fileName) throws Exception {
         if (fileName.isDirectory()) {
             File[] contents = fileName.listFiles();
             if (contents != null) {
@@ -88,7 +88,7 @@ public class RmApplication implements RmInterface {
     }
 
     @Override
-    public void run(String[] args, InputStream stdin, OutputStream stdout) throws RmException {
+    public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
         if (args == null) {
             throw new RmException(ERR_NULL_ARGS);
         }
@@ -111,7 +111,13 @@ public class RmApplication implements RmInterface {
         if (fileNames.length == 0) {
             throw new RmException(ERR_MISSING_ARG);
         } else {
-            remove(emptyFolder, recursive, fileNames);
+            try {
+                remove(emptyFolder, recursive, fileNames);
+            } catch (RmException rmException) {
+                throw rmException;
+            } catch(Exception e) {
+                throw new RmException(e.getMessage());
+            }
         }
 
 
