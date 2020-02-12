@@ -107,7 +107,7 @@ public class CutApplication implements CutInterface {
     @Override
     public String cutFromStdin(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, InputStream stdin) throws Exception {
         if (stdin == null) {
-            throw new Exception(ERR_NULL_STREAMS);
+            throw new CutException(ERR_NULL_STREAMS);
         }
         List<String> lines = IOUtils.getLinesFromInputStream(stdin);
         List<String> results;
