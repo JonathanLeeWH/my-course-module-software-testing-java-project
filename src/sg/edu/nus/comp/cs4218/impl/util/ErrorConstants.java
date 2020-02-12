@@ -28,6 +28,7 @@ public class ErrorConstants {
     public static final String ERR_IS_DIR = "This is a directory";
     public static final String ERR_IS_NOT_DIR = "Not a directory";
     public static final String ERR_NO_PERM = "Permission denied";
+    public static final String ERR_NON_EMPTY_DIR = "Non empty directory";
 
     // `date` related
     public static final String ERR_INVALID_FORMAT_PREFIX = "Invalid format. Date format must start with '+'";

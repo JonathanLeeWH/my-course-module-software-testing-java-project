@@ -31,22 +31,19 @@ public class PipeCommand implements Command {
 
         InputStream nextInputStream = stdin;
         OutputStream nextOutputStream = null;
-
         for (int i = 0; i < callCommands.size(); i++) {
             CallCommand callCommand = callCommands.get(i);
-
             if (absAppException != null || shellException != null) {
                 callCommand.terminate();
                 continue;
             }
-
             try {
                 nextOutputStream = new ByteArrayOutputStream();
-                if (i == callCommands.size() ) {
+                if (i == callCommands.size() - 1) {
                     nextOutputStream = stdout;
                 }
                 callCommand.evaluate(nextInputStream, nextOutputStream);
-                if (i != callCommands.size() ) {
+                if (i != callCommands.size() - 1) {
                     nextInputStream = new ByteArrayInputStream(((ByteArrayOutputStream) nextOutputStream).toByteArray());
                 }
             } catch (AbstractApplicationException e) {
@@ -55,7 +52,11 @@ public class PipeCommand implements Command {
                 shellException = e;
             } finally {
                 try {
-                    nextInputStream.close();
+                    nextInputStream = null;
+                    nextOutputStream = null;
+                    if (nextInputStream != null) {
+                        nextInputStream.close();
+                    }
                     if (nextOutputStream != null) {
                         nextOutputStream.close();
                     }
@@ -64,15 +65,12 @@ public class PipeCommand implements Command {
                 }
             }
         }
-
         if (absAppException != null) {
             throw absAppException;
         }
         if (shellException != null) {
             throw shellException;
         }
-        IOUtils.closeInputStream(nextInputStream);
-        IOUtils.closeOutputStream(nextOutputStream);
     }
 
     @Override

@@ -32,6 +32,7 @@ public class EchoApplication implements EchoInterface {
             result = STRING_NEWLINE;
         } else {
             result = String.join(" ", args);
+            result += STRING_NEWLINE;
         }
 
         return result;
@@ -54,7 +55,6 @@ public class EchoApplication implements EchoInterface {
         String result = constructResult(args);
         try {
             stdout.write(result.getBytes());
-            stdout.write(StringUtils.STRING_NEWLINE.getBytes());
         } catch (IOException e) {
             throw (EchoException) new EchoException(ERR_IO_EXCEPTION).initCause(e);
         }

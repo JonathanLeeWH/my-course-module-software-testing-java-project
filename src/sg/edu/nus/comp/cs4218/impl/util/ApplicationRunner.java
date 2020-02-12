@@ -23,10 +23,9 @@ public class ApplicationRunner {
     public final static String APP_DIFF = "diff";
     public final static String APP_CD = "cd";
     public final static String APP_SED = "sed";
+    public final static String APP_RM = "rm";
     public final static String APP_CUT = "cut";
     public final static String APP_MV = "mv";
-
-
 
     /**
      * Run the application as specified by the application command keyword and arguments.
@@ -73,11 +72,14 @@ public class ApplicationRunner {
             case APP_SED:
                 application = new SedApplication();
                 break;
-            case APP_MV:
-                application = new MvApplication();
+            case APP_RM:
+                application = new RmApplication();
+                break;
             case APP_CUT:
                 application = new CutApplication();
                 break;
+            case APP_MV:
+                application = new MvApplication();
             default:
                 throw new ShellException(app + ": " + ERR_INVALID_APP);
         }
