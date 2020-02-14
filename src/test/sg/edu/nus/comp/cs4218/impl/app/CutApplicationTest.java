@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 class CutApplicationTest {
     private CutApplication cutApplication;
@@ -34,21 +35,25 @@ class CutApplicationTest {
 
     @Test
     void testRunNullArgs() {
-       assertThrows(CutException.class, () -> cutApplication.run(null, stdin, stdout));
+       Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(null, stdin, stdout));
+       assertEquals(thrown.getMessage(), "cut: " + ERR_NULL_ARGS);
     }
 
     @Test
     void testRunNullOutputStream() {
-        assertThrows(CutException.class, () -> cutApplication.run(defaultCutArgs, stdin, null));
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(defaultCutArgs, stdin, null));
+        assertEquals(thrown.getMessage(), "cut: " + ERR_NO_OSTREAM);
     }
 
     @Test
     void testCutFromStdinNullInputStream() {
-        assertThrows(CutException.class, () -> cutApplication.cutFromStdin(false, false, false, 1, 2, null));
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(false, false, false, 1, 2, null));
+        assertEquals(thrown.getMessage(), "cut: " + ERR_NULL_STREAMS);
     }
 
     @Test
     void testCutFromFilesNullFile() {
-        assertThrows(CutException.class, () -> cutApplication.cutFromFiles(false, false, false, 1, 2, null));
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(false, false, false, 1, 2, null));
+        assertEquals(thrown.getMessage(), "cut: " + ERR_GENERAL);
     }
 }
