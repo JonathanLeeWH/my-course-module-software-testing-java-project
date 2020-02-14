@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.exception.RmException;
+import sg.edu.nus.comp.cs4218.impl.app.RmApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +55,7 @@ class RmApplicationTest {
         // rm with no flags
         rmApplication.remove(false, false, fileNames);
 
+        // Check that the file is deleted.
         assertFalse(Files.exists(file));
     }
 
@@ -70,7 +72,7 @@ class RmApplicationTest {
 
         Files.createDirectory(emptyFolder);
 
-        assertTrue(Files.exists(emptyFolder));
+        assertTrue(Files.isDirectory(emptyFolder));
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -79,7 +81,8 @@ class RmApplicationTest {
 
        assertEquals(new RmException(ERR_IS_DIR).getMessage(), exception.getMessage());
 
-       assertTrue(Files.exists(emptyFolder));
+       // Check that the empty folder is not deleted.
+       assertTrue(Files.isDirectory(emptyFolder));
     }
 
     /**
@@ -102,6 +105,7 @@ class RmApplicationTest {
         // rm with no flags
         rmApplication.remove(false, false, fileNames);
 
+        // Check to ensure file1 and file2 are deleted.
         assertFalse(Files.exists(file1));
         assertFalse(Files.exists(file2));
     }
@@ -124,7 +128,6 @@ class RmApplicationTest {
 
         assertTrue(Files.exists(file));
         assertTrue(Files.isDirectory(emptyFolder));
-        assertTrue(Files.exists(emptyFolder));
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -133,8 +136,9 @@ class RmApplicationTest {
 
         assertEquals(new RmException(ERR_IS_DIR).getMessage(), exception.getMessage());
 
+        // Check that the file is deleted but the folder still exist.
+        assertFalse(Files.exists(file));
         assertTrue(Files.isDirectory(emptyFolder));
-        assertTrue(Files.exists(emptyFolder));
     }
 
     /**
@@ -153,7 +157,7 @@ class RmApplicationTest {
 
         Files.createFile(file);
         Files.createDirectories(fileInFolder);
-
+        
         assertTrue(Files.exists(file));
         assertTrue(Files.isDirectory(nonEmptyFolder));
         assertTrue(Files.exists(fileInFolder));
@@ -164,9 +168,41 @@ class RmApplicationTest {
         });
 
         assertEquals(new RmException(ERR_IS_DIR).getMessage(), exception.getMessage());
-        
+
+        // Check that the file is deleted but the non empty folder still exist.
+        assertFalse(Files.exists(file));
         assertTrue(Files.isDirectory(nonEmptyFolder));
         assertTrue(Files.exists(fileInFolder));
+    }
+
+    /**
+     * Tests for removing a non existing directory followed by an existing file followed by a non existing file.
+     * For example: rm hello 1.txt 2.txt
+     * Where 1.txt exists, hello directory is a directory that does not exist and 2.txt does not exist.
+     * Expected: Removes 1.txt and throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove hello directory which does not exist.
+     * The expected behaviour is similar to in unix except our shell only throw the latest exception as clarified with lecturer.
+     */
+    @Test
+    void removeNoFlagsMultipleFileArgumentsIncludeNonExistingFileAndFolderShouldDeleteExistingFileAndThrowLatestRmException(@TempDir Path tempDir) throws IOException {
+        Path file1 = tempDir.resolve(FILE_NAME_1);
+        Path file2 = tempDir.resolve(FILE_NAME_2);
+        Path folder  = tempDir.resolve(FOLDER_NAME_1);
+        String[] fileNames = {folder.toString(), file1.toString(), file2.toString()};
+
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1));
+        assertFalse(Files.isDirectory(folder)); // folder does not exist.
+        assertFalse(Files.exists(file2)); // file2 does not exist.
+
+        // rm with no flags
+        Exception exception = assertThrows(RmException.class, () -> {
+            rmApplication.remove(false, false, fileNames);
+        });
+
+        assertEquals(new RmException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
+
+        // Check that file1 is deleted.
+        assertFalse(Files.exists(file1));
     }
 
     /**
@@ -203,10 +239,10 @@ class RmApplicationTest {
         assertFalse(Files.exists(file));
     }
 
-    @Test
-    void removeFileAndEmptyFolderOnlyWhenNonEmptyFolderIsPresent() {
-
-    }
+//    @Test
+//    void removeFileAndEmptyFolderOnlyWhenNonEmptyFolderIsPresent() {
+//
+//    }
 //
 //    @Test
 //    void removeFilesAndFolderContent() {
