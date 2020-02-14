@@ -68,7 +68,7 @@ public class CutApplication implements CutInterface {
     @Override
     public String cutFromFiles(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, String... fileName) throws Exception {
         if (fileName == null) {
-            throw new Exception(ERR_GENERAL);
+            throw new CutException(ERR_GENERAL);
         }
 
         List<String> lines = new ArrayList<>();

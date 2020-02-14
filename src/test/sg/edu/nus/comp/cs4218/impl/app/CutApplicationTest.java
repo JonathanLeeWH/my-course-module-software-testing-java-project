@@ -33,12 +33,22 @@ class CutApplicationTest {
     }
 
     @Test
-    void testRunNoArgs() {
+    void testRunNullArgs() {
        assertThrows(CutException.class, () -> cutApplication.run(null, stdin, stdout));
     }
 
     @Test
-    void testRunNoOutputStream() {
+    void testRunNullOutputStream() {
         assertThrows(CutException.class, () -> cutApplication.run(defaultCutArgs, stdin, null));
+    }
+
+    @Test
+    void testCutFromStdinNullInputStream() {
+        assertThrows(CutException.class, () -> cutApplication.cutFromStdin(false, false, false, 1, 2, null));
+    }
+
+    @Test
+    void testCutFromFilesNullFile() {
+        assertThrows(CutException.class, () -> cutApplication.cutFromFiles(false, false, false, 1, 2, null));
     }
 }
