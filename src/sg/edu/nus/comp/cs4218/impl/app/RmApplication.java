@@ -30,13 +30,16 @@ public class RmApplication implements RmInterface {
      */
     @Override
     public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws Exception {
+        RmException rmException = null;
         for (String current : fileName) {
             File node = IOUtils.resolveFilePath(current).toFile();
             if (!node.exists()) {
-                throw new RmException(ERR_FILE_NOT_FOUND);
+                rmException = new RmException(ERR_FILE_NOT_FOUND);
+                continue;
             }
             if (node.isDirectory() && !isEmptyFolder && !isRecursive) {
-                throw new RmException(ERR_IS_DIR);
+                rmException = new RmException(ERR_IS_DIR);
+                continue;
             }
 
             if (!isEmptyFolder && !isRecursive) { // no -r and no -d flag
@@ -50,7 +53,9 @@ public class RmApplication implements RmInterface {
             if (isRecursive) { // if -r flag is present for example -r or -rd will call the same method.
                 removeFilesAndFolderContent(node);
             }
-
+        }
+        if (rmException != null) {
+            throw rmException;
         }
     }
 
@@ -116,7 +121,7 @@ public class RmApplication implements RmInterface {
             } catch (RmException rmException) {
                 throw rmException;
             } catch(Exception e) {
-                throw new RmException(e.getMessage());
+                throw (RmException) new RmException(e.getMessage()).initCause(e);
             }
         }
 
