@@ -64,4 +64,32 @@ class CutApplicationTest {
         cutApplication.run(Arrays.asList("-c", "6", "README.md").toArray(new String[3]), stdin, outputStream);
         assertEquals("2\na\nr\n", outputStream.toString());
     }
+    
+    
+    @Test
+    void testCutUsingCharPosAndCommaSeparatedNumWithASingleFile() { }
+
+    @Test
+    void testCutUsingBytePosAndCommaSeparatedNumWithMultipleFiles() { }
+
+    @Test
+    void testCutUsingCharPosAndNumRangeWithStdin() { }
+
+    @Test
+    void testCutUsingBytePosAndNumRangeWithASingleFile() { }
+
+    @Test
+    void testCutUsingCharPosAndSingleNumWithMultipleFiles() { }
+
+    @Test
+    void testCutUsingBytePosAndSingleNumWithStdin() { }
+
+    @Test
+    void testCutUsingCharPosAndCommaSeparatedNumWithStdin() { }
+
+    @Test
+    void testCutUsingBytePosAndNumRangeWithMultipleFiles() { }
+
+    @Test
+    void testCutUsingCharPosAndSingleNumWithASingleFile() { }
 }
