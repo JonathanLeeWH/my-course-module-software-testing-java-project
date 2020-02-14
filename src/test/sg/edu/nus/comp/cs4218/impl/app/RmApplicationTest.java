@@ -178,20 +178,21 @@ class RmApplicationTest {
     /**
      * Tests for removing a non existing directory followed by an existing file followed by a non existing file.
      * For example: rm hello 1.txt 2.txt
-     * Where 1.txt exists, hello directory is a directory that does not exist and 2.txt does not exist.
-     * Expected: Removes 1.txt and throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove hello directory which does not exist.
+     * Where 1.txt exists, hello is a directory that exist and 2.txt does not exist.
+     * Expected: Removes 1.txt and throws latest RmException with ERR_FILE_NOT_FOUND as 2.txt does not exist and it is the latest exception.
      * The expected behaviour is similar to in unix except our shell only throw the latest exception as clarified with lecturer.
      */
     @Test
-    void removeNoFlagsMultipleFileArgumentsIncludeNonExistingFileAndFolderShouldDeleteExistingFileAndThrowLatestRmException(@TempDir Path tempDir) throws IOException {
+    void removeNoFlagsMultipleFileArgumentsIncludeNonExistingFileAndExistingFolderShouldDeleteExistingFileAndThrowLatestRmException(@TempDir Path tempDir) throws IOException {
         Path file1 = tempDir.resolve(FILE_NAME_1);
         Path file2 = tempDir.resolve(FILE_NAME_2);
         Path folder  = tempDir.resolve(FOLDER_NAME_1);
         String[] fileNames = {folder.toString(), file1.toString(), file2.toString()};
 
         Files.createFile(file1);
+        Files.createDirectories(folder);
         assertTrue(Files.exists(file1));
-        assertFalse(Files.isDirectory(folder)); // folder does not exist.
+        assertTrue(Files.isDirectory(folder));
         assertFalse(Files.exists(file2)); // file2 does not exist.
 
         // rm with no flags
@@ -201,8 +202,9 @@ class RmApplicationTest {
 
         assertEquals(new RmException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
 
-        // Check that file1 is deleted.
+        // Check that file1 is deleted and folder still exist.
         assertFalse(Files.exists(file1));
+        assertTrue(Files.isDirectory(folder));
     }
 
     /**
