@@ -36,24 +36,24 @@ class CutApplicationTest {
     @Test
     void testRunNullArgs() {
        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(null, stdin, stdout));
-       assertEquals(thrown.getMessage(), "cut: " + ERR_NULL_ARGS);
+       assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_NULL_ARGS);
     }
 
     @Test
     void testRunNullOutputStream() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(defaultCutArgs, stdin, null));
-        assertEquals(thrown.getMessage(), "cut: " + ERR_NO_OSTREAM);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_NO_OSTREAM);
     }
 
     @Test
     void testCutFromStdinNullInputStream() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(false, false, false, 1, 2, null));
-        assertEquals(thrown.getMessage(), "cut: " + ERR_NULL_STREAMS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_NULL_STREAMS);
     }
 
     @Test
     void testCutFromFilesNullFile() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(false, false, false, 1, 2, null));
-        assertEquals(thrown.getMessage(), "cut: " + ERR_GENERAL);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_GENERAL);
     }
 }

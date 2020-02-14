@@ -15,6 +15,8 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class CutApplication implements CutInterface {
+    public static final String COMMAND = "cut";
+
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws CutException {
         if (args == null) {
