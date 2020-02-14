@@ -80,6 +80,7 @@ public class ApplicationRunner {
                 break;
             case APP_MV:
                 application = new MvApplication();
+                break;
             default:
                 throw new ShellException(app + ": " + ERR_INVALID_APP);
         }
