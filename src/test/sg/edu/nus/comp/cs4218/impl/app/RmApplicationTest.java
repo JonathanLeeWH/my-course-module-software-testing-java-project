@@ -22,11 +22,13 @@ class RmApplicationTest {
     private static final String FILE_NAME_2 = "2.txt";
     private static final String FOLDER_NAME_1 = "hello";
 
-//    @BeforeEach
-//    void setUp() {
-//
-//    }
-//
+    private RmApplication rmApplication;
+
+    @BeforeEach
+    void setUp() {
+        rmApplication = new RmApplication();
+    }
+
 //    @AfterEach
 //    void tearDown() {
 //    }
@@ -42,7 +44,6 @@ class RmApplicationTest {
      */
     @Test
     void removeNoFlagsFileExistsShouldDeleteFile(@TempDir Path tempDir) throws Exception {
-        RmApplication rmApplication = new RmApplication();
         Path file = tempDir.resolve(FILE_NAME_1);
         String[] fileNames = {file.toString()};
 
@@ -64,7 +65,6 @@ class RmApplicationTest {
      */
     @Test
     void removeNoFlagsEmptyFolderExistsThrowsRmException(@TempDir Path tempDir) throws IOException {
-        RmApplication rmApplication = new RmApplication();
         Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
         String[] fileNames = {emptyFolder.toString()};
 
@@ -89,7 +89,6 @@ class RmApplicationTest {
      */
     @Test
     void removeNoFlagsFilesExistsShouldDeleteFiles(@TempDir Path tempDir) throws Exception {
-        RmApplication rmApplication = new RmApplication();
         Path file1 = tempDir.resolve(FILE_NAME_1);
         Path file2 = tempDir.resolve(FILE_NAME_2);
         String[] fileNames = {file1.toString(), file2.toString()};
@@ -116,7 +115,6 @@ class RmApplicationTest {
      */
     @Test
     void removeNoFlagsFilesAndEmptyFolderExistsShouldThrowRmException(@TempDir Path tempDir) throws IOException {
-        RmApplication rmApplication = new RmApplication();
         Path file = tempDir.resolve(FILE_NAME_1);
         Path emptyFolder  = tempDir.resolve(FOLDER_NAME_1);
         String[] fileNames = {file.toString(), emptyFolder.toString()};
@@ -148,7 +146,6 @@ class RmApplicationTest {
      */
     @Test
     void removeNoFlagsFilesAndNonEmptyFolderExistsShouldThrowRmException(@TempDir Path tempDir) throws IOException {
-        RmApplication rmApplication = new RmApplication();
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();
@@ -178,7 +175,6 @@ class RmApplicationTest {
      */
     @Test
     void removeFileOnlyWhenFileAbsentShouldThrowRmException(@TempDir Path tempDir) {
-        RmApplication rmApplication = new RmApplication();
         Path file = tempDir.resolve(FILE_NAME_1);
 
         assertFalse(Files.exists(file)); // check to ensure file does not exist initially.
@@ -196,7 +192,6 @@ class RmApplicationTest {
      */
     @Test
     void removeFileOnlyWhenFileExistsShouldDeleteFile(@TempDir Path tempDir) throws Exception {
-        RmApplication rmApplication = new RmApplication();
         Path file = tempDir.resolve(FILE_NAME_1);
 
         Files.createFile(file);
@@ -210,7 +205,6 @@ class RmApplicationTest {
 
     @Test
     void removeFileAndEmptyFolderOnlyWhenNonEmptyFolderIsPresent() {
-        RmApplication rmApplication = new RmApplication();
 
     }
 //
