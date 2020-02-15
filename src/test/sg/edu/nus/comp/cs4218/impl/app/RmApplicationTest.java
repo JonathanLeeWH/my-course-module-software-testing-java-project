@@ -238,13 +238,196 @@ class RmApplicationTest {
 
         rmApplication.removeFileOnly(file.toFile());
 
+        // Check that file is deleted.
         assertFalse(Files.exists(file));
     }
 
-//    @Test
-//    void removeFileAndEmptyFolderOnlyWhenNonEmptyFolderIsPresent() {
-//
-//    }
+    /**
+     * Tests removeFileAndEmptyFolderOnly method when input file is absent.
+     * Expected: Throws RmException with ERR_IO_EXCEPTION
+     */
+    @Test
+    void removeFileAndEmptyFolderOnlyWhenFileAbsentShouldThrowRmException(@TempDir Path tempDir) {
+        Path file = tempDir.resolve(FILE_NAME_1);
+
+        assertFalse(Files.exists(file)); // check to ensure file does not exist initially.
+
+        Exception exception = assertThrows(RmException.class, () -> {
+            rmApplication.removeFileAndEmptyFolderOnly(file.toFile());
+        });
+
+        assertEquals(new RmException(ERR_IO_EXCEPTION).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests removeFileAndEmptyFolderOnly method when input file exists.
+     * Expected: Input file is deleted.
+     */
+    @Test
+    void removeFileAndEmptyFolderOnlyWhenFileExistsShouldDeleteFile(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve(FILE_NAME_1);
+
+        Files.createFile(file);
+
+        assertTrue(Files.exists(file));
+
+        rmApplication.removeFileAndEmptyFolderOnly(file.toFile());
+
+        // Check that file is deleted.
+        assertFalse(Files.exists(file));
+    }
+
+    /**
+     * Tests removeFileAndEmptyFolderOnly method when input folder is absent.
+     * Expected: Throws RmException with ERR_IO_EXCEPTION
+     */
+    @Test
+    void removeFileAndEmptyFolderOnlyWhenInputFolderIsAbsentShouldThrowRmException(@TempDir Path tempDir) {
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+
+        assertFalse(Files.isDirectory(folder)); // check to ensure folder does not exist initially.
+
+        Exception exception = assertThrows(RmException.class, () -> {
+            rmApplication.removeFileAndEmptyFolderOnly(folder.toFile());
+        });
+
+        assertEquals(new RmException(ERR_IO_EXCEPTION).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests removeFileAndEmptyFolderOnly method when input empty folder exists.
+     * Expected : Input empty folder is deleted.
+     */
+    @Test
+    void removeFileAndEmptyFolderOnlyWhenEmptyFolderExistsShouldDeleteEmptyFolder(@TempDir Path tempDir) throws Exception {
+        Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
+
+        Files.createDirectories(emptyFolder);
+
+        assertTrue(Files.isDirectory(emptyFolder));
+
+        rmApplication.removeFileAndEmptyFolderOnly(emptyFolder.toFile());
+
+        // Check that empty folder is deleted.
+        assertFalse(Files.isDirectory(emptyFolder));
+    }
+
+    /**
+     * Tests removeFileAndEmptyFolderOnly method when input non empty folder exists.
+     * Expected: Throws RmException with ERR_NON_EMPTY_DIR
+     */
+    @Test
+    void removeFileAndEmptyFolderOnlyWhenInputNonEmptyFolderShouldThrowRmException(@TempDir Path tempDir) throws Exception {
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_1);
+        Path nonEmptyFolder = fileInFolder.getParent();
+
+        Files.createDirectories(fileInFolder);
+
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        Exception exception = assertThrows(RmException.class, () -> {
+            rmApplication.removeFileAndEmptyFolderOnly(nonEmptyFolder.toFile());
+        });
+
+        assertEquals(new RmException(ERR_NON_EMPTY_DIR).getMessage(), exception.getMessage());
+
+        // Check that the non empty folder still exist.
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+    }
+
+    /**
+     * Tests removeFilesAndFolderContent method when input file is absent.
+     * Expected: Throws RmException with ERR_IO_EXCEPTION
+     */
+    @Test
+    void removeFilesAndFolderContentWhenInputFileAbsentShouldThrowRmException(@TempDir Path tempDir) {
+        Path file = tempDir.resolve(FILE_NAME_1);
+
+        assertFalse(Files.exists(file)); // check to ensure file does not exist initially.
+
+        Exception exception = assertThrows(RmException.class, () -> {
+            rmApplication.removeFilesAndFolderContent(file.toFile());
+        });
+
+        assertEquals(new RmException(ERR_IO_EXCEPTION).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests removeFileAndFolderContent method when input file exists.
+     * Expected: Input file is deleted.
+     */
+    @Test
+    void removeFileAndFolderContentWhenInputFileExistsShouldDeleteFile(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve(FILE_NAME_1);
+
+        Files.createFile(file);
+
+        assertTrue(Files.exists(file));
+
+        rmApplication.removeFilesAndFolderContent(file.toFile());
+
+        // Check that file is deleted.
+        assertFalse(Files.exists(file));
+    }
+
+    /**
+     * Tests removeFileAndFolderContent method when input folder is absent.
+     * Expected: Throws RmException with ERR_IO_EXCEPTION
+     */
+    @Test
+    void removeFileAndFolderContentWhenInputFolderIsAbsentShouldThrowRmException(@TempDir Path tempDir) {
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+
+        assertFalse(Files.isDirectory(folder)); // check to ensure folder does not exist initially.
+
+        Exception exception = assertThrows(RmException.class, () -> {
+            rmApplication.removeFilesAndFolderContent(folder.toFile());
+        });
+
+        assertEquals(new RmException(ERR_IO_EXCEPTION).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests removeFileAndFolderContent method when input empty folder exists.
+     * Expected : Input empty folder is deleted.
+     */
+    @Test
+    void removeFileAndFolderContentWhenEmptyFolderExistsShouldDeleteEmptyFolder(@TempDir Path tempDir) throws Exception {
+        Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
+
+        Files.createDirectories(emptyFolder);
+
+        assertTrue(Files.isDirectory(emptyFolder));
+
+        rmApplication.removeFilesAndFolderContent(emptyFolder.toFile());
+
+        // Check that empty folder is deleted.
+        assertFalse(Files.isDirectory(emptyFolder));
+    }
+
+    /**
+     * Tests removeFileAndFolderContent method when input non empty folder exists.
+     * Expected: Input non empty folder is deleted.
+     */
+    @Test
+    void removeFileAndFolderContentWhenInputNonEmptyFolderShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_1);
+        Path nonEmptyFolder = fileInFolder.getParent();
+
+        Files.createDirectories(fileInFolder);
+
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        rmApplication.removeFilesAndFolderContent(nonEmptyFolder.toFile());
+
+        // Check that the non empty folder is deleted.
+        assertFalse(Files.isDirectory(nonEmptyFolder));
+        assertFalse(Files.exists(fileInFolder));
+    }
+
 //
 //    @Test
 //    void removeFilesAndFolderContent() {
