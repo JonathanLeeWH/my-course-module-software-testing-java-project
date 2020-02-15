@@ -123,20 +123,23 @@ public class PasteApplication implements PasteInterface {
     private String paste(BufferedReader... bufferedReaders) throws PasteException {
         String tab = "\t", newLine = "\n";
         StringBuilder stringBuilder = new StringBuilder();
-        boolean hasMoreLines = true;
+        boolean hasMoreLines = true, startOfLine = false;
         while (hasMoreLines) {
             boolean allLinesNull = true;
             for (int i = 0; i < bufferedReaders.length; i++) {
                 try {
                     String currentLine = bufferedReaders[i].readLine();
-                    if (currentLine != null) {
+                    if (currentLine != null && allLinesNull) {
                         allLinesNull = false;
-                        stringBuilder.append(currentLine);
-                        if (i == bufferedReaders.length - 1) {
+                        if (stringBuilder.length() != 0) {
                             stringBuilder.append(newLine);
-                        } else {
-                            stringBuilder.append(tab);
+                            stringBuilder.append(currentLine);
+                        } else if (i == 0) {
+                            stringBuilder.append(currentLine);
                         }
+                    }
+                    else if (currentLine != null) {
+                        stringBuilder.append("\t").append(currentLine);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -145,6 +148,7 @@ public class PasteApplication implements PasteInterface {
             if (allLinesNull) {
                 hasMoreLines = false;
             }
+
         }
         return stringBuilder.toString();
     }
