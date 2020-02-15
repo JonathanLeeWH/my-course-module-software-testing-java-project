@@ -89,7 +89,11 @@ public class RmApplication implements RmInterface {
             }
         }
 
-        fileName.delete(); // delete the file.
+        try {
+            Files.delete(fileName.toPath()); // delete the file.
+        } catch (IOException e) {
+            throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
+        }
     }
 
     @Override
