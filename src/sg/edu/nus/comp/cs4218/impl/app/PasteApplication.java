@@ -61,7 +61,7 @@ public class PasteApplication implements PasteInterface {
                 }
                 else if (sum == 2) { // only file present
                     stdout.write(mergeFile(allFileNames).getBytes());
-                } else if (sum == 3) { // one argument is stdin, while the other is fileName
+                } else { // one argument is stdin, while the other is fileName
                     stdout.write(mergeFileAndStdin(stdin, allFileNames).getBytes());
                 }
             } catch (Exception e) {
@@ -123,7 +123,7 @@ public class PasteApplication implements PasteInterface {
     private String paste(BufferedReader... bufferedReaders) throws PasteException {
         String tab = "\t", newLine = "\n";
         StringBuilder stringBuilder = new StringBuilder();
-        boolean hasMoreLines = true, startOfLine = false;
+        boolean hasMoreLines = true;
         while (hasMoreLines) {
             boolean allLinesNull = true;
             for (int i = 0; i < bufferedReaders.length; i++) {
