@@ -131,7 +131,7 @@ public class PasteApplication implements PasteInterface {
                     String currentLine = bufferedReaders[i].readLine();
                     if (currentLine != null && allLinesNull) {
                         allLinesNull = false;
-                        if (stringBuilder.length() != 0) {
+                        if (stringBuilder.length() > 0) {
                             stringBuilder.append(newLine);
                             stringBuilder.append(currentLine);
                         } else if (i == 0) {
@@ -139,7 +139,7 @@ public class PasteApplication implements PasteInterface {
                         }
                     }
                     else if (currentLine != null) {
-                        stringBuilder.append("\t").append(currentLine);
+                        stringBuilder.append(tab).append(currentLine);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
