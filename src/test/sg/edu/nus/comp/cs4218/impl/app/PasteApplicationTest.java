@@ -83,7 +83,7 @@ public class PasteApplicationTest {
     public void execute_printTwoLinesWhenATwoLinesFileIsGiven_success() throws Exception {
         String[] fileName = new String[1];
         fileName[0] = fileWithTwoLines.toPath().toString();
-        assertEquals(TEXT_FILE_WITH_TWO_LINES + "\n", pasteApplication.mergeFile(fileName));
+        assertEquals(TEXT_FILE_WITH_TWO_LINES, pasteApplication.mergeFile(fileName));
     }
 
     @Test
@@ -91,13 +91,13 @@ public class PasteApplicationTest {
         String[] fileName = new String[1];
         fileName[0] = fileWithOneLine.toPath().toString();
         String actualOutput = pasteApplication.mergeFile(fileName);
-        assertEquals(TEXT_FILE_WITH_ONE_LINE + "\n", actualOutput);
+        assertEquals(TEXT_FILE_WITH_ONE_LINE, actualOutput);
     }
 
     @Test
     public void execute_mergeMultipleFiles_success() throws Exception {
         String[] args = { fileWithTwoLines.toPath().toString(), fileWithOneLine.toPath().toString() };
-        String expectedOutput = "First Line" + "\t" + "Only One Line" + "\n" + "Second Line" + "\t";
+        String expectedOutput = "First Line" + "\t" + "Only One Line" + "\n" + "Second Line";
         String actualOutput = pasteApplication.mergeFile(args);
         assertEquals(expectedOutput, actualOutput);
     }
@@ -105,12 +105,20 @@ public class PasteApplicationTest {
     @Test
     public void execute_printSingleLineWhenStdinSingleLine_success() throws Exception {
         InputStream inputStream = new FileInputStream(fileWithOneLine);
-        assertEquals(TEXT_FILE_WITH_ONE_LINE + "\n", pasteApplication.mergeStdin(inputStream));
+        assertEquals(TEXT_FILE_WITH_ONE_LINE, pasteApplication.mergeStdin(inputStream));
     }
 
     @Test
-    public void execute_printMultipleLinesWhenStdinMultipleLines_success() throws Exception {
+    public void execute_printStdinMultipleLines_success() throws Exception {
         InputStream inputStream = new FileInputStream(fileWithTwoLines);
-        assertEquals(TEXT_FILE_WITH_TWO_LINES + "\n", pasteApplication.mergeStdin(inputStream));
+        assertEquals(TEXT_FILE_WITH_TWO_LINES, pasteApplication.mergeStdin(inputStream));
+    }
+
+    @Test
+    public void execute_mergeStdinAndSingleFile_success() throws Exception {
+        InputStream inputStream = new FileInputStream(fileWithTwoLines);
+        String[] fileNames = { fileWithTwoLines.toPath().toString() };
+        String expectedOutput = "First Line" + "\t" + "First Line" + "\n" + "Second Line" + "\t" + "Second Line";
+        assertEquals(expectedOutput, pasteApplication.mergeFileAndStdin(inputStream, fileNames));
     }
 }
