@@ -76,7 +76,7 @@ public class PasteApplication implements PasteInterface {
      * @param stdin InputStream containing arguments from Stdin
      * @throws Exception
      */
-    public String mergeStdin(InputStream stdin) throws Exception{
+    public String mergeStdin(InputStream stdin) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stdin));
             return paste(bufferedReader);
     }
