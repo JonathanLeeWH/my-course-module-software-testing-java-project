@@ -56,6 +56,15 @@ public class PasteApplicationTest {
     }
 
     @Test
+    public void execute_emptyFileName_throwFileNotFoundException() {
+        String[] args = { fileWithOneLine.toPath().toString(), ""};
+        Exception thrown = assertThrows(FileNotFoundException.class, () -> {
+            pasteApplication.mergeFile(args);
+        });
+        assertEquals("", thrown.getMessage());
+    }
+    
+    @Test
     public void execute_printNothingWhenOneEmptyFileIsGiven_success() throws Exception {
         String[] fileNames = new String[1];
         fileNames[0] = emptyFile.toPath().toString();
@@ -84,4 +93,6 @@ public class PasteApplicationTest {
         String actualOutput = pasteApplication.mergeFile(args);
         assertEquals(expectedOutput, actualOutput);
     }
+
+
 }
