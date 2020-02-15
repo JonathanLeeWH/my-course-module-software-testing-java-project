@@ -9,7 +9,7 @@ import java.io.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PasteApplicationTest {
-    private static final String testFileType = ".txt";
+    private static final String TEST_FILE_TYPE = ".txt";
     private static final String TEST_EMPTY_FILE_NAME = "testFileZero";
     private static final String TEST_FILE_WITH_TWO_LINES_NAME = "testFileOne";
     private static final String TEST_FILE_WITH_ONE_LINE_NAME = "testFileTwo";
@@ -20,17 +20,18 @@ public class PasteApplicationTest {
     private static File fileWithTwoLines;
     private static File fileWithOneLine;
     private static PasteApplication pasteApplication;
+    private static OutputStream outputStreamZero, outputStreamOne, outputStreamTwo;
 
     @BeforeAll
     public static void setupBeforeTest() throws IOException {
         pasteApplication = new PasteApplication();
         try {
-            emptyFile = File.createTempFile(TEST_EMPTY_FILE_NAME, testFileType);
-            fileWithTwoLines = File.createTempFile(TEST_FILE_WITH_TWO_LINES_NAME, testFileType);
-            fileWithOneLine = File.createTempFile(TEST_FILE_WITH_ONE_LINE_NAME, testFileType);
-            OutputStream outputStreamZero = new FileOutputStream(emptyFile);
-            OutputStream outputStreamOne = new FileOutputStream(fileWithTwoLines);
-            OutputStream outputStreamTwo = new FileOutputStream(fileWithOneLine);
+            emptyFile = File.createTempFile(TEST_EMPTY_FILE_NAME, TEST_FILE_TYPE);
+            fileWithTwoLines = File.createTempFile(TEST_FILE_WITH_TWO_LINES_NAME, TEST_FILE_TYPE);
+            fileWithOneLine = File.createTempFile(TEST_FILE_WITH_ONE_LINE_NAME, TEST_FILE_TYPE);
+            outputStreamZero = new FileOutputStream(emptyFile);
+            outputStreamOne = new FileOutputStream(fileWithTwoLines);
+            outputStreamTwo = new FileOutputStream(fileWithOneLine);
             outputStreamZero.write(TEXT_EMPTY_FILE.getBytes());
             outputStreamOne.write(TEXT_FILE_WITH_TWO_LINES.getBytes());
             outputStreamTwo.write(TEXT_FILE_WITH_ONE_LINE.getBytes());
@@ -40,10 +41,17 @@ public class PasteApplicationTest {
     }
 
     @AfterAll
-    public static void deleteTempFilesUponExit() {
+    public static void tearDownAfterTesting() {
         emptyFile.deleteOnExit();
         fileWithTwoLines.deleteOnExit();
         fileWithOneLine.deleteOnExit();
+        try {
+            outputStreamZero.close();
+            outputStreamOne.close();
+            outputStreamTwo.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -63,7 +71,7 @@ public class PasteApplicationTest {
         });
         assertEquals("", thrown.getMessage());
     }
-    
+
     @Test
     public void execute_printNothingWhenOneEmptyFileIsGiven_success() throws Exception {
         String[] fileNames = new String[1];
@@ -94,5 +102,15 @@ public class PasteApplicationTest {
         assertEquals(expectedOutput, actualOutput);
     }
 
+    @Test
+    public void execute_printSingleLineWhenStdinSingleLine_success() throws Exception {
+        InputStream inputStream = new FileInputStream(fileWithOneLine);
+        assertEquals(TEXT_FILE_WITH_ONE_LINE + "\n", pasteApplication.mergeStdin(inputStream));
+    }
 
+    @Test
+    public void execute_printMultipleLinesWhenStdinMultipleLines_success() throws Exception {
+        InputStream inputStream = new FileInputStream(fileWithTwoLines);
+        assertEquals(TEXT_FILE_WITH_TWO_LINES + "\n", pasteApplication.mergeStdin(inputStream));
+    }
 }
