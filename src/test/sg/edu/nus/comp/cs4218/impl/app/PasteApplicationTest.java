@@ -73,7 +73,8 @@ public class PasteApplicationTest {
     public void execute_printSingleLineWhenOneSingleLineFileIsGiven_success() throws Exception {
         String[] fileName = new String[1];
         fileName[0] = fileWithOneLine.toPath().toString();
-        assertEquals(TEXT_FILE_WITH_ONE_LINE + "\n", pasteApplication.mergeFile(fileName));
+        String actualOutput = pasteApplication.mergeFile(fileName);
+        assertEquals(TEXT_FILE_WITH_ONE_LINE + "\n", actualOutput);
     }
 
     @Test
