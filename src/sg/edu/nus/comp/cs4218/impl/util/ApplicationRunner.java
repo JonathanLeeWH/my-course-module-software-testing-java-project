@@ -76,6 +76,7 @@ public class ApplicationRunner {
                 break;
             case APP_CUT:
                 application = new CutApplication();
+                break;
             case APP_PASTE:
                 application = new PasteApplication();
                 break;
