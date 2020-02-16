@@ -31,15 +31,12 @@ public class PipeCommand implements Command {
 
         InputStream nextInputStream = stdin;
         OutputStream nextOutputStream = null;
-
         for (int i = 0; i < callCommands.size(); i++) {
             CallCommand callCommand = callCommands.get(i);
-
             if (absAppException != null || shellException != null) {
                 callCommand.terminate();
                 continue;
             }
-
             try {
                 nextOutputStream = new ByteArrayOutputStream();
                 if (i == callCommands.size() - 1) {
@@ -68,7 +65,6 @@ public class PipeCommand implements Command {
                 }
             }
         }
-
         if (absAppException != null) {
             throw absAppException;
         }
