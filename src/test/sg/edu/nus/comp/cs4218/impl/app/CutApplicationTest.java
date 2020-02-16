@@ -107,7 +107,7 @@ class CutApplicationTest {
 
     @Test
     void testCutFromFilesUsingBytePosAndSingleNumAndNullFilename() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(false, false, false, 1, 2, (String) null));
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(false, false, false, 1, 2, (String[]) null));
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_GENERAL);
     }
 
