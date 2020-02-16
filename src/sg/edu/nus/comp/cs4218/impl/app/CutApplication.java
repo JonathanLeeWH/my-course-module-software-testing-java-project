@@ -8,6 +8,7 @@ import sg.edu.nus.comp.cs4218.impl.parser.CutArgsParser;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,7 +135,7 @@ public class CutApplication implements CutInterface {
     private List<String> retrieveByCharPos(List<String> lines, Boolean isRange, int startIdx, int endIdx) {
         List<String> results = new ArrayList<>();
         for (String line: lines) {
-            if (endIdx == 0) {
+            if (endIdx == startIdx) {
                 char val = line.charAt(startIdx - 1);
                 results.add(String.valueOf(val));
             }
@@ -148,9 +149,6 @@ public class CutApplication implements CutInterface {
                 char endVal = line.charAt(endIdx - 1);
                 if (startIdx > endIdx) {
                     results.add(String.valueOf(endVal) + startVal);
-                }
-                else if (startIdx == endIdx) {
-                    results.add(String.valueOf(startVal));
                 }
                 else {
                     results.add(String.valueOf(startVal) + endVal);
@@ -173,7 +171,7 @@ public class CutApplication implements CutInterface {
         List<String> results = new ArrayList<>();
         for (String line: lines) {
             int currBytePos = 1;
-            if (endIdx == 0) {
+            if (endIdx == startIdx) {
                 for (char val: line.toCharArray()) {
                     int byteLength = String.valueOf(val).getBytes().length;
                     if ((startIdx == currBytePos) || ((startIdx > currBytePos) && (startIdx < (currBytePos + byteLength)))) {

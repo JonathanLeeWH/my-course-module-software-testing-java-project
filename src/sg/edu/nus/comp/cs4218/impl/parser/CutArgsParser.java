@@ -36,7 +36,7 @@ public class CutArgsParser extends ArgsParser{
     public Pair<Integer, Integer> getPositions() throws CutException {
         String list = nonFlagArgs.get(INDEX_LIST);
         int startPos = 0;
-        int endPos = 0;
+        int endPos;
 
         if (list.contains(LIST_COMMA_OPTION)) {
             int commaPos = list.indexOf(LIST_COMMA_OPTION);
@@ -56,6 +56,7 @@ public class CutArgsParser extends ArgsParser{
         }
         else {
             startPos = Integer.parseInt(list);
+            endPos = startPos;
             if (startPos <= 0) {
                 throw new CutException("cut: Values has to be more than 0.");
             }

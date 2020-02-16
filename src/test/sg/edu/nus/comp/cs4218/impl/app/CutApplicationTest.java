@@ -8,7 +8,6 @@ import sg.edu.nus.comp.cs4218.impl.app.CutApplication;
 import test.sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -73,7 +72,12 @@ class CutApplicationTest {
     }
 
     @Test
-    void testCutFromFilesUsingByteAndCharPos() { }
+    void testCutFromFilesUsingByteAndCharPos() {
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
+                true, true, false, 1, 5, testFile1.toFile().getPath()
+        ));
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+    }
 
     @Test
     void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndASingleFileWithStartNumLessThanZero() { }
@@ -117,19 +121,49 @@ class CutApplicationTest {
 
     // Positive test cases (50 cases)
     @Test
-    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndValidSingleFileWithStartNumLowerThanEndNum() { }
+    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndValidSingleFileWithStartNumLowerThanEndNum() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, 6, 13, testFile1.toFile().getPath()
+        );
+        String expectedResult = "8w\n" + "šü\n" + "eo\n" + "cf\n" + "rp\n" + "al";
+        assertEquals(expectedResult, actualResult);
+    }
 
     @Test
-    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumUnsortedAndValidSingleFileWithStartNumHigherThanEndNum() { }
+    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumUnsortedAndValidSingleFileWithStartNumHigherThanEndNum() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, 13, 6, testFile1.toFile().getPath()
+        );
+        String expectedResult = "8w\n" + "šü\n" + "eo\n" + "cf\n" + "rp\n" + "al";
+        assertEquals(expectedResult, actualResult);
+    }
 
     @Test
-    void testCutFromFilesUsingBytePosAndNumRangeAndValidSingleFileWithStartNumLowerThanEndNum() { }
+    void testCutFromFilesUsingBytePosAndNumRangeAndValidSingleFileWithStartNumLowerThanEndNum() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, true, 6, 12, testFile1.toFile().getPath()
+        );
+        String expectedResult = "8: Soft\n" + "š mödü\n" + "egressi\n" + "cause o\n" + "rmance \n" + "al skil";
+        assertEquals(expectedResult, actualResult);
+    }
 
     @Test
-    void testCutFromFilesUsingBytePosAndNumRangeAndValidSingleFileWithStartNumHigherThanEndNum() { }
+    void testCutFromFilesUsingBytePosAndNumRangeAndValidSingleFileWithStartNumHigherThanEndNum() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, true, 12, 5, testFile1.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "";
+        assertEquals(expectedResult, actualResult);
+    }
 
     @Test
-    void testCutFromFilesUsingBytePosAndSingleNumAndValidSingleFile() { }
+    void testCutFromFilesUsingBytePosAndSingleNumAndValidSingleFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, 5, 5, testFile1.toFile().getPath()
+        );
+        String expectedResult = "1\n" + "š\n" + "r\n" + "-\n" + "o\n" + "i";
+        assertEquals(expectedResult, actualResult);
+    }
 
     @Test
     void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndValidSingleFileWithStartNumLowerThanEndNum() { }
@@ -273,12 +307,19 @@ class CutApplicationTest {
     // Erronorous Test cases (9 cases)
     @Test
     void testCutFromStdinWithoutAnyPosFlags() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(false, false, false, 1, 5, ourTestStdin));
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
+                false, false, false, 1, 5, ourTestStdin
+        ));
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_MISSING_ARG);
     }
 
     @Test
-    void testCutFromStdinUsingByteAndCharPos() { }
+    void testCutFromStdinUsingByteAndCharPos() {
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
+                true, true, false, 1, 5, ourTestStdin
+        ));
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+    }
 
     @Test
     void testCutFromStdinUsingBytePosAnd2CommaSeparatedNumAndValidInputStreamWithStartNumLessThanZero() { }
