@@ -52,7 +52,7 @@ public class RmApplication implements RmInterface {
                 removeFileAndEmptyFolderOnly(node);
             }
 
-            if (isRecursive) { // if -r flag is present for example -r or -rd will call the same method.
+            if (isRecursive) { // if -r flag is present for example -r or -r -d or -rd will call the same method.
                 removeFilesAndFolderContent(node);
             }
         }
