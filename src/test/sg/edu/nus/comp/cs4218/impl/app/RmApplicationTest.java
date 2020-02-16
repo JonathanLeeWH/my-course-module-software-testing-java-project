@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.RmException;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+import static org.mockito.Mockito.*;
 
 class RmApplicationTest {
 
@@ -24,6 +26,19 @@ class RmApplicationTest {
     @BeforeEach
     void setUp() {
         rmApplication = new RmApplication();
+    }
+
+    /**
+     * Tests run method when input array of arguments is null.
+     * Expected: Throws RmException with ERR_NULL_ARGS
+     */
+    @Test
+    void runInputArgsIsNullThrowsRmException() {
+        AbstractApplicationException exception = assertThrows(RmException.class, () -> {
+            rmApplication.run(null, null, null); // stdin and stdout is not used in RmApplication
+        });
+
+        assertEquals(new RmException(ERR_NULL_ARGS).getMessage(), exception.getMessage());
     }
 
     /**
