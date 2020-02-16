@@ -525,13 +525,4 @@ class RmApplicationTest {
         assertFalse(Files.isDirectory(nonEmptyFolder));
         assertFalse(Files.exists(fileInFolder));
     }
-
-//
-//    @Test
-//    void removeFilesAndFolderContent() {
-//    }
-//
-//    @Test
-//    void run() {
-//    }
 }
