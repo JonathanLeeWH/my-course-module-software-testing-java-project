@@ -22,10 +22,7 @@ public class RmApplication implements RmInterface {
      * @param isRecursive   Boolean option to recursively delete the folder contents (traversing
      *                      through all folders inside the specified folder)
      * @param fileName    Array of String of file names
-     * @throws Exception if the file does not exist (ERR_FILE_NOT_FOUND) or one of the cases as shown below:
-     * 1) isEmptyFolder and isRecursive are false and the input file is a directory (ERR_IS_DIR)
-     * 2) If exception is thrown from any of the methods called such as removeFileOnly, removeFileAndEmptyFolderOnly or
-     * removeFilesAndFolderContent.
+     * @throws Exception  
      */
     @Override
     public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws Exception {
