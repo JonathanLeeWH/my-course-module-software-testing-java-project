@@ -58,6 +58,12 @@ public class RmApplication implements RmInterface {
         }
     }
 
+    /**
+     * Removes input file.
+     * Precondition: Input file is not a directory.
+     * @param fileName input file to be deleted.
+     * @throws Exception
+     */
     public void removeFileOnly(File fileName) throws Exception {
         try {
             if (!fileName.isDirectory()) {
@@ -68,6 +74,11 @@ public class RmApplication implements RmInterface {
         }
     }
 
+    /**
+     * Removes input file or input empty folder.
+     * @param fileName  input file to be deleted.
+     * @throws Exception
+     */
     public void removeFileAndEmptyFolderOnly(File fileName) throws Exception {
         try {
             Files.delete(fileName.toPath());
@@ -78,6 +89,11 @@ public class RmApplication implements RmInterface {
         }
     }
 
+    /**
+     * Removes input file or input folder and its contents by traversing recursively to delete the input folder contents.
+     * @param fileName input file to be deleted.
+     * @throws Exception
+     */
     public void removeFilesAndFolderContent(File fileName) throws Exception {
         if (fileName.isDirectory()) {
             File[] contents = fileName.listFiles();
@@ -95,14 +111,17 @@ public class RmApplication implements RmInterface {
         }
     }
 
+    /**
+     * Runs RmApplication with specified input data and specified output stream.
+     * @param args Array of arguments for the RmApplication
+     * @param stdin An InputStream, not used.
+     * @param stdout An OutputStream, not used.
+     * @throws AbstractApplicationException
+     */
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
         if (args == null) {
             throw new RmException(ERR_NULL_ARGS);
-        }
-
-        if (stdout == null) {
-            throw new RmException(ERR_NO_OSTREAM);
         }
 
         RmArgsParser parser = new RmArgsParser();
