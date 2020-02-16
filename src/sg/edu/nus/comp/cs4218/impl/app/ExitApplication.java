@@ -23,12 +23,13 @@ public class ExitApplication implements ExitInterface {
     }
 
     /**
-     * Terminate shell.
+     * Terminate shell by throwing ExitException with exit code 0.
      *
-     * @throws Exception
+     * @throws Exception with exit code in the exception message.
      */
     @Override
     public void terminateExecution() throws ExitException {
-        System.exit(0);
+//        System.exit(0);
+        throw new ExitException("0");
     }
 }
