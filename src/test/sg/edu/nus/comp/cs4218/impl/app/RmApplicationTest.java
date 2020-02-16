@@ -30,16 +30,8 @@ class RmApplicationTest {
         rmApplication = new RmApplication();
     }
 
-//    @AfterEach
-//    void tearDown() {
-//    }
-//
-//    @Test
-//    void remove() {
-//    }
-
     /**
-     * Tests for removing a file without any flags.
+     * Tests remove method without any flags for removing a file.
      * For example: rm 1.txt
      * Expected: Removes the file.
      */
@@ -60,7 +52,7 @@ class RmApplicationTest {
     }
 
     /**
-     * Tests for removing an empty folder without any flags.
+     * Tests remove method without any flags for removing an empty folder.
      * For example: rm hello
      * Where hello directory exists and is an empty directory.
      * Expected: Throws RmException with ERR_IS_DIR
@@ -78,7 +70,7 @@ class RmApplicationTest {
         Exception exception = assertThrows(RmException.class, () -> {
             rmApplication.remove(false, false, fileNames);
         });
-
+        
        assertEquals(new RmException(ERR_IS_DIR).getMessage(), exception.getMessage());
 
        // Check that the empty folder is not deleted.
@@ -86,7 +78,7 @@ class RmApplicationTest {
     }
 
     /**
-     * Tests for removing multiple files (no folders) without any flags.
+     * Tests remove method without any flags for removing multiple files (no folders).
      * For example: rm 1.txt 2.txt
      * Expected: Removes the files.
      */
@@ -111,7 +103,7 @@ class RmApplicationTest {
     }
 
     /**
-     * Tests for removing multiple files (with empty folders) without any flags.
+     * Tests remove method without any flags for removing multiple files (with empty folders).
      * For example: rm 1.txt hello
      * Where 1.txt exists and hello directory is an empty directory.
      * Expected: Removes 1.txt and throws RmException with ERR_IS_DIR as it attempts to remove hello directory.
@@ -142,7 +134,7 @@ class RmApplicationTest {
     }
 
     /**
-     * Tests for removing multiple files (with non empty folders) without any flags.
+     * Tests remove method without any flags for removing multiple files (with non empty folders).
      * For example: rm 1.txt hello
      * Where 1.txt exists and hello directory is a non empty directory.
      * Expected: Removes 1.txt and throws RmException with ERR_IS_DIR as it attempts to remove hello directory.
@@ -176,7 +168,7 @@ class RmApplicationTest {
     }
 
     /**
-     * Tests for removing a non existing directory followed by an existing file followed by a non existing file.
+     * Tests remove method without any flags for removing a non existing directory followed by an existing file followed by a non existing file.
      * For example: rm hello 1.txt 2.txt
      * Where 1.txt exists, hello is a directory that exist and 2.txt does not exist.
      * Expected: Removes 1.txt and throws latest RmException with ERR_FILE_NOT_FOUND as 2.txt does not exist and it is the latest exception.
