@@ -8,7 +8,6 @@ import sg.edu.nus.comp.cs4218.impl.parser.CutArgsParser;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +49,6 @@ public class CutApplication implements CutInterface {
             else {
                 output.append(cutFromFiles(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), files));
             }
-
         } catch (Exception e) {
             throw new CutException(e);
         }
