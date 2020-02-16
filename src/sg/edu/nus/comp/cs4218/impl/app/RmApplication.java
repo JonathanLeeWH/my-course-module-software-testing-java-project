@@ -2,7 +2,6 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import sg.edu.nus.comp.cs4218.app.RmInterface;
 import sg.edu.nus.comp.cs4218.exception.*;
-import sg.edu.nus.comp.cs4218.impl.parser.LsArgsParser;
 import sg.edu.nus.comp.cs4218.impl.parser.RmArgsParser;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
@@ -11,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
