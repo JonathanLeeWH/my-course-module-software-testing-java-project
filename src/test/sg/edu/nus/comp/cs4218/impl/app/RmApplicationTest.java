@@ -1,18 +1,14 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.exception.RmException;
-import sg.edu.nus.comp.cs4218.impl.app.RmApplication;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
@@ -28,6 +24,26 @@ class RmApplicationTest {
     @BeforeEach
     void setUp() {
         rmApplication = new RmApplication();
+    }
+
+    /**
+     * Tests remove method when input file/folder does not exist.
+     * For example: rm 1.txt
+     * Where 1.txt does not exist.
+     * Expected: Throws RmException with ERR_FILE_NOT_FOUND
+     */
+    @Test
+    void removeInputFileAbsentThrowsRmException(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        String[] fileNames = {file.toString()};
+
+        assertFalse(Files.exists(file));
+
+        Exception exception = assertThrows(RmException.class, () -> {
+            rmApplication.remove(false, false, fileNames);
+        });
+
+        assertEquals(new RmException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
     }
 
     /**
@@ -269,7 +285,7 @@ class RmApplicationTest {
 
         // rm with -r flag
         rmApplication.remove(false, true, fileNames);
-        
+
         // Check that the non empty folder is deleted.
         assertFalse(Files.isDirectory(nonEmptyFolder));
     }
