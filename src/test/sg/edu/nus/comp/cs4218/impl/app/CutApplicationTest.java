@@ -5,13 +5,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.impl.app.CutApplication;
+import test.sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
@@ -19,15 +19,18 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 class CutApplicationTest {
     private CutApplication cutApplication;
     private String[] defaultCutArgs;
-    private InputStream stdin;
-    private OutputStream outputStream;
+    private InputStream ourTestStdin;
+    private OutputStream ourTestStdout;
+    private static final String TEST_STDIN_MSG_1 = "baz";
+    private Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
+
 
     @BeforeEach
     public void setUp() {
         cutApplication = new CutApplication();
-        stdin = System.in;
         defaultCutArgs = Arrays.asList("-c","8").toArray(new String[1]);
-        outputStream = new ByteArrayOutputStream();
+        ourTestStdin = new ByteArrayInputStream(TEST_STDIN_MSG_1.getBytes());
+        ourTestStdout = new ByteArrayOutputStream();
     }
 
     @AfterEach
@@ -40,21 +43,21 @@ class CutApplicationTest {
 
     @Test
     void testRunNullArgs() {
-       Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(null, stdin, outputStream));
+       Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(null, ourTestStdin, ourTestStdout));
        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_NULL_ARGS);
     }
 
     @Test
     void testRunNullOutputStream() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(defaultCutArgs, stdin, null));
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(defaultCutArgs, ourTestStdin, null));
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_NO_OSTREAM);
     }
 
     @Test
     void testRunSuccess() throws CutException {
         //Use a sample test file.
-        cutApplication.run(Arrays.asList("-c", "6", "README.md").toArray(new String[3]), stdin, outputStream);
-        assertEquals("2\na\nr\n", outputStream.toString());
+        cutApplication.run(Arrays.asList("-c", "6", "README.md").toArray(new String[3]), ourTestStdin, ourTestStdout);
+        assertEquals("2\na\nr\n", ourTestStdout.toString());
     }
 
     /**
@@ -62,7 +65,12 @@ class CutApplicationTest {
      */
     // Erronorous Test cases (13 cases)
     @Test
-    void testCutFromFilesWithoutAnyPosFlags() { }
+    void testCutFromFilesWithoutAnyPosFlags() {
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
+                false, false, false, 1, 5, testFile1.toFile().getPath()
+        ));
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_MISSING_ARG);
+    }
 
     @Test
     void testCutFromFilesUsingByteAndCharPos() { }
@@ -98,8 +106,8 @@ class CutApplicationTest {
     void testCutFromFilesUsingCharPosAndNumRangeAndMultipleFilesWithAtLeastOneInvalidFilename() { }
 
     @Test
-    void testCutFromFilesUsingBytePosAndSingleNumAndNullFile() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(false, false, false, 1, 2, null));
+    void testCutFromFilesUsingBytePosAndSingleNumAndNullFilename() {
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(false, false, false, 1, 2, (String) null));
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_GENERAL);
     }
 
@@ -264,7 +272,10 @@ class CutApplicationTest {
      */
     // Erronorous Test cases (9 cases)
     @Test
-    void testCutFromStdinWithoutAnyPosFlags() { }
+    void testCutFromStdinWithoutAnyPosFlags() {
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(false, false, false, 1, 5, ourTestStdin));
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_MISSING_ARG);
+    }
 
     @Test
     void testCutFromStdinUsingByteAndCharPos() { }

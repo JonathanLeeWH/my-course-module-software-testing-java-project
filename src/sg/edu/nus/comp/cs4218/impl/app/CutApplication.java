@@ -43,9 +43,6 @@ public class CutApplication implements CutInterface {
         String[] files = parser.getFileNames();
 
         try {
-            if ((isCharPos) && (isBytePos)) {
-               //throw new CutException(ERR_INVALID_FLAG);
-            }
             if (files == null) {
                 output.append(cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin));
             }
