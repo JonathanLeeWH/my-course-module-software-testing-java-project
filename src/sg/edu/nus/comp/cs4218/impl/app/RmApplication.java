@@ -2,7 +2,6 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import sg.edu.nus.comp.cs4218.app.RmInterface;
 import sg.edu.nus.comp.cs4218.exception.*;
-import sg.edu.nus.comp.cs4218.impl.parser.LsArgsParser;
 import sg.edu.nus.comp.cs4218.impl.parser.RmArgsParser;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
@@ -11,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
@@ -25,8 +22,7 @@ public class RmApplication implements RmInterface {
      * @param isRecursive   Boolean option to recursively delete the folder contents (traversing
      *                      through all folders inside the specified folder)
      * @param fileName    Array of String of file names
-     * @throws RmException
-     *
+     * @throws Exception  
      */
     @Override
     public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws Exception {
@@ -50,7 +46,7 @@ public class RmApplication implements RmInterface {
                 removeFileAndEmptyFolderOnly(node);
             }
 
-            if (isRecursive) { // if -r flag is present for example -r or -rd will call the same method.
+            if (isRecursive) { // if -r flag is present for example -r or -r -d or -rd will call the same method.
                 removeFilesAndFolderContent(node);
             }
         }
@@ -59,6 +55,12 @@ public class RmApplication implements RmInterface {
         }
     }
 
+    /**
+     * Removes input file.
+     * Precondition: Input file is not a directory.
+     * @param fileName input file to be deleted.
+     * @throws Exception
+     */
     public void removeFileOnly(File fileName) throws Exception {
         try {
             if (!fileName.isDirectory()) {
@@ -69,6 +71,11 @@ public class RmApplication implements RmInterface {
         }
     }
 
+    /**
+     * Removes input file or input empty folder.
+     * @param fileName  input file to be deleted.
+     * @throws Exception
+     */
     public void removeFileAndEmptyFolderOnly(File fileName) throws Exception {
         try {
             Files.delete(fileName.toPath());
@@ -79,6 +86,11 @@ public class RmApplication implements RmInterface {
         }
     }
 
+    /**
+     * Removes input file or input folder and its contents by traversing recursively to delete the input folder contents.
+     * @param fileName input file to be deleted.
+     * @throws Exception
+     */
     public void removeFilesAndFolderContent(File fileName) throws Exception {
         if (fileName.isDirectory()) {
             File[] contents = fileName.listFiles();
@@ -89,17 +101,24 @@ public class RmApplication implements RmInterface {
             }
         }
 
-        fileName.delete(); // delete the file.
+        try {
+            Files.delete(fileName.toPath()); // delete the file.
+        } catch (IOException e) {
+            throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
+        }
     }
 
+    /**
+     * Runs RmApplication with specified input data and specified output stream.
+     * @param args Array of arguments for the RmApplication
+     * @param stdin An InputStream, not used.
+     * @param stdout An OutputStream, not used.
+     * @throws AbstractApplicationException
+     */
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
         if (args == null) {
             throw new RmException(ERR_NULL_ARGS);
-        }
-
-        if (stdout == null) {
-            throw new RmException(ERR_NO_OSTREAM);
         }
 
         RmArgsParser parser = new RmArgsParser();

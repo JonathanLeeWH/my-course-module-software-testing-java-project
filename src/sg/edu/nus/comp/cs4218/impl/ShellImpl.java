@@ -4,6 +4,7 @@ import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.ExitException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.CommandBuilder;
@@ -37,6 +38,11 @@ public class ShellImpl implements Shell {
                     if (!StringUtils.isBlank(commandString)) {
                         shell.parseAndEvaluate(commandString, System.out);
                     }
+                } catch (ExitException e) {
+                     String exitCode = e.getMessage().substring(6);
+                     if (Integer.parseInt(exitCode) == 0) {
+                         System.exit(0);
+                     }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
