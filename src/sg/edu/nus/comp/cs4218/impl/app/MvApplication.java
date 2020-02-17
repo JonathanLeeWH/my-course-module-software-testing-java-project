@@ -19,10 +19,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 public class MvApplication implements MvInterface {
 
-    private static final String NO_ARG_EXCEPTION ="No input found, please specify file to be moved";
-    public static final String NO_DESTINATION = "No destination specified";
-    public static final String FAILED_TO_MOVE = "Failed to move file";
-    public static final String NO_FILE = "No file specified found";
+
 
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout)
@@ -82,6 +79,15 @@ public class MvApplication implements MvInterface {
         boolean fileMoved = true;
 
         File file = IOUtils.resolveFilePath(srcFile).toFile();
+        File destinationFile = IOUtils.resolveFilePath(destFile).toFile();
+
+        if(!file.exists()) {
+            throw (MvException) new MvException(NO_FILE);
+        }
+
+        if(destFile.isEmpty()) {
+            throw (MvException) new MvException(NO_DESTINATION);
+        }
 
         try{
             Files.move(Paths.get(srcFile), Paths.get(destFile), REPLACE_EXISTING);
@@ -120,10 +126,14 @@ public class MvApplication implements MvInterface {
     public String mvFilesToFolder(String destFolder, String... fileName) throws Exception{
 
         boolean fileMoved = true;
+        File destinationFile = IOUtils.resolveFilePath(destFolder).toFile();
+        if(!destinationFile.exists()) {
+            throw (MvException) new MvException(NO_DESTINATION_FOLDER);
+        }
         for(String sourceFile : fileName) {
             File file = IOUtils.resolveFilePath(sourceFile).toFile();
-            String currentSourcFileName = file.getName();
-            String dest = destFolder + File.separator + currentSourcFileName;
+            String currentSrcName = file.getName();
+            String dest = destFolder + File.separator + currentSrcName;
             try {
                 Files.move(Paths.get(sourceFile), Paths.get(dest), REPLACE_EXISTING);
 

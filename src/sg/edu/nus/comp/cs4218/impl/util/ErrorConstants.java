@@ -54,6 +54,13 @@ public class ErrorConstants {
     public static final String ERR_FILE_EXISTS = "File or directory already exists";
     public static final String ERR_TOP_LEVEL_MISSING = "Top level folders do not exist";
 
+    // `mv` related
+    public static final String NO_ARG_EXCEPTION ="No input found, please specify file to be moved";
+    public static final String NO_DESTINATION = "No destination file specified";
+    public static final String NO_DESTINATION_FOLDER = "No destination folder specified";
+    public static final String FAILED_TO_MOVE = "Failed to move file";
+    public static final String NO_FILE = "No file specified found";
+
     // General constants
     public static final String ERR_INVALID_APP = "Invalid app";
     public static final String ERR_NOT_SUPPORTED = "Not supported yet";
