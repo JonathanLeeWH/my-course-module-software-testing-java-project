@@ -11,6 +11,20 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <!-- To allow mvn test to run any and all test java classes -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.0</version>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <!-- ... -->
         <dependency>
