@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +16,12 @@ import static org.mockito.Mockito.*;
 
 class PipeCommandTest {
 
-    private List<CallCommand> mockCallCommandsList;
+    private List<CallCommand> spyCallCommandsList;
+    private PipeCommand pipeCommand;
 
     @BeforeEach
     void setUp() {
-        mockCallCommandsList = mock(ArrayList.class);
+        spyCallCommandsList = spy(ArrayList.class);
     }
 
     /**
@@ -28,13 +31,14 @@ class PipeCommandTest {
     @Test
     void evaluateWhenCallCommandThrowsAbsAppExceptionShouldThrowAbstractApplicationException() throws AbstractApplicationException, ShellException {
         CallCommand mockCallCommand = mock(CallCommand.class);
-        mockCallCommandsList.add(mockCallCommand);
-        verify(mockCallCommandsList).add(mockCallCommand);
+        spyCallCommandsList.add(mockCallCommand);
+        verify(spyCallCommandsList).add(mockCallCommand);
+        pipeCommand = new PipeCommand(spyCallCommandsList);
 
         doThrow(mock(AbstractApplicationException.class)).when(mockCallCommand).evaluate(any(), any());
 
         assertThrows(AbstractApplicationException.class, () -> {
-           mockCallCommand.evaluate(any(), any());
+           pipeCommand.evaluate(mock(InputStream.class), mock(OutputStream.class));
         });
     }
 
@@ -45,13 +49,14 @@ class PipeCommandTest {
     @Test
     void evaluateWhenCallCommandThrowsShellExceptionShouldThrowShellException() throws AbstractApplicationException, ShellException {
         CallCommand mockCallCommand = mock(CallCommand.class);
-        mockCallCommandsList.add(mockCallCommand);
-        verify(mockCallCommandsList).add(mockCallCommand);
+        spyCallCommandsList.add(mockCallCommand);
+        verify(spyCallCommandsList).add(mockCallCommand);
+        pipeCommand = new PipeCommand(spyCallCommandsList);
 
         doThrow(ShellException.class).when(mockCallCommand).evaluate(any(), any());
 
         assertThrows(ShellException.class, () -> {
-            mockCallCommand.evaluate(any(), any());
+            pipeCommand.evaluate(mock(InputStream.class), mock(OutputStream.class));
         });
     }
 }
