@@ -22,6 +22,8 @@ public class MvApplicationTest {
     private static final String TEST_FOLDER = "testFolder";
     private static MvApplication mvApplication;
     private static final String NO_ARG_EXCEPTION ="No input found, please specify file to be moved";
+    private static final String FAILED_TO_MOVE = "Failed to move file";
+
 
     @BeforeEach
     void setupBeforeTest() throws IOException {
@@ -72,6 +74,42 @@ public class MvApplicationTest {
         String newFileInFolder = destFolderString + File.separator + TEST_FILE;
         assertTrue(Files.exists(Paths.get(newFileInFolder)));
         assertTrue(!Files.exists(Paths.get(TEST_FILE)));
+    }
+
+    @Test
+    public void executeMvFileToFolderFolderNotFound(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(TEST_FILE);
+        Path file2 = tempDir.resolve(TEST_FOLDER);
+        String fileSrcString = file1.toString();
+        String destFolderString = file2.toString();
+
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1));
+        assertFalse(Files.exists(file2));
+
+        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+            mvApplication.mvFilesToFolder(destFolderString,fileSrcString);
+        });
+
+        assertEquals(new MvException(FAILED_TO_MOVE).getMessage(), exception.getMessage());
+    }
+
+    @Test
+    public void executeMvFileToDestFileNotFound(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(TEST_FILE);
+        Path file2 = tempDir.resolve(TEST_DIFFERENT);
+        String fileSrcString = file1.toString();
+        String destFolderString = file2.toString();
+
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1));
+        assertFalse(Files.exists(file2));
+
+        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+            mvApplication.mvSrcFileToDestFile(destFolderString,fileSrcString);
+        });
+
+        assertEquals(new MvException(FAILED_TO_MOVE).getMessage(), exception.getMessage());
     }
 
 
