@@ -1,11 +1,11 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
-import javafx.util.Pair;
 import sg.edu.nus.comp.cs4218.app.CutInterface;
 import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
 import sg.edu.nus.comp.cs4218.impl.parser.CutArgsParser;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
+import sg.edu.nus.comp.cs4218.impl.util.Pair;
 
 import java.io.*;
 import java.util.ArrayList;

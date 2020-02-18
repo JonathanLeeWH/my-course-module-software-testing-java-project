@@ -57,19 +57,17 @@ public class PasteApplicationTest {
     @Test
     public void execute_invalidFile_throwsFileNotFoundException() {
         String[] args = { "invalidTest" };
-        Exception thrown = assertThrows(FileNotFoundException.class, () -> {
+        assertThrows(FileNotFoundException.class, () -> {
             pasteApplication.mergeFile(args);
         });
-        assertTrue(thrown.getMessage().contains("invalidTest (The system cannot find the file specified)"));
     }
 
     @Test
     public void execute_emptyFileName_throwFileNotFoundException() {
         String[] args = { fileWithOneLine.toPath().toString(), ""};
-        Exception thrown = assertThrows(FileNotFoundException.class, () -> {
+        assertThrows(FileNotFoundException.class, () -> {
             pasteApplication.mergeFile(args);
         });
-        assertEquals("", thrown.getMessage());
     }
 
     @Test

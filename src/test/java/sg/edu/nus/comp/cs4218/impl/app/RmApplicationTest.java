@@ -13,7 +13,6 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
-import static org.mockito.Mockito.*;
 
 class RmApplicationTest {
 
