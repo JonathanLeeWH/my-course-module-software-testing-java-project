@@ -1,4 +1,4 @@
-# CS4218 Project: Shell Application
+# CS4218 Project: Shell Application [![Build Status](https://travis-ci.com/nus-cs4218/cs4218-project-ay1920-s2-2020-team22.svg?token=jKdVBsb1h7BZ2PCTqrnm&branch=master)](https://travis-ci.com/nus-cs4218/cs4218-project-ay1920-s2-2020-team22)
 
 ## Table of Contents
   * [Overview](#overview)
