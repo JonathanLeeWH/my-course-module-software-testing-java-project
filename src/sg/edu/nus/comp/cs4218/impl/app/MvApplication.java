@@ -19,8 +19,6 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 public class MvApplication implements MvInterface {
 
-
-
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout)
             throws MvException {
@@ -53,59 +51,13 @@ public class MvApplication implements MvInterface {
         File file = new File(checkDest);
 
         if(parser.isNotOverWrite()) {
-            if(file.isDirectory()) {
-                String fileInDir = checkDest + File.separator + source;
-                File fileCheck = new File(fileInDir);
-                if(fileCheck.exists()) {
-                    throw (MvException) new MvException(NO_OVERWRITE);
-                }
-                else{
-                    try{
-                        String complete = mvFilesToFolder(checkDest,source);
-                    } catch(Exception e){
-                        throw (MvException) new MvException(e.getMessage()).initCause(e);
-                    }
-                }
-            }
-            else{
-                File fileCheck = new File(destFile);
-                if(fileCheck.exists()){
-                    throw (MvException) new MvException(NO_OVERWRITE);
-                }
-                else{
-                    try{
-                        String complete = mvSrcFileToDestFile(source,checkDest);
-                    } catch(Exception e){
-                        throw (MvException) new MvException(e.getMessage()).initCause(e);
-                    }
-                }
-            }
-
+            noOverwriteProcess(source, destFile, checkDest, file);
         }
         else{
-            if(file.isDirectory()){
-                try{
-                    String complete = mvFilesToFolder(checkDest,source);
-                } catch(Exception e){
-                    throw (MvException) new MvException(e.getMessage()).initCause(e);
-                }
-
-            }
-            else{
-                try{
-                    String complete = mvSrcFileToDestFile(source,checkDest);
-                } catch(Exception e){
-                    throw (MvException) new MvException(e.getMessage()).initCause(e);
-                }
-            }
-
+            overWriteProcess(source, checkDest, file);
         }
-
-
-
-
-
     }
+
     /**
      * renames the file named by the source operand to the destination path named by the target operand
      *
@@ -191,5 +143,52 @@ public class MvApplication implements MvInterface {
         }
 
         return returnString;
+    }
+
+    private void mvFileToDestMethod(String source, String checkDest) throws MvException {
+        try{
+            String complete = mvSrcFileToDestFile(source,checkDest);
+        } catch(Exception e){
+            throw (MvException) new MvException(e.getMessage()).initCause(e);
+        }
+    }
+
+    private void mvFilesForFolderMethod(String source, String checkDest) throws MvException {
+        try{
+            String complete = mvFilesToFolder(checkDest,source);
+        } catch(Exception e){
+            throw (MvException) new MvException(e.getMessage()).initCause(e);
+        }
+    }
+
+    private void overWriteProcess(String source, String checkDest, File file) throws MvException {
+        if(file.isDirectory()){
+            mvFilesForFolderMethod(source, checkDest);
+        }
+        else{
+            mvFileToDestMethod(source, checkDest);
+        }
+    }
+
+    private void noOverwriteProcess(String source, String destFile, String checkDest, File file) throws MvException {
+        if(file.isDirectory()) {
+            String fileInDir = checkDest + File.separator + source;
+            File fileCheck = new File(fileInDir);
+            if(fileCheck.exists()) {
+                throw (MvException) new MvException(NO_OVERWRITE);
+            }
+            else{
+                mvFilesForFolderMethod(source, checkDest);
+            }
+        }
+        else{
+            File fileCheck = new File(destFile);
+            if(fileCheck.exists()){
+                throw (MvException) new MvException(NO_OVERWRITE);
+            }
+            else{
+                mvFileToDestMethod(source, checkDest);
+            }
+        }
     }
 }
