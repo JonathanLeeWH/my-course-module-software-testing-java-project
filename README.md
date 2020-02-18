@@ -6,8 +6,8 @@
   * [Instructions to setup project](#instructions-to-setup-project)
   * [Instructions to run the Shell program](#instructions-to-run-the-shell-program)
   * [Instructions to run all our test cases](#instructions-to-run-all-our-test-cases)
-  * [External libraries / plugins / tools / technologies used](#external-libraries---plugins---tools---technologies-used)
-  * [Acknowledges / References](#acknowledges---references)
+  * [External libraries / plugins / tools / technologies used](#external-libraries-/-plugins-/-tools-/-technologies-used)
+  * [Acknowledges / References](#acknowledges-/-references)
 
 ## Overview
 
@@ -70,3 +70,4 @@ You will just need to run `mvn test`.
 - Maven Failsafe Plugin: Required by Maven in order to run test file within Java Maven Project.
 
 ## Acknowledges / References
+[TBC]
