@@ -1,8 +1,8 @@
 package sg.edu.nus.comp.cs4218.impl.parser;
 
-import javafx.util.Pair;
 import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.impl.util.ErrorConstants;
+import sg.edu.nus.comp.cs4218.impl.util.Pair;
 
 public class CutArgsParser extends ArgsParser{
 
