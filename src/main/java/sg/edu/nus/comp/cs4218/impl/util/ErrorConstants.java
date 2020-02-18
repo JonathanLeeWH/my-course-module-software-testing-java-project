@@ -56,6 +56,7 @@ public class ErrorConstants {
 
     // `mv` related
     public static final String NO_ARG_EXCEPTION ="No input found, please specify file to be moved";
+    public static final String MISSING_ARG_EXCEPTION = "Missing Arguments";
     public static final String NO_DESTINATION = "No destination file specified";
     public static final String NO_DESTINATION_FOLDER = "No destination folder specified";
     public static final String FAILED_TO_MOVE = "Failed to move file";

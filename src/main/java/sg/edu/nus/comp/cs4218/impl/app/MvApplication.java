@@ -32,13 +32,17 @@ public class MvApplication implements MvInterface {
         }
         // Parse arguments.
         MvArgsParser parser = new MvArgsParser();
-        StringBuilder output = new StringBuilder();
+
         try {
             parser.parse(args);
         } catch (InvalidArgsException e) {
             throw (MvException) new MvException(e.getMessage()).initCause(e);
         }
         List<String> sourceDestination = parser.getNonFlagArgs();
+        if(sourceDestination.isEmpty() || sourceDestination.size() ==1) {
+            throw new MvException(MISSING_ARG_EXCEPTION);
+        }
+
         String source = sourceDestination.get(0);
         String destFile = sourceDestination.get(1);
         String dest = File.separator + sourceDestination.get(1);
