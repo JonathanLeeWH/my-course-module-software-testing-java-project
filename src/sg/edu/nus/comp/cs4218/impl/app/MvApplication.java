@@ -42,6 +42,7 @@ public class MvApplication implements MvInterface {
         }
         List<String> sourceDestination = parser.getNonFlagArgs();
         String source = sourceDestination.get(0);
+        String destFile = sourceDestination.get(1);
         String dest = File.separator + sourceDestination.get(1);
         String currentDir = EnvironmentHelper.currentDirectory.trim();
 
@@ -50,21 +51,58 @@ public class MvApplication implements MvInterface {
         String checkDest = stringbuilder.toString();
 
         File file = new File(checkDest);
-        if(file.isDirectory()){
-            try{
-                String complete = mvFilesToFolder(checkDest,source);
-            } catch(Exception e){
-                throw (MvException) new MvException(e.getMessage()).initCause(e);
+
+        if(parser.isNotOverWrite()) {
+            if(file.isDirectory()) {
+                String fileInDir = checkDest + File.separator + source;
+                File fileCheck = new File(fileInDir);
+                if(fileCheck.exists()) {
+                    throw (MvException) new MvException(NO_OVERWRITE);
+                }
+                else{
+                    try{
+                        String complete = mvFilesToFolder(checkDest,source);
+                    } catch(Exception e){
+                        throw (MvException) new MvException(e.getMessage()).initCause(e);
+                    }
+                }
+            }
+            else{
+                File fileCheck = new File(destFile);
+                if(fileCheck.exists()){
+                    throw (MvException) new MvException(NO_OVERWRITE);
+                }
+                else{
+                    try{
+                        String complete = mvSrcFileToDestFile(source,checkDest);
+                    } catch(Exception e){
+                        throw (MvException) new MvException(e.getMessage()).initCause(e);
+                    }
+                }
             }
 
         }
         else{
-            try{
-                String complete = mvSrcFileToDestFile(source,checkDest);
-            } catch(Exception e){
-                throw (MvException) new MvException(e.getMessage()).initCause(e);
+            if(file.isDirectory()){
+                try{
+                    String complete = mvFilesToFolder(checkDest,source);
+                } catch(Exception e){
+                    throw (MvException) new MvException(e.getMessage()).initCause(e);
+                }
+
             }
-    }
+            else{
+                try{
+                    String complete = mvSrcFileToDestFile(source,checkDest);
+                } catch(Exception e){
+                    throw (MvException) new MvException(e.getMessage()).initCause(e);
+                }
+            }
+
+        }
+
+
+
 
 
     }
