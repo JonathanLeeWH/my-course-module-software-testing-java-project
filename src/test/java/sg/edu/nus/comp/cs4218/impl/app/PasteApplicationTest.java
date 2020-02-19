@@ -58,7 +58,7 @@ public class PasteApplicationTest {
      *  Expected: Throws FileNotFound Exception
      */
     @Test
-    public void execute_invalidFile_throwsFileNotFoundException() {
+    public void executeInvalidFileThrowsFileNotFoundException() {
         String[] args = { "invalidTest" };
         assertThrows(FileNotFoundException.class, () -> {
             pasteApplication.mergeFile(args);
@@ -70,7 +70,7 @@ public class PasteApplicationTest {
      *  Expected: Throws FileNotFound Exception
      */
     @Test
-    public void execute_emptyFileName_throwFileNotFoundException() {
+    public void executeEmptyFileNameThrowFileNotFoundException() {
         String[] args = { fileWithOneLine.toPath().toString(), ""};
         assertThrows(FileNotFoundException.class, () -> {
             pasteApplication.mergeFile(args);
@@ -82,7 +82,7 @@ public class PasteApplicationTest {
      *  Expected: Throws FileNotFound Exception
      */
     @Test
-    public void execute_printNothingWhenOneEmptyFileIsGiven_success() throws Exception {
+    public void executePrintNothingWhenOneEmptyFileIsGivenSuccess() throws Exception {
         String[] fileNames = new String[1];
         fileNames[0] = emptyFile.toPath().toString();
         assertEquals("", pasteApplication.mergeFile(fileNames));
@@ -93,7 +93,7 @@ public class PasteApplicationTest {
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
     @Test
-    public void execute_printTwoLinesWhenATwoLinesFileIsGiven_success() throws Exception {
+    public void executePrintTwoLinesWhenATwoLinesFileIsGivenSuccess() throws Exception {
         String[] fileName = new String[1];
         fileName[0] = fileWithTwoLines.toPath().toString();
         assertEquals(TEXT_FILE_WITH_TWO_LINES, pasteApplication.mergeFile(fileName));
@@ -104,7 +104,7 @@ public class PasteApplicationTest {
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
     @Test
-    public void execute_printSingleLineWhenOneSingleLineFileIsGiven_success() throws Exception {
+    public void executePrintSingleLineWhenOneSingleLineFileIsGivenSuccess() throws Exception {
         String[] fileName = new String[1];
         fileName[0] = fileWithOneLine.toPath().toString();
         String actualOutput = pasteApplication.mergeFile(fileName);
@@ -116,7 +116,7 @@ public class PasteApplicationTest {
      *  Expected: Returns a string with the two file contents merged (tab-concatenated).
      */
     @Test
-    public void execute_mergeMultipleFiles_success() throws Exception {
+    public void executeMergeMultipleFilesSuccess() throws Exception {
         String[] args = { fileWithTwoLines.toPath().toString(), fileWithOneLine.toPath().toString() };
         String expectedOutput = "First Line" + "\t" + "Only One Line" + System.lineSeparator() + "Second Line";
         String actualOutput = pasteApplication.mergeFile(args);
@@ -128,7 +128,7 @@ public class PasteApplicationTest {
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
     @Test
-    public void execute_printSingleLineWhenStdinSingleLine_success() throws Exception {
+    public void executePrintSingleLineWhenStdinSingleLineSuccess() throws Exception {
         InputStream inputStream = new FileInputStream(fileWithOneLine);
         assertEquals(TEXT_FILE_WITH_ONE_LINE, pasteApplication.mergeStdin(inputStream));
     }
@@ -138,7 +138,7 @@ public class PasteApplicationTest {
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
     @Test
-    public void execute_printStdinMultipleLines_success() throws Exception {
+    public void executePrintStdinMultipleLinesSuccess() throws Exception {
         InputStream inputStream = new FileInputStream(fileWithTwoLines);
         assertEquals(TEXT_FILE_WITH_TWO_LINES, pasteApplication.mergeStdin(inputStream));
     }
@@ -148,7 +148,7 @@ public class PasteApplicationTest {
      *  Expected: Returns a string with the two file contents merged (tab-concatenated).
      */
     @Test
-    public void execute_mergeStdinAndSingleFile_success() throws Exception {
+    public void executeMergeStdinAndSingleFileSuccess() throws Exception {
         InputStream inputStream = new FileInputStream(fileWithTwoLines);
         String[] fileNames = { fileWithTwoLines.toPath().toString() };
         String expectedOutput = "First Line" + "\t" + "First Line" + "\n" + "Second Line" + "\t" + "Second Line";
