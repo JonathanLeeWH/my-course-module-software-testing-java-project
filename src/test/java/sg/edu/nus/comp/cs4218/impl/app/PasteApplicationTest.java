@@ -53,6 +53,10 @@ public class PasteApplicationTest {
         }
     }
 
+    /**
+     * Test mergeFile method when filename is invalid.
+     *  Expected: Throws FileNotFound Exception
+     */
     @Test
     public void execute_invalidFile_throwsFileNotFoundException() {
         String[] args = { "invalidTest" };
@@ -61,6 +65,10 @@ public class PasteApplicationTest {
         });
     }
 
+    /**
+     * Test mergeFile method when filename is empty.
+     *  Expected: Throws FileNotFound Exception
+     */
     @Test
     public void execute_emptyFileName_throwFileNotFoundException() {
         String[] args = { fileWithOneLine.toPath().toString(), ""};
@@ -69,6 +77,10 @@ public class PasteApplicationTest {
         });
     }
 
+    /**
+     * Test mergeFile method when filename is empty.
+     *  Expected: Throws FileNotFound Exception
+     */
     @Test
     public void execute_printNothingWhenOneEmptyFileIsGiven_success() throws Exception {
         String[] fileNames = new String[1];
@@ -76,6 +88,10 @@ public class PasteApplicationTest {
         assertEquals("", pasteApplication.mergeFile(fileNames));
     }
 
+    /**
+     * Test mergeFile method when filename is the name of a file with two lines.
+     *  Expected: Returns a string of the file contents and terminates with a newline.
+     */
     @Test
     public void execute_printTwoLinesWhenATwoLinesFileIsGiven_success() throws Exception {
         String[] fileName = new String[1];
@@ -83,6 +99,10 @@ public class PasteApplicationTest {
         assertEquals(TEXT_FILE_WITH_TWO_LINES, pasteApplication.mergeFile(fileName));
     }
 
+    /**
+     * Test mergeFile method when filename is the name of a file with one line.
+     *  Expected: Returns a string of the file contents and terminates with a newline.
+     */
     @Test
     public void execute_printSingleLineWhenOneSingleLineFileIsGiven_success() throws Exception {
         String[] fileName = new String[1];
@@ -91,6 +111,10 @@ public class PasteApplicationTest {
         assertEquals(TEXT_FILE_WITH_ONE_LINE, actualOutput);
     }
 
+    /**
+     * Test mergeFile method when two filenames are given.
+     *  Expected: Returns a string with the two file contents merged (tab-concatenated).
+     */
     @Test
     public void execute_mergeMultipleFiles_success() throws Exception {
         String[] args = { fileWithTwoLines.toPath().toString(), fileWithOneLine.toPath().toString() };
@@ -99,18 +123,30 @@ public class PasteApplicationTest {
         assertEquals(expectedOutput, actualOutput);
     }
 
+    /**
+     * Test mergeStdin method when no filenames are given and Stdin contains only one file that has a single line.
+     *  Expected: Returns a string of the file contents and terminates with a newline.
+     */
     @Test
     public void execute_printSingleLineWhenStdinSingleLine_success() throws Exception {
         InputStream inputStream = new FileInputStream(fileWithOneLine);
         assertEquals(TEXT_FILE_WITH_ONE_LINE, pasteApplication.mergeStdin(inputStream));
     }
 
+    /**
+     * Test mergeStdin method when no filenames are given and Stdin contains only one file that has multiple lines.
+     *  Expected: Returns a string of the file contents and terminates with a newline.
+     */
     @Test
     public void execute_printStdinMultipleLines_success() throws Exception {
         InputStream inputStream = new FileInputStream(fileWithTwoLines);
         assertEquals(TEXT_FILE_WITH_TWO_LINES, pasteApplication.mergeStdin(inputStream));
     }
 
+    /**
+     * Test mergeFileAndStdin method when one filename is given and Stdin contains only one file.
+     *  Expected: Returns a string with the two file contents merged (tab-concatenated).
+     */
     @Test
     public void execute_mergeStdinAndSingleFile_success() throws Exception {
         InputStream inputStream = new FileInputStream(fileWithTwoLines);
