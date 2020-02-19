@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import sg.edu.nus.comp.cs4218.impl.app.MvApplication;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +30,7 @@ public class MvApplicationTest {
 
 
     @Test
-    public void executeNoArgSpecifiedThrowsArgException() {
+    public void runWhenNoArgSpecifiedThrowsArgException() {
 
         AbstractApplicationException exception = assertThrows(MvException.class, () -> {
             mvApplication.run(null, null, null); // stdin and stdout is not used in MvApplication
@@ -41,7 +40,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMissingArgSpecifiedThrowsArgException() {
+    public void runWhenMissingArgSpecifiedThrowsArgException() {
 
         String[] constructArgs = new String [] {"-n"};
         AbstractApplicationException exception = assertThrows(MvException.class, () -> {
@@ -52,7 +51,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMissingDestinationArgSpecifiedThrowsArgException() {
+    public void runWhenMissingDestinationArgSpecifiedThrowsArgException() {
 
         String[] constructArgs = new String [] {"-n",TEST_FILE};
         AbstractApplicationException exception = assertThrows(MvException.class, () -> {
@@ -63,7 +62,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMissingArgSpecifiedNoOverwriteThrowsArgException() {
+    public void runWhenMissingArgSpecifiedNoOverwriteThrowsArgException() {
 
         String[] constructArgs = new String [] {"-n"};
         AbstractApplicationException exception = assertThrows(MvException.class, () -> {
@@ -74,7 +73,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMissingDestinationArgSpecifiedNoOverwriteThrowsArgException() {
+    public void runWhenMissingDestinationArgSpecifiedNoOverwriteThrowsArgException() {
 
         String[] constructArgs = new String [] {"-n",TEST_FILE};
         AbstractApplicationException exception = assertThrows(MvException.class, () -> {
@@ -85,7 +84,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToDestFileSuccess(@TempDir Path tempDir) throws Exception {
+    public void mvSrcFileToDestFileFileSuccess(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         Path file2 = tempDir.resolve(TEST_DIFFERENT);
         String fileSrcString = file1.toString();
@@ -101,7 +100,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToDestFileWithNoOverwriteSuccess() throws Exception {
+    public void runWhenMvFileToDestFileWithNoOverwriteSuccess() throws Exception {
 
         String currentDir = EnvironmentHelper.currentDirectory.trim();
         String filePath1 = currentDir + File.separator + TEST_FILE;
@@ -126,7 +125,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToFolderWithNoOverwriteSuccess() throws Exception {
+    public void runWhenMvFileToFolderWithNoOverwriteSuccess() throws Exception {
 
         String currentDir = EnvironmentHelper.currentDirectory.trim();
         String filePath1 = currentDir + File.separator + TEST_FILE;
@@ -155,7 +154,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToDestFileSWithNoOverwriteException(@TempDir Path tempDir) throws Exception {
+    public void runWhenMvFileToDestFileSWithNoOverwriteException(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         Path file2 = tempDir.resolve(TEST_DIFFERENT);
         String fileSrcString = file1.toString();
@@ -176,7 +175,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToDestFolderWithNoOverwriteException(@TempDir Path tempDir) throws Exception {
+    public void runWhenMvFileToDestFolderWithNoOverwriteException(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         Path file2 = tempDir.resolve(TEST_FOLDER);
         Path file3 = tempDir.resolve(TEST_FOLDER + File.separator + TEST_FILE);
@@ -200,7 +199,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToFolderSuccess(@TempDir Path tempDir) throws Exception {
+    public void mvFileToFolderSuccess(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         Path file2 = tempDir.resolve(TEST_FOLDER);
         String fileSrcString = file1.toString();
@@ -218,7 +217,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToFolderFolderNotFound(@TempDir Path tempDir) throws Exception {
+    public void mvFileToFolderFolderNotFoundThrowNoDestinationException(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         Path file2 = tempDir.resolve(TEST_FOLDER);
         String fileSrcString = file1.toString();
@@ -236,7 +235,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToDestFileFileNotFound(@TempDir Path tempDir) throws Exception {
+    public void mvSrcFileToDestFileFileThrowNotFoundException(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         Path file2 = tempDir.resolve(TEST_DIFFERENT);
         String fileSrcString = file1.toString();
@@ -253,7 +252,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToDestFileDestinationNull(@TempDir Path tempDir) throws Exception {
+    public void mvSrcFileToDestFileThrowDestinationNullException(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         String fileSrcString = file1.toString();
 
@@ -266,7 +265,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToDestFolderDestinationNull(@TempDir Path tempDir) throws Exception {
+    public void mvFileToFolderThrowsDestinationNullException(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         String fileSrcString = file1.toString();
 
@@ -279,7 +278,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void executeMvFileToDestFolderNotExist(@TempDir Path tempDir) throws Exception {
+    public void mvFileToFoldeThrowDestinationNotExistException(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         String fileSrcString = file1.toString();
 
