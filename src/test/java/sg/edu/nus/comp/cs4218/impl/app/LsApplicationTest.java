@@ -13,7 +13,6 @@ public class LsApplicationTest {
 
     private static final String TEST_FILE = "testFile";
     private static final String TEST_SAME_NAME = "testFile";
-    private static final String TEST_DIFFERENT = "testFile2";
     private static final String TEST_FOLDER = "testFolder";
     private static LsApplication lsApplication;
 
