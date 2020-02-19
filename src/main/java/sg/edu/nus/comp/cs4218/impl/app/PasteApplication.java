@@ -121,7 +121,7 @@ public class PasteApplication implements PasteInterface {
      * @throws PasteException
      */
     private String paste(BufferedReader... bufferedReaders) throws PasteException {
-        String tab = "\t", newLine = "\n";
+        String tab = "\t", newLine = System.lineSeparator();
         StringBuilder stringBuilder = new StringBuilder();
         boolean hasMoreLines = true;
         while (hasMoreLines) {

@@ -1,9 +1,8 @@
-package test.sg.edu.nus.comp.cs4218.impl.app;
+package sg.edu.nus.comp.cs4218.impl.app;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import sg.edu.nus.comp.cs4218.impl.app.PasteApplication;
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +13,7 @@ public class PasteApplicationTest {
     private static final String TEST_FILE_WITH_TWO_LINES_NAME = "testFileOne";
     private static final String TEST_FILE_WITH_ONE_LINE_NAME = "testFileTwo";
     private static final String TEXT_EMPTY_FILE = "";
-    private static final String TEXT_FILE_WITH_TWO_LINES = "First Line" + "\n" + "Second Line";
+    private static final String TEXT_FILE_WITH_TWO_LINES = "First Line" + System.lineSeparator() + "Second Line";
     private static final String TEXT_FILE_WITH_ONE_LINE = "Only One Line";
     private static File emptyFile;
     private static File fileWithTwoLines;
@@ -32,7 +31,7 @@ public class PasteApplicationTest {
             outputStreamZero = new FileOutputStream(emptyFile);
             outputStreamOne = new FileOutputStream(fileWithTwoLines);
             outputStreamTwo = new FileOutputStream(fileWithOneLine);
-            outputStreamZero.write(TEXT_EMPTY_FILE.getBytes());
+            outputStreamZero.write(TEXT_EMPTY_FILE.getBytes()   );
             outputStreamOne.write(TEXT_FILE_WITH_TWO_LINES.getBytes());
             outputStreamTwo.write(TEXT_FILE_WITH_ONE_LINE.getBytes());
         } catch (IOException e) {
@@ -95,7 +94,7 @@ public class PasteApplicationTest {
     @Test
     public void execute_mergeMultipleFiles_success() throws Exception {
         String[] args = { fileWithTwoLines.toPath().toString(), fileWithOneLine.toPath().toString() };
-        String expectedOutput = "First Line" + "\t" + "Only One Line" + "\n" + "Second Line";
+        String expectedOutput = "First Line" + "\t" + "Only One Line" + System.lineSeparator() + "Second Line";
         String actualOutput = pasteApplication.mergeFile(args);
         assertEquals(expectedOutput, actualOutput);
     }
