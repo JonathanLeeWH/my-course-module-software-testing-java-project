@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import sg.edu.nus.comp.cs4218.impl.app.MvApplication;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -183,7 +182,7 @@ public class MvApplicationTest {
         String fileSrcString = file1.toString();
         String fileDestString = file2.toString();
 
-        String[] constructArgs = new String [] {"-n",fileSrcString,fileDestString};;
+        String[] constructArgs = new String [] {"-n",fileSrcString,fileDestString};
 
 
         Files.createFile(file1);
