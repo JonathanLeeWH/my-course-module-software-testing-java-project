@@ -16,12 +16,12 @@ import static org.mockito.Mockito.*;
 
 class PipeCommandTest {
 
-    private List<CallCommand> spyCallCommandsList;
+    private List<CallCommand> spyCallCommands;
     private PipeCommand pipeCommand;
 
     @BeforeEach
     void setUp() {
-        spyCallCommandsList = spy(ArrayList.class);
+        spyCallCommands = spy(ArrayList.class);
     }
 
     /**
@@ -31,9 +31,9 @@ class PipeCommandTest {
     @Test
     void evaluateWhenCallCommandThrowsAbsAppExceptionShouldThrowAbstractApplicationException() throws AbstractApplicationException, ShellException {
         CallCommand mockCallCommand = mock(CallCommand.class);
-        spyCallCommandsList.add(mockCallCommand);
-        verify(spyCallCommandsList).add(mockCallCommand);
-        pipeCommand = new PipeCommand(spyCallCommandsList);
+        spyCallCommands.add(mockCallCommand);
+        verify(spyCallCommands).add(mockCallCommand);
+        pipeCommand = new PipeCommand(spyCallCommands);
 
         doThrow(mock(AbstractApplicationException.class)).when(mockCallCommand).evaluate(any(), any());
 
@@ -49,9 +49,9 @@ class PipeCommandTest {
     @Test
     void evaluateWhenCallCommandThrowsShellExceptionShouldThrowShellException() throws AbstractApplicationException, ShellException {
         CallCommand mockCallCommand = mock(CallCommand.class);
-        spyCallCommandsList.add(mockCallCommand);
-        verify(spyCallCommandsList).add(mockCallCommand);
-        pipeCommand = new PipeCommand(spyCallCommandsList);
+        spyCallCommands.add(mockCallCommand);
+        verify(spyCallCommands).add(mockCallCommand);
+        pipeCommand = new PipeCommand(spyCallCommands);
 
         doThrow(ShellException.class).when(mockCallCommand).evaluate(any(), any());
 
