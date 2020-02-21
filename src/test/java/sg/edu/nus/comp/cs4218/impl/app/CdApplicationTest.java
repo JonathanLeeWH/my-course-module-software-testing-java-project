@@ -17,7 +17,6 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 class CdApplicationTest {
 
-    private static final String CD_EXCEP_PREFIX = "cd: ";
     private static final String EMPTY_STRING = "";
     private static final String FILE_NAME = "1.txt";
     private static final String FOLDER_NAME = "hello";
@@ -29,19 +28,17 @@ class CdApplicationTest {
         cdApplication = new CdApplication();
     }
 
-//    /**
-//     * Tests for changeToDirectory method when input path is empty.
-//     * Expected: Throws CdException with ERR_NULL_ARGS
-//     */
-//    @Test
-//    void changeToDirectoryWhenInputPathIsEmptyShouldThrowsCdException() {
-//        StringUtils mockStringUtils = mock(StringUtils.class);
-//        when(mockStringUtils.isBlank(EMPTY_STRING)).thenReturn(true);
-//        Exception exception = assertThrows(CdException.class, () -> {
-//            cdApplication.changeToDirectory(EMPTY_STRING);
-//        });
-//        assertEquals(CD_EXCEP_PREFIX + ERR_NULL_ARGS, exception.getMessage());
-//    }
+    /**
+     * Tests for changeToDirectory method when input path is empty.
+     * Expected: Throws CdException with ERR_NO_ARGS
+     */
+    @Test
+    void changeToDirectoryWhenInputPathIsEmptyShouldThrowsCdException() {
+        Exception exception = assertThrows(CdException.class, () -> {
+            cdApplication.changeToDirectory(EMPTY_STRING);
+        });
+        assertEquals(new CdException(ERR_NO_ARGS).getMessage(), exception.getMessage());
+    }
 
     /**
      * Tests for changeToDirectory method when input path is a file and not a directory.
@@ -57,7 +54,7 @@ class CdApplicationTest {
         Exception exception = assertThrows(CdException.class, () -> {
             cdApplication.changeToDirectory(file.toString());
         });
-        assertEquals(CD_EXCEP_PREFIX + ERR_IS_NOT_DIR, exception.getMessage());
+        assertEquals(new CdException(ERR_IS_NOT_DIR).getMessage(), exception.getMessage());
     }
 
     /**
@@ -74,7 +71,7 @@ class CdApplicationTest {
         Exception exception = assertThrows(CdException.class, () -> {
             cdApplication.changeToDirectory(path.toString());
         });
-        assertEquals(CD_EXCEP_PREFIX + ERR_FILE_NOT_FOUND, exception.getMessage());
+        assertEquals(new CdException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
     }
 
 //    /**
