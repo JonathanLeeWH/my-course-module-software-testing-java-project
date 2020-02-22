@@ -37,7 +37,7 @@ class RmApplicationTest {
     @Test
     void runInputArgsIsNullThrowsRmException() {
         AbstractApplicationException exception = assertThrows(RmException.class, () -> {
-            rmApplication.run(null, System.in, System.out); // stdin and stdout is not used in RmApplication
+            rmApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
         });
 
         assertEquals(new RmException(ERR_NULL_ARGS).getMessage(), exception.getMessage());
