@@ -3,7 +3,9 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
 import sg.edu.nus.comp.cs4218.exception.RmException;
 
 import java.io.File;
@@ -14,14 +16,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 
 class RmApplicationTest {
 
     private static final String FILE_NAME_1 = "1.txt";
     private static final String FILE_NAME_2 = "2.txt";
     private static final String FOLDER_NAME_1 = "hello";
+    private static final String ILLEGAL_FLAG = "z";
+    public static final String ILLEGAL_FLAG_MSG = "illegal option -- ";
 
     private RmApplication rmApplication;
 
@@ -35,7 +40,7 @@ class RmApplicationTest {
      * Expected: Throws RmException with ERR_NULL_ARGS
      */
     @Test
-    void runInputArgsIsNullThrowsRmException() {
+    void runWhenInputArgsIsNullThrowsRmException() {
         AbstractApplicationException exception = assertThrows(RmException.class, () -> {
             rmApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
         });
@@ -48,12 +53,68 @@ class RmApplicationTest {
      * Expected: Throws RmException with ERR_MISSING_ARG
      */
     @Test
-    void runInputArgsIsEmptyThrowsRmException() {
+    void runWhenInputArgsIsEmptyThrowsRmException() {
         AbstractApplicationException exception = assertThrows(RmException.class, () -> {
             rmApplication.run(new String[] {}, mock(InputStream.class), mock(OutputStream.class));
         });
 
         assertEquals(new RmException(ERR_MISSING_ARG).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests run method when input array of arguments contains illegal flag
+     * Expected: Throws RmException with InvalidArgsException message.
+     */
+    @Test
+    void runWhenInputArgsContainsIllegalFlagShouldThrowRmException() {
+        String[] argsList = {CHAR_FLAG_PREFIX + ILLEGAL_FLAG};
+        AbstractApplicationException exception = assertThrows(RmException.class, () -> {
+            rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+        assertEquals(new RmException(new InvalidArgsException(ILLEGAL_FLAG_MSG + ILLEGAL_FLAG).getMessage()).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests run method when RmException is catch from remove method executed in run method.
+     * Expected: Throws RmException.
+     */
+    @Test
+    void runWhenRemoveThrowsRmExceptionShouldThrowRmException() throws Exception {
+        String[] argsList = {FILE_NAME_1, FILE_NAME_2};
+        assertThrows(RmException.class, () -> {
+           rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+    }
+
+    /**
+     * Tests run method when Exception is catch from remove method executed in run method.
+     * Expected: Throws RmException.
+     */
+    @Test
+    void runWhenRemoveThrowsExceptionShouldThrowRmException() throws Exception {
+        String[] argsList = {FILE_NAME_1, FILE_NAME_2};
+        assertThrows(Exception.class, () -> {
+            rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+    }
+
+    /**
+     * Tests run method execute successfully.
+     */
+    @Test
+    void runWhenSuccessfulExecution(@TempDir Path tempDir) throws Exception {
+        String[] argsList = {FILE_NAME_1};
+        Path file = tempDir.resolve(FILE_NAME_1);
+
+        Files.createFile(file);
+        assertTrue(Files.exists(file)); // check if file exist.
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+
+        rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+
+        assertFalse(Files.exists(file)); // file is deleted.
     }
 
     /**
@@ -63,11 +124,14 @@ class RmApplicationTest {
      * Expected: Throws RmException with ERR_FILE_NOT_FOUND
      */
     @Test
-    void removeInputFileAbsentThrowsRmException(@TempDir Path tempDir) throws Exception {
+    void removeWhenInputFileAbsentThrowsRmException(@TempDir Path tempDir) throws Exception {
         Path file = tempDir.resolve(FILE_NAME_1);
-        String[] fileNames = {file.toString()};
+        String[] fileNames = {FILE_NAME_1};
 
         assertFalse(Files.exists(file));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         Exception exception = assertThrows(RmException.class, () -> {
             rmApplication.remove(false, false, fileNames);
@@ -82,13 +146,16 @@ class RmApplicationTest {
      * Expected: Removes the file.
      */
     @Test
-    void removeNoFlagsFileExistsShouldDeleteFile(@TempDir Path tempDir) throws Exception {
+    void removeWhenNoFlagsFileExistsShouldDeleteFile(@TempDir Path tempDir) throws Exception {
         Path file = tempDir.resolve(FILE_NAME_1);
-        String[] fileNames = {file.toString()};
+        String[] fileNames = {FILE_NAME_1};
 
         Files.createFile(file);
 
         assertTrue(Files.exists(file));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         rmApplication.remove(false, false, fileNames);
@@ -104,13 +171,16 @@ class RmApplicationTest {
      * Expected: Throws RmException with ERR_IS_DIR
      */
     @Test
-    void removeNoFlagsEmptyFolderExistsThrowsRmException(@TempDir Path tempDir) throws IOException {
+    void removeWhenNoFlagsEmptyFolderExistsThrowsRmException(@TempDir Path tempDir) throws IOException {
         Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
-        String[] fileNames = {emptyFolder.toString()};
+        String[] fileNames = {FOLDER_NAME_1};
 
         Files.createDirectory(emptyFolder);
 
         assertTrue(Files.isDirectory(emptyFolder));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -129,16 +199,19 @@ class RmApplicationTest {
      * Expected: Removes the files.
      */
     @Test
-    void removeNoFlagsFilesExistsShouldDeleteFiles(@TempDir Path tempDir) throws Exception {
+    void removeWhenNoFlagsFilesExistsShouldDeleteFiles(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(FILE_NAME_1);
         Path file2 = tempDir.resolve(FILE_NAME_2);
-        String[] fileNames = {file1.toString(), file2.toString()};
+        String[] fileNames = {FILE_NAME_1, FILE_NAME_2};
 
         Files.createFile(file1);
         Files.createFile(file2);
 
         assertTrue(Files.exists(file1));
         assertTrue(Files.exists(file2));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         rmApplication.remove(false, false, fileNames);
@@ -156,16 +229,19 @@ class RmApplicationTest {
      * The expected behaviour is similar to in unix.
      */
     @Test
-    void removeNoFlagsFilesAndEmptyFolderExistsShouldThrowRmException(@TempDir Path tempDir) throws IOException {
+    void removeWhenNoFlagsFilesAndEmptyFolderExistsShouldThrowRmException(@TempDir Path tempDir) throws IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path emptyFolder  = tempDir.resolve(FOLDER_NAME_1);
-        String[] fileNames = {file.toString(), emptyFolder.toString()};
+        String[] fileNames = {FILE_NAME_1, FOLDER_NAME_1};
 
         Files.createFile(file);
         Files.createDirectory(emptyFolder);
 
         assertTrue(Files.exists(file));
         assertTrue(Files.isDirectory(emptyFolder));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -187,11 +263,11 @@ class RmApplicationTest {
      * The expected behaviour is similar to in unix.
      */
     @Test
-    void removeNoFlagsFilesAndNonEmptyFolderExistsShouldThrowRmException(@TempDir Path tempDir) throws IOException {
+    void removeWhenNoFlagsFilesAndNonEmptyFolderExistsShouldThrowRmException(@TempDir Path tempDir) throws IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();
-        String[] fileNames = {file.toString(), nonEmptyFolder.toString()};
+        String[] fileNames = {FILE_NAME_1, FOLDER_NAME_1 + File.separator + FILE_NAME_2};
 
         Files.createFile(file);
         Files.createDirectories(fileInFolder);
@@ -199,6 +275,9 @@ class RmApplicationTest {
         assertTrue(Files.exists(file));
         assertTrue(Files.isDirectory(nonEmptyFolder));
         assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -221,17 +300,20 @@ class RmApplicationTest {
      * The expected behaviour is similar to in unix except our shell only throw the latest exception as clarified with lecturer.
      */
     @Test
-    void removeNoFlagsMultipleFileArgumentsIncludeNonExistingFileAndExistingFolderShouldDeleteExistingFileAndThrowLatestRmException(@TempDir Path tempDir) throws IOException {
+    void removeWhenNoFlagsMultipleFileArgumentsIncludeNonExistingFileAndExistingFolderShouldDeleteExistingFileAndThrowLatestRmException(@TempDir Path tempDir) throws IOException {
         Path file1 = tempDir.resolve(FILE_NAME_1);
         Path file2 = tempDir.resolve(FILE_NAME_2);
         Path folder  = tempDir.resolve(FOLDER_NAME_1);
-        String[] fileNames = {folder.toString(), file1.toString(), file2.toString()};
+        String[] fileNames = {FOLDER_NAME_1, FILE_NAME_1, FILE_NAME_2};
 
         Files.createFile(file1);
         Files.createDirectories(folder);
         assertTrue(Files.exists(file1));
         assertTrue(Files.isDirectory(folder));
         assertFalse(Files.exists(file2)); // file2 does not exist.
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -252,13 +334,16 @@ class RmApplicationTest {
      * Expected: Removes hello directory.
      */
     @Test
-    void removeDFlagEmptyFolderExistsShouldDeleteEmptyFolder(@TempDir Path tempDir) throws Exception {
+    void removeWhenDFlagEmptyFolderExistsShouldDeleteEmptyFolder(@TempDir Path tempDir) throws Exception {
         Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
-        String[] fileNames = {emptyFolder.toString()};
+        String[] fileNames = {FOLDER_NAME_1};
 
         Files.createDirectory(emptyFolder);
 
         assertTrue(Files.isDirectory(emptyFolder));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with -d flag
         rmApplication.remove(true, false, fileNames);
@@ -274,15 +359,18 @@ class RmApplicationTest {
      * Expected: Throws RmException with ERR_NON_EMPTY_DIR as it attempts to remove hello directory
      */
     @Test
-    void removeDFlagNonEmptyFolderExistsThrowsRmException(@TempDir Path tempDir) throws Exception {
+    void removeWhenDFlagNonEmptyFolderExistsThrowsRmException(@TempDir Path tempDir) throws Exception {
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
-        String[] fileNames = {nonEmptyFolder.toString()};
+        String[] fileNames = {FOLDER_NAME_1};
 
         Files.createDirectories(fileInFolder);
 
         assertTrue(Files.isDirectory(nonEmptyFolder));
         assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with -d flag
         Exception exception = assertThrows(RmException.class, () -> {
@@ -303,15 +391,18 @@ class RmApplicationTest {
      * Expected: Removes hello directory and its contents
      */
     @Test
-    void removeRFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
+    void removeWhenRFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
-        String[] fileNames = {nonEmptyFolder.toString()};
+        String[] fileNames = {FOLDER_NAME_1};
 
         Files.createDirectories(fileInFolder);
 
         assertTrue(Files.isDirectory(nonEmptyFolder));
         assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
+        mockEnvironmentHelper.currentDirectory = tempDir.toString();
 
         // rm with -r flag
         rmApplication.remove(false, true, fileNames);
