@@ -8,10 +8,13 @@ import sg.edu.nus.comp.cs4218.exception.RmException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 class RmApplicationTest {
@@ -38,6 +41,19 @@ class RmApplicationTest {
         });
 
         assertEquals(new RmException(ERR_NULL_ARGS).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests run method when input array of arguments is empty.
+     * Expected: Throws RmException with ERR_MISSING_ARG
+     */
+    @Test
+    void runInputArgsIsEmptyThrowsRmException() {
+        AbstractApplicationException exception = assertThrows(RmException.class, () -> {
+            rmApplication.run(new String[] {}, mock(InputStream.class), mock(OutputStream.class));
+        });
+
+        assertEquals(new RmException(ERR_MISSING_ARG).getMessage(), exception.getMessage());
     }
 
     /**
