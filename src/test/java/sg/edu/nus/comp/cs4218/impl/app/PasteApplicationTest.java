@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PasteApplicationTest {
     private static final String TEST_FILE_TYPE = ".txt";
-    private static final String TEST_EMPTY_FILE_NAME = "testFileZero";
-    private static final String TEST_FILE_WITH_TWO_LINES_NAME = "testFileOne";
-    private static final String TEST_FILE_WITH_ONE_LINE_NAME = "testFileTwo";
-    private static final String TEXT_EMPTY_FILE = "";
-    private static final String TEXT_FILE_WITH_TWO_LINES = "First Line" + System.lineSeparator() + "Second Line";
-    private static final String TEXT_FILE_WITH_ONE_LINE = "Only One Line";
+    private static final String EMPTY_FILE_NAME= "testFileZero";
+    private static final String TWO_LINES_FILE = "testFileOne";
+    private static final String ONE_LINE_FILE= "testFileTwo";
+    private static final String EMPTY_FILE = "";
+    private static final String TWO_LINES = "First Line" + System.lineSeparator() + "Second Line";
+    private static final String ONE_LINE = "Only One Line";
     private static File emptyFile;
     private static File fileWithTwoLines;
     private static File fileWithOneLine;
@@ -25,15 +25,15 @@ public class PasteApplicationTest {
     public static void setupBeforeTest() throws IOException {
         pasteApplication = new PasteApplication();
         try {
-            emptyFile = File.createTempFile(TEST_EMPTY_FILE_NAME, TEST_FILE_TYPE);
-            fileWithTwoLines = File.createTempFile(TEST_FILE_WITH_TWO_LINES_NAME, TEST_FILE_TYPE);
-            fileWithOneLine = File.createTempFile(TEST_FILE_WITH_ONE_LINE_NAME, TEST_FILE_TYPE);
+            emptyFile = File.createTempFile(EMPTY_FILE_NAME, TEST_FILE_TYPE);
+            fileWithTwoLines = File.createTempFile(TWO_LINES_FILE, TEST_FILE_TYPE);
+            fileWithOneLine = File.createTempFile(ONE_LINE_FILE, TEST_FILE_TYPE);
             outputStreamZero = new FileOutputStream(emptyFile);
             outputStreamOne = new FileOutputStream(fileWithTwoLines);
             outputStreamTwo = new FileOutputStream(fileWithOneLine);
-            outputStreamZero.write(TEXT_EMPTY_FILE.getBytes()   );
-            outputStreamOne.write(TEXT_FILE_WITH_TWO_LINES.getBytes());
-            outputStreamTwo.write(TEXT_FILE_WITH_ONE_LINE.getBytes());
+            outputStreamZero.write(EMPTY_FILE.getBytes()   );
+            outputStreamOne.write(TWO_LINES.getBytes());
+            outputStreamTwo.write(ONE_LINE.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,7 +96,7 @@ public class PasteApplicationTest {
     public void executePrintTwoLinesWhenATwoLinesFileIsGivenSuccess() throws Exception {
         String[] fileName = new String[1];
         fileName[0] = fileWithTwoLines.toPath().toString();
-        assertEquals(TEXT_FILE_WITH_TWO_LINES, pasteApplication.mergeFile(fileName));
+        assertEquals(TWO_LINES, pasteApplication.mergeFile(fileName));
     }
 
     /**
@@ -108,7 +108,7 @@ public class PasteApplicationTest {
         String[] fileName = new String[1];
         fileName[0] = fileWithOneLine.toPath().toString();
         String actualOutput = pasteApplication.mergeFile(fileName);
-        assertEquals(TEXT_FILE_WITH_ONE_LINE, actualOutput);
+        assertEquals(ONE_LINE, actualOutput);
     }
 
     /**
@@ -129,8 +129,11 @@ public class PasteApplicationTest {
      */
     @Test
     public void executePrintSingleLineWhenStdinSingleLineSuccess() throws Exception {
-        InputStream inputStream = new FileInputStream(fileWithOneLine);
-        assertEquals(TEXT_FILE_WITH_ONE_LINE, pasteApplication.mergeStdin(inputStream));
+        try (InputStream inputStream = new FileInputStream(fileWithOneLine)) {
+            assertEquals(ONE_LINE, pasteApplication.mergeStdin(inputStream));
+        }  catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -139,8 +142,11 @@ public class PasteApplicationTest {
      */
     @Test
     public void executePrintStdinMultipleLinesSuccess() throws Exception {
-        InputStream inputStream = new FileInputStream(fileWithTwoLines);
-        assertEquals(TEXT_FILE_WITH_TWO_LINES, pasteApplication.mergeStdin(inputStream));
+        try (InputStream inputStream = new FileInputStream(fileWithTwoLines)) {
+            assertEquals(TWO_LINES, pasteApplication.mergeStdin(inputStream));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -149,9 +155,15 @@ public class PasteApplicationTest {
      */
     @Test
     public void executeMergeStdinAndSingleFileSuccess() throws Exception {
-        InputStream inputStream = new FileInputStream(fileWithTwoLines);
-        String[] fileNames = { fileWithTwoLines.toPath().toString() };
-        String expectedOutput = "First Line" + "\t" + "First Line" + "\n" + "Second Line" + "\t" + "Second Line";
-        assertEquals(expectedOutput, pasteApplication.mergeFileAndStdin(inputStream, fileNames));
+        try (InputStream inputStream = new FileInputStream(fileWithTwoLines)) {
+            String firstLine = "First Line";
+            String secondLine = "Second Line";
+            String[] fileNames = { fileWithTwoLines.toPath().toString() };
+            String expectedOutput = firstLine + "\t" + firstLine + System.lineSeparator() + secondLine + "\t" + secondLine;
+            assertEquals(expectedOutput, pasteApplication.mergeFileAndStdin(inputStream, fileNames));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
