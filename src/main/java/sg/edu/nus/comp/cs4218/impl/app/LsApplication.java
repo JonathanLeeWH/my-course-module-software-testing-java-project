@@ -21,6 +21,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FILE_SEP;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_CURR_DIR;
 
+@SuppressWarnings({"PMD.GodClass","PMD.ExcessiveMethodLength"})
 public class LsApplication implements LsInterface {
 
     private final static String PATH_CURR_DIR = STRING_CURR_DIR + CHAR_FILE_SEP;
@@ -28,17 +29,32 @@ public class LsApplication implements LsInterface {
     @Override
     public String listFolderContent(Boolean isFoldersOnly, Boolean isRecursive,
                                     String... folderName) throws LsException {
+
+        if(folderName.length == 0 && isFoldersOnly){
+            return ".";
+        }
         if (folderName.length == 0 && !isRecursive) {
             return listCwdContent(isFoldersOnly);
         }
 
         List<Path> paths;
+
         if (folderName.length == 0 && isRecursive) {
             String[] directories = new String[1];
             directories[0] = EnvironmentHelper.currentDirectory;
             paths = resolvePaths(directories);
+            return buildResultForBaseDir(paths, isFoldersOnly, isRecursive);
         } else {
             paths = resolvePaths(folderName);
+            if(paths.size() == 1 && !isRecursive) {
+                Path path = paths.get(0);
+                File currFile = new File(path.toString());
+
+                if(currFile.isDirectory() && !isFoldersOnly){
+                    EnvironmentHelper.currentDirectory = paths.get(0).toString();
+                    return listCwdContent(isFoldersOnly);
+                }
+            }
         }
 
         return buildResult(paths, isFoldersOnly, isRecursive);
@@ -106,23 +122,37 @@ public class LsApplication implements LsInterface {
         StringBuilder result = new StringBuilder();
         for (Path path : paths) {
             try {
-                List<Path> contents = getContents(path, isFoldersOnly);
-                String formatted = formatContents(contents);
-                String relativePath = getRelativeToCwd(path).toString();
-                result.append(StringUtils.isBlank(relativePath) ? PATH_CURR_DIR : relativePath);
-                result.append(":\n");
-                result.append(formatted);
+                File file = new File(path.toString());
+                if(file.isDirectory() && !isFoldersOnly) {
+                    List<Path> contents = getContents(path, isFoldersOnly);
+                    String formatted = formatContents(contents);
+                    buildRelativePath(isRecursive, result, path);
+                    result.append(":" + System.lineSeparator());
+                    result.append(formatted);
 
-                if (!formatted.isEmpty()) {
-                    // Empty directories should not have an additional new line
+                    if (!formatted.isEmpty()) {
+                        // Empty directories should not have an additional new line
+                        result.append(StringUtils.STRING_NEWLINE);
+                    }
                     result.append(StringUtils.STRING_NEWLINE);
-                }
-                result.append(StringUtils.STRING_NEWLINE);
 
-                // RECURSE!
-                if (isRecursive) {
-                    result.append(buildResult(contents, isFoldersOnly, isRecursive));
+                    // RECURSE!
+                    if (isRecursive) {
+                        List<Path> contentRe = new ArrayList<Path>();
+                        buildRecurse(isFoldersOnly, isRecursive, result, contents, contentRe);
+                        result.append(System.lineSeparator());
+                    }
+
                 }
+                else if (file.isDirectory() && isFoldersOnly) {
+                    result.append(file.getName());
+                    result.append(System.lineSeparator());
+                }
+                else{
+                    result.append(file.getName());
+                    result.append(System.lineSeparator());
+                }
+
             } catch (InvalidDirectoryException e) {
                 // NOTE: This is pretty hackish IMO - we should find a way to change this
                 // If the user is in recursive mode, and if we resolve a file that isn't a directory
@@ -132,12 +162,100 @@ public class LsApplication implements LsInterface {
                 // do we do then?
                 if (!isRecursive) {
                     result.append(e.getMessage());
-                    result.append('\n');
+                    result.append(System.lineSeparator());
                 }
             }
         }
 
         return result.toString().trim();
+    }
+
+    private String buildResultForBaseDir(List<Path> paths, Boolean isFoldersOnly, Boolean isRecursive) {
+        StringBuilder result = new StringBuilder();
+        for (Path path : paths) {
+            try {
+                File file = new File(path.toString());
+                if(file.isDirectory() && !isFoldersOnly) {
+                    List<Path> contents = getContents(path, isFoldersOnly);
+                    String formatted = formatContents(contents);
+                    if(!path.toString().equals(EnvironmentHelper.currentDirectory)){
+                        buildRelativePathForBaseDir(isRecursive, result, path);
+                        result.append(":"+ System.lineSeparator());
+                    }
+                    result.append(formatted);
+
+                    if (!formatted.isEmpty()) {
+                        // Empty directories should not have an additional new line
+                        result.append(StringUtils.STRING_NEWLINE);
+                    }
+                    result.append(StringUtils.STRING_NEWLINE);
+
+                    // RECURSE!
+                    if (isRecursive) {
+                        List<Path> contentRe = new ArrayList<Path>();
+                        buildRecurseForNoArgs(isFoldersOnly, isRecursive, result, contents, contentRe);
+                        result.append(System.lineSeparator());
+                    }
+
+                }
+                else if (file.isDirectory() && isFoldersOnly) {
+                    result.append(file.getName());
+                    result.append(System.lineSeparator());
+                }
+                else{
+                    result.append(file.getName());
+                    result.append(System.lineSeparator());
+                }
+
+            } catch (InvalidDirectoryException e) {
+                // NOTE: This is pretty hackish IMO - we should find a way to change this
+                // If the user is in recursive mode, and if we resolve a file that isn't a directory
+                // we should not spew the error message.
+                //
+                // However the user might have written a command like `ls invalid1 valid1 -R`, what
+                // do we do then?
+                if (!isRecursive) {
+                    result.append(e.getMessage());
+                    result.append(System.lineSeparator() );
+                }
+            }
+        }
+
+        return result.toString().trim();
+    }
+
+    private void buildRelativePath(Boolean isRecursive, StringBuilder result, Path path) {
+        String relativePath = getRelativeToCwd(path).toString();
+        if(isRecursive) {
+            relativePath = System.lineSeparator() +relativePath;
+        }
+        result.append(StringUtils.isBlank(relativePath) ? PATH_CURR_DIR :relativePath);
+    }
+
+    private void buildRelativePathForBaseDir(Boolean isRecursive, StringBuilder result, Path path) {
+        String relativePath = getRelativeToCwd(path).toString();
+        relativePath = System.lineSeparator() + PATH_CURR_DIR +relativePath;
+        result.append(StringUtils.isBlank(relativePath) ? PATH_CURR_DIR : relativePath);
+    }
+
+    private void buildRecurse(Boolean isFoldersOnly, Boolean isRecursive, StringBuilder result, List<Path> contents, List<Path> contentRe) {
+        for(Path content : contents) {
+            File fileCheck = new File(content.toString());
+            if(fileCheck.isDirectory()) {
+                contentRe.add(content);
+            }
+        }
+        result.append(buildResult(contentRe, isFoldersOnly, isRecursive));
+    }
+
+    private void buildRecurseForNoArgs(Boolean isFoldersOnly, Boolean isRecursive, StringBuilder result, List<Path> contents, List<Path> contentRe) {
+        for(Path content : contents) {
+            File fileCheck = new File(content.toString());
+            if(fileCheck.isDirectory()) {
+                contentRe.add(content);
+            }
+        }
+        result.append(buildResultForBaseDir(contentRe, isFoldersOnly, isRecursive));
     }
 
     /**
@@ -155,7 +273,7 @@ public class LsApplication implements LsInterface {
         StringBuilder result = new StringBuilder();
         for (String fileName : fileNames) {
             result.append(fileName);
-            result.append('\n');
+            result.append(System.lineSeparator());
         }
 
         return result.toString().trim();
