@@ -38,6 +38,7 @@ class RmApplicationTest {
 
     @AfterEach
     void tearDown() {
+        // Reset EnvironmentHelper current directory to default.
         EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
         environmentHelper.currentDirectory = System.getProperty("user.dir");
     }
