@@ -137,13 +137,9 @@ public class RmApplication implements RmInterface {
         } else {
             try {
                 remove(emptyFolder, recursive, fileNames);
-            } catch (RmException rmException) {
-                throw rmException;
             } catch(Exception e) {
                 throw (RmException) new RmException(e.getMessage()).initCause(e);
             }
         }
-
-
     }
 }

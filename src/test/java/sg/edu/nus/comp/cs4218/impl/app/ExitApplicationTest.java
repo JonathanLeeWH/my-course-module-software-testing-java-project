@@ -4,7 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.ExitException;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class ExitApplicationTest {
 
@@ -16,14 +20,13 @@ class ExitApplicationTest {
     }
 
     /**
-     * Tests run method. Parameters not tested since they are not used.
-     * In this test case, the parameters are set to null for simplicity.
+     * Tests run method.
      * Expected: Throws ExitException with exit code 0.
      */
     @Test
     void run() {
         Exception exception = assertThrows(ExitException.class, () -> {
-            exitApplication.run(null, null, null); // Since parameters are not used they are set to null for simplicity.
+            exitApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
         });
 
         assertEquals(new ExitException("0").getMessage(), exception.getMessage());
