@@ -5,11 +5,16 @@ import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NO_OSTREAM;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_ARGS;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyByte;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 class EchoApplicationTest {
@@ -85,7 +90,7 @@ class EchoApplicationTest {
     @Test
     void runWhenInputOutputStreamIsNullShouldThrowEchoException() {
         Exception exception = assertThrows(EchoException.class, () -> {
-            echoApplication.run(new String[]{}, System.in, null);
+            echoApplication.run(new String[]{}, mock(InputStream.class), null);
         });
 
         assertEquals(new EchoException(ERR_NO_OSTREAM).getMessage(), exception.getMessage());
@@ -98,7 +103,7 @@ class EchoApplicationTest {
     @Test
     void runWhenInputArgsIsNullShouldThrowEchoException() {
         Exception exception = assertThrows(EchoException.class, () -> {
-            echoApplication.run(null, System.in, outputStream);
+            echoApplication.run(null, mock(InputStream.class), outputStream);
         });
 
         assertEquals(new EchoException(ERR_NULL_ARGS).getMessage(), exception.getMessage());
@@ -113,7 +118,7 @@ class EchoApplicationTest {
     void runWhenInputArgsIsEmptyShouldWriteNewLine() throws EchoException {
         String[] inputArgs = {};
 
-        echoApplication.run(inputArgs, System.in, outputStream);
+        echoApplication.run(inputArgs, mock(InputStream.class), outputStream);
 
         assertEquals(STRING_NEWLINE, outputStream.toString());
     }
@@ -128,7 +133,7 @@ class EchoApplicationTest {
         String[] inputArgs = {TEST_STRING_1};
         String expected = TEST_STRING_1 + STRING_NEWLINE;
 
-        echoApplication.run(inputArgs, System.in, outputStream);
+        echoApplication.run(inputArgs, mock(InputStream.class), outputStream);
 
         assertEquals(expected, outputStream.toString());
     }
@@ -143,7 +148,7 @@ class EchoApplicationTest {
         String[] inputArgs = {TEST_STRING_1, TEST_STRING_2};
         String expected = TEST_STRING_1 + WHITE_SPACE + TEST_STRING_2 + STRING_NEWLINE;
 
-        echoApplication.run(inputArgs, System.in, outputStream);
+        echoApplication.run(inputArgs, mock(InputStream.class), outputStream);
 
         assertEquals(expected, outputStream.toString());
     }
@@ -158,7 +163,7 @@ class EchoApplicationTest {
         String[] inputArgs = {TEST_STRING_3};
         String expected = TEST_STRING_3 + STRING_NEWLINE;
 
-        echoApplication.run(inputArgs, System.in, outputStream);
+        echoApplication.run(inputArgs, mock(InputStream.class), outputStream);
 
         assertEquals(expected, outputStream.toString());
     }
@@ -173,8 +178,24 @@ class EchoApplicationTest {
         String[] inputArgs = {TEST_STRING_4};
         String expected = TEST_STRING_4 + STRING_NEWLINE;
 
-        echoApplication.run(inputArgs, System.in, outputStream);
+        echoApplication.run(inputArgs, mock(InputStream.class), outputStream);
 
         assertEquals(expected, outputStream.toString());
+    }
+
+    /**
+     * Tests run method when IOException occurs.
+     * Expected: Throws EchoException with ERR_IO_EXCEPTION
+     */
+    @Test
+    void runWhenIOExceptionOccursShouldThrowEchoException() throws IOException {
+        String[] inputArgs = {};
+        try (OutputStream mockOutputStream = mock(OutputStream.class)) {
+            doThrow(IOException.class).when(mockOutputStream).write(any(byte[].class));
+            EchoException exception = assertThrows(EchoException.class, () -> {
+                echoApplication.run(inputArgs, mock(InputStream.class), mockOutputStream);
+            });
+            assertEquals(new EchoException(ERR_IO_EXCEPTION).getMessage(), exception.getMessage());
+        }
     }
 }
