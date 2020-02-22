@@ -182,7 +182,7 @@ public class MvApplicationTest {
         String fileSrcString = file1.toString();
         String fileDestString = file2.toString();
 
-        String[] constructArgs = new String [] {"-n",fileSrcString,fileDestString};;
+        String[] constructArgs = new String [] {"-n",fileSrcString,fileDestString};
 
 
         Files.createFile(file1);
