@@ -86,4 +86,46 @@ class SequenceCommandTest {
 
         assertEquals(new RmException(ERR_GENERAL).getMessage() + STRING_NEWLINE, outputStream.toString());
     }
+
+    /**
+     * Tests getCommands method when the list of commands passed to SequenceCommand constructor is nonempty only one element.
+     * We do not test if the list commands is empty given that CommandBuilder.java which calls SequenceCommand,
+     * the list passed to the SequenceCommand argument cannot be empty.
+     * Expected: Returns commands list with that element.
+     */
+    @Test
+    void getCommandsWhenListOfCommandsPassedToSequenceCommandConstructorIsNonEmptyOnlyOneElement() {
+        Command mockCommand = mock(Command.class);
+        spyCommandsList.add(mockCommand);
+        verify(spyCommandsList).add(mockCommand);
+        sequenceCommand = new SequenceCommand(spyCommandsList);
+
+        List<Command> expected = new LinkedList<>();
+        expected.add(mockCommand);
+
+        assertEquals(expected, sequenceCommand.getCommands());
+    }
+
+    /**
+     * Tests getCommands method when the list of commands passed to SequenceCommand constructor is nonempty more than one element.
+     * We do not test if the list commands is empty given that CommandBuilder.java which calls SequenceCommand,
+     * the list passed to the SequenceCommand argument cannot be empty.
+     * Expected: Returns commands list with those elements.
+     */
+    @Test
+    void getCommandsWhenListOfCommandsPassedToSequenceCommandConstructorIsNonEmptyMoreThanOneElements() {
+        Command mockCommand1 = mock(Command.class);
+        Command mockCommand2 = mock(Command.class);
+        spyCommandsList.add(mockCommand1);
+        verify(spyCommandsList).add(mockCommand1);
+        spyCommandsList.add(mockCommand2);
+        verify(spyCommandsList).add(mockCommand2);
+        sequenceCommand = new SequenceCommand(spyCommandsList);
+
+        List<Command> expected = new LinkedList<>();
+        expected.add(mockCommand1);
+        expected.add(mockCommand2);
+
+        assertEquals(expected, sequenceCommand.getCommands());
+    }
 }
