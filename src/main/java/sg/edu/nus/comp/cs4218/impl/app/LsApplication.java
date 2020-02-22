@@ -21,6 +21,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FILE_SEP;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_CURR_DIR;
 
+@SuppressWarnings({"PMD.GodClass","PMD.ExcessiveMethodLength"})
 public class LsApplication implements LsInterface {
 
     private final static String PATH_CURR_DIR = STRING_CURR_DIR + CHAR_FILE_SEP;

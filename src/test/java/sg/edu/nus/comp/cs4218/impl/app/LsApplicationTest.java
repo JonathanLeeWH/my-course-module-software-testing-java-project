@@ -59,9 +59,9 @@ public class LsApplicationTest {
         mockOutputStream = Mockito.mock(OutputStream.class);
 
         folders = new ArrayList<>();
-        File dir = new File(FOLDER_PATH + File.separator + EMPTY_FOLDER_NAME);
-        folders.add(dir);
-        dir.mkdirs();
+        File directory = new File(FOLDER_PATH + File.separator + EMPTY_FOLDER_NAME);
+        folders.add(directory);
+        directory.mkdirs();
 
         createFileFolder(L1_FOLDER_1, true);
         createFileFolder(L2_FOLDER_1, true);
