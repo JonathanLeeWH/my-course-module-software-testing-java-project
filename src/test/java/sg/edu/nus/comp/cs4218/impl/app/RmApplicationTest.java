@@ -109,8 +109,8 @@ class RmApplicationTest {
         Files.createFile(file);
         assertTrue(Files.exists(file)); // check if file exist.
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
 
@@ -130,8 +130,8 @@ class RmApplicationTest {
 
         assertFalse(Files.exists(file));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         Exception exception = assertThrows(RmException.class, () -> {
             rmApplication.remove(false, false, fileNames);
@@ -154,8 +154,8 @@ class RmApplicationTest {
 
         assertTrue(Files.exists(file));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         rmApplication.remove(false, false, fileNames);
@@ -179,8 +179,8 @@ class RmApplicationTest {
 
         assertTrue(Files.isDirectory(emptyFolder));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -210,8 +210,8 @@ class RmApplicationTest {
         assertTrue(Files.exists(file1));
         assertTrue(Files.exists(file2));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         rmApplication.remove(false, false, fileNames);
@@ -240,8 +240,8 @@ class RmApplicationTest {
         assertTrue(Files.exists(file));
         assertTrue(Files.isDirectory(emptyFolder));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -276,8 +276,8 @@ class RmApplicationTest {
         assertTrue(Files.isDirectory(nonEmptyFolder));
         assertTrue(Files.exists(fileInFolder));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -312,8 +312,8 @@ class RmApplicationTest {
         assertTrue(Files.isDirectory(folder));
         assertFalse(Files.exists(file2)); // file2 does not exist.
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with no flags
         Exception exception = assertThrows(RmException.class, () -> {
@@ -342,8 +342,8 @@ class RmApplicationTest {
 
         assertTrue(Files.isDirectory(emptyFolder));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with -d flag
         rmApplication.remove(true, false, fileNames);
@@ -369,8 +369,8 @@ class RmApplicationTest {
         assertTrue(Files.isDirectory(nonEmptyFolder));
         assertTrue(Files.exists(fileInFolder));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with -d flag
         Exception exception = assertThrows(RmException.class, () -> {
@@ -401,8 +401,8 @@ class RmApplicationTest {
         assertTrue(Files.isDirectory(nonEmptyFolder));
         assertTrue(Files.exists(fileInFolder));
 
-        EnvironmentHelper mockEnvironmentHelper = mock(EnvironmentHelper.class);
-        mockEnvironmentHelper.currentDirectory = tempDir.toString();
+        EnvironmentHelper environmentHelper = mock(EnvironmentHelper.class);
+        environmentHelper.currentDirectory = tempDir.toString();
 
         // rm with -r flag
         rmApplication.remove(false, true, fileNames);
