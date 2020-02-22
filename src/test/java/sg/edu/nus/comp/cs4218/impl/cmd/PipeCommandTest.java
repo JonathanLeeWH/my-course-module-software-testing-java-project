@@ -8,6 +8,7 @@ import sg.edu.nus.comp.cs4218.exception.ShellException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +22,7 @@ class PipeCommandTest {
 
     @BeforeEach
     void setUp() {
-        spyCallCommands = spy(ArrayList.class);
+        spyCallCommands = spy(new LinkedList<>());
     }
 
     /**
