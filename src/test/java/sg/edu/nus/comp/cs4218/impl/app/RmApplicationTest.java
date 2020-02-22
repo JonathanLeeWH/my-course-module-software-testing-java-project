@@ -83,18 +83,6 @@ class RmApplicationTest {
     }
 
     /**
-     * Tests run method when RmException is catch from remove method executed in run method.
-     * Expected: Throws RmException.
-     */
-    @Test
-    void runWhenRemoveThrowsRmExceptionShouldThrowRmException() throws Exception {
-        String[] argsList = {FILE_NAME_1, FILE_NAME_2};
-        assertThrows(RmException.class, () -> {
-           rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
-        });
-    }
-
-    /**
      * Tests run method when Exception is catch from remove method executed in run method.
      * Expected: Throws RmException.
      */
