@@ -136,6 +136,7 @@ public class SedApplication implements SedInterface {
 
     private String replaceString(String line, String regexp, String replacement, int replacementIndex) {
         int index = 0;
+        String space = " ";
         String[] words = line.split("\\s+", 0);
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < words.length; i++) {
@@ -147,7 +148,7 @@ public class SedApplication implements SedInterface {
             }
             stringBuilder.append(words[i]);
             if (i!= words.length-1) {
-                stringBuilder.append(" ");
+                stringBuilder.append(space);
             }
         }
         return stringBuilder.toString();
