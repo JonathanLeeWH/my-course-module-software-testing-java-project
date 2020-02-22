@@ -19,13 +19,11 @@ class ArgsParserTest {
     private static final String VALID_NON_FLAG_1 = "hello";
 
     private ArgsParser argsParser;
-    private ArgsParser spyArgsParser;
 
     @BeforeEach
     void setUp() {
         argsParser = new ArgsParser();
         argsParser.legalFlags.addAll(Arrays.asList(VALID_FLAG_1, VALID_FLAG_2));
-        spyArgsParser = spy(ArgsParser.class);
     }
 
     /**
@@ -37,7 +35,6 @@ class ArgsParserTest {
     @Test
     void parseWhenAtLeastOneIllegalFlagShouldThrowInvalidArgsException() throws InvalidArgsException {
         String[] argsList = {CHAR_FLAG_PREFIX + ILLEGAL_FLAG};
-        doThrow(new InvalidArgsException(ILLEGAL_FLAG_MSG + ILLEGAL_FLAG)).when(spyArgsParser).validateArgs();
         InvalidArgsException exception = assertThrows(InvalidArgsException.class, () -> {
             argsParser.parse(argsList);
         });
