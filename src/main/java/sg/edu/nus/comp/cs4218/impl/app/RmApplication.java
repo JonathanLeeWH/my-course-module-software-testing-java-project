@@ -143,7 +143,5 @@ public class RmApplication implements RmInterface {
                 throw (RmException) new RmException(e.getMessage()).initCause(e);
             }
         }
-
-
     }
 }
