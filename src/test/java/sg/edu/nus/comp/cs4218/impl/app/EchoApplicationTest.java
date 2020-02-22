@@ -190,11 +190,12 @@ class EchoApplicationTest {
     @Test
     void runWhenIOExceptionOccursShouldThrowEchoException() throws IOException {
         String[] inputArgs = {};
-        OutputStream mockOutputStream = mock(OutputStream.class);
-        doThrow(IOException.class).when(mockOutputStream).write(any(byte[].class));
-        EchoException exception = assertThrows(EchoException.class, () -> {
-            echoApplication.run(inputArgs, mock(InputStream.class), mockOutputStream);
-        });
-        assertEquals(new EchoException(ERR_IO_EXCEPTION).getMessage(), exception.getMessage());
+        try (OutputStream mockOutputStream = mock(OutputStream.class)) {
+            doThrow(IOException.class).when(mockOutputStream).write(any(byte[].class));
+            EchoException exception = assertThrows(EchoException.class, () -> {
+                echoApplication.run(inputArgs, mock(InputStream.class), mockOutputStream);
+            });
+            assertEquals(new EchoException(ERR_IO_EXCEPTION).getMessage(), exception.getMessage());
+        }
     }
 }
