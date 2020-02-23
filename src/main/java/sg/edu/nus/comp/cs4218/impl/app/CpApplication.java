@@ -3,9 +3,16 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import sg.edu.nus.comp.cs4218.app.CpInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CpException;
+import sg.edu.nus.comp.cs4218.exception.RmException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 public class CpApplication implements CpInterface {
     /**
@@ -33,11 +40,11 @@ public class CpApplication implements CpInterface {
     }
 
     /**
-     * Runs application with specified input data and specified output stream.
-     *
-     * @param args
-     * @param stdin
-     * @param stdout
+     * Runs CpApplication with specified input data and specified output stream.
+     * @param args Array of arguments for the CpApplication
+     * @param stdin An InputStream, not used.
+     * @param stdout An OutputStream, not used.
+     * @throws CpException
      */
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws CpException {
