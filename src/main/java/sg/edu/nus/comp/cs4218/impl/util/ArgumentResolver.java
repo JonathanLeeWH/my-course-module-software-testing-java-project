@@ -94,6 +94,14 @@ public class ArgumentResolver {
                             RegexArgument firstOutputArg = subOutputSegment.remove(0);
                             appendParsedArgIntoSegment(parsedArgsSegment, firstOutputArg);
                         }
+                        else {
+                            // Note that this is a naive impln
+                            // This is basically taking the result from the suboutput
+                            // and placed it inside the parsedArgsSegment
+                            for (RegexArgument segment: subOutputSegment) {
+                                appendParsedArgIntoSegment(parsedArgsSegment, segment);
+                            }
+                        }
 
                     } else {
                         // don't tokenize subCommand output
