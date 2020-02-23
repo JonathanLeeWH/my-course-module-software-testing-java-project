@@ -38,7 +38,15 @@ public class CdApplication implements CdInterface {
         if (args == null) {
             throw new CdException(ERR_NULL_ARGS);
         }
-        changeToDirectory(args[0]);
+
+        if (args.length == 0) {
+            throw new CdException(ERR_MISSING_ARG);
+        } else if (args.length == 1) {
+            changeToDirectory(args[0]);
+        } else {
+            throw new CdException(ERR_TOO_MANY_ARGS);
+        }
+
     }
 
     private String getNormalizedAbsolutePath(String pathStr) throws CdException {
