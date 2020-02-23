@@ -50,19 +50,6 @@ public class PipeCommand implements Command {
                 absAppException = e;
             } catch (ShellException e) {
                 shellException = e;
-            } finally {
-                try {
-                    nextInputStream = null;
-                    nextOutputStream = null;
-                    if (nextInputStream != null) {
-                        nextInputStream.close();
-                    }
-                    if (nextOutputStream != null) {
-                        nextOutputStream.close();
-                    }
-                } catch (IOException e) {
-                    throw (ShellException) new ShellException(ERR_IO_EXCEPTION).initCause(e);
-                }
             }
         }
         if (absAppException != null) {
