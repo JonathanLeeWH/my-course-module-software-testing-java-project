@@ -118,7 +118,7 @@ public class LsApplication implements LsInterface {
      * @param isRecursive   - recursive mode, repeatedly ls the child directories
      * @return String to be written to output stream.
      */
-    private String buildResult(List<Path> paths, Boolean isFoldersOnly, Boolean isRecursive) {
+    private String buildResult(List<Path> paths, Boolean isFoldersOnly, Boolean isRecursive) throws LsException {
         StringBuilder result = new StringBuilder();
         for (Path path : paths) {
             try {
@@ -149,6 +149,9 @@ public class LsApplication implements LsInterface {
                     result.append(System.lineSeparator());
                 }
                 else{
+                    if(!file.exists()) {
+                        throw (LsException) new LsException(NO_FILE_OR_FOLDER);
+                    }
                     result.append(file.getName());
                     result.append(System.lineSeparator());
                 }
@@ -238,7 +241,7 @@ public class LsApplication implements LsInterface {
         result.append(StringUtils.isBlank(relativePath) ? PATH_CURR_DIR : relativePath);
     }
 
-    private void buildRecurse(Boolean isFoldersOnly, Boolean isRecursive, StringBuilder result, List<Path> contents, List<Path> contentRe) {
+    private void buildRecurse(Boolean isFoldersOnly, Boolean isRecursive, StringBuilder result, List<Path> contents, List<Path> contentRe) throws LsException {
         for(Path content : contents) {
             File fileCheck = new File(content.toString());
             if(fileCheck.isDirectory()) {
