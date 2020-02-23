@@ -44,10 +44,10 @@ public class CutApplication implements CutInterface {
 
         try {
             if ((isCharPos) && (isBytePos)) {
-                throw new CutException(ERR_TOO_MANY_ARGS);
+                throw new Exception(ERR_TOO_MANY_ARGS);
             }
             if ((!isCharPos) && (!isBytePos)) {
-                throw new CutException(ERR_MISSING_ARG);
+                throw new Exception(ERR_MISSING_ARG);
             }
             if (files == null) {
                 output.append(cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin));

@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static sg.edu.nus.comp.cs4218.impl.parser.ArgsParser.ILLEGAL_FLAG_MSG;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 class CutApplicationTest {
@@ -53,9 +54,17 @@ class CutApplicationTest {
     }
 
     @Test
+    void testRunWithInvalidOption() {
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(
+                Arrays.asList("-x", "6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout
+        ));
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ILLEGAL_FLAG_MSG + "x");
+    }
+
+    @Test
     void testRunUsingWithoutByteAndCharPos() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(
-                Arrays.asList("6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout
+                Arrays.asList("6", testFile1.toFile().getPath()).toArray(new String[2]), ourTestStdin, ourTestStdout
         ));
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_MISSING_ARG);
     }
@@ -65,11 +74,18 @@ class CutApplicationTest {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(
                 Arrays.asList("-b","-c", "6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout
         ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_TOO_MANY_ARGS);
     }
 
     @Test
-    void testRunSuccess() throws CutException {
+    void testRunUsingStdin() throws CutException {
+        cutApplication.run(Arrays.asList("-b", "1").toArray(new String[2]), ourTestStdin, ourTestStdout);
+        String expectedResult = "d";
+        assertEquals(expectedResult, ourTestStdout.toString());
+    }
+
+    @Test
+    void testRunUsingFiles() throws CutException {
         cutApplication.run(Arrays.asList("-c", "6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout);
         String expectedResult = "8\n" + "m\n" + "e\n" + "c\n" + "r\n" + "a";
         assertEquals(expectedResult, ourTestStdout.toString());
