@@ -127,7 +127,7 @@ public class RmApplication implements RmInterface {
      * @throws AbstractApplicationException
      */
     @Override
-    public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
+    public void run(String[] args, InputStream stdin, OutputStream stdout) throws RmException {
         if (args == null) {
             throw new RmException(ERR_NULL_ARGS);
         }

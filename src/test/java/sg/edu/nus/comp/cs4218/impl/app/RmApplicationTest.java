@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
-import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
 import sg.edu.nus.comp.cs4218.exception.RmException;
 
@@ -49,7 +48,7 @@ class RmApplicationTest {
      */
     @Test
     void runWhenInputArgsIsNullThrowsRmException() {
-        AbstractApplicationException exception = assertThrows(RmException.class, () -> {
+        RmException exception = assertThrows(RmException.class, () -> {
             rmApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
         });
 
@@ -62,7 +61,7 @@ class RmApplicationTest {
      */
     @Test
     void runWhenInputArgsIsEmptyThrowsRmException() {
-        AbstractApplicationException exception = assertThrows(RmException.class, () -> {
+        RmException exception = assertThrows(RmException.class, () -> {
             rmApplication.run(new String[] {}, mock(InputStream.class), mock(OutputStream.class));
         });
 
@@ -76,7 +75,7 @@ class RmApplicationTest {
     @Test
     void runWhenInputArgsContainsIllegalFlagShouldThrowRmException() {
         String[] argsList = {CHAR_FLAG_PREFIX + ILLEGAL_FLAG};
-        AbstractApplicationException exception = assertThrows(RmException.class, () -> {
+        RmException exception = assertThrows(RmException.class, () -> {
             rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
         });
         assertEquals(new RmException(new InvalidArgsException(ILLEGAL_FLAG_MSG + ILLEGAL_FLAG).getMessage()).getMessage(), exception.getMessage());
@@ -87,7 +86,7 @@ class RmApplicationTest {
      * Expected: Throws RmException.
      */
     @Test
-    void runWhenRemoveThrowsExceptionShouldThrowRmException() throws Exception {
+    void runWhenRemoveThrowsExceptionShouldThrowRmException() {
         String[] argsList = {FILE_NAME_1, FILE_NAME_2};
         assertThrows(Exception.class, () -> {
             rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
