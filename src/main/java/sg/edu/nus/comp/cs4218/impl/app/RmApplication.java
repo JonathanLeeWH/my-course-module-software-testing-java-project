@@ -25,7 +25,7 @@ public class RmApplication implements RmInterface {
      * @throws Exception  
      */
     @Override
-    public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws Exception {
+    public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws RmException {
         RmException rmException = null;
         for (String current : fileName) {
             File node = IOUtils.resolveFilePath(current).toFile();
@@ -61,7 +61,7 @@ public class RmApplication implements RmInterface {
      * @param fileName input file to be deleted.
      * @throws Exception
      */
-    public void removeFileOnly(File fileName) throws Exception {
+    public void removeFileOnly(File fileName) throws RmException {
         try {
             if (!fileName.isDirectory()) {
                 Files.delete(fileName.toPath());
@@ -76,7 +76,7 @@ public class RmApplication implements RmInterface {
      * @param fileName  input file to be deleted.
      * @throws Exception
      */
-    public void removeFileAndEmptyFolderOnly(File fileName) throws Exception {
+    public void removeFileAndEmptyFolderOnly(File fileName) throws RmException {
         try {
             Files.delete(fileName.toPath());
         } catch (DirectoryNotEmptyException e) {
@@ -91,7 +91,7 @@ public class RmApplication implements RmInterface {
      * @param fileName input file to be deleted.
      * @throws Exception
      */
-    public void removeFilesAndFolderContent(File fileName) throws Exception {
+    public void removeFilesAndFolderContent(File fileName) throws RmException {
         if (fileName.isDirectory()) {
             File[] contents = fileName.listFiles();
             if (contents != null) {
@@ -146,11 +146,7 @@ public class RmApplication implements RmInterface {
         if (fileNames.length == 0) {
             throw new RmException(ERR_MISSING_ARG);
         } else {
-            try {
-                remove(emptyFolder, recursive, fileNames);
-            } catch(Exception e) {
-                throw (RmException) new RmException(e.getMessage()).initCause(e);
-            }
+            remove(emptyFolder, recursive, fileNames);
         }
     }
 }
