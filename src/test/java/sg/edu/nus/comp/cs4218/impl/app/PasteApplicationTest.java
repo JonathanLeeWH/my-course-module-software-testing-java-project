@@ -86,24 +86,6 @@ public class PasteApplicationTest {
         }
     }
 
-
-    /**
-     *  Test run when dash is not in the first argument.
-     *  Expected: Throws FileNotFound Exception
-     */
-    @Test
-    public void runDashInFirstArgumentShouldThrowPasteException() {
-        String[] args = {"-", "ok.txt"};
-        try (InputStream inputStream = new FileInputStream(twoLinesFile)) {
-            assertThrows(PasteException.class, () -> {
-                pasteApplication.run(args, inputStream, outputStreamOne);
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     /**
      * Test mergeFile method when filename is empty.
      *  Expected: Throws FileNotFound Exception
@@ -139,18 +121,6 @@ public class PasteApplicationTest {
     }
 
     /**
-     * Test mergeFile method when filename is the name of a file with one line.
-     *  Expected: Returns a string of the file contents and terminates with a newline.
-     */
-    @Test
-    public void runOneSingleLineFileShouldPrintOneSingleLine() throws Exception {
-        String[] fileName = new String[1];
-        fileName[0] = oneLineFile.toPath().toString();
-        String actualOutput = pasteApplication.mergeFile(fileName);
-        assertEquals(ONE_LINE + System.lineSeparator(), actualOutput);
-    }
-
-    /**
      * Test mergeFile method when two filenames are given.
      *  Expected: Returns a string with the two file contents merged (tab-concatenated).
      */
@@ -178,6 +148,20 @@ public class PasteApplicationTest {
     }
 
     /**
+     * Test mergeStdin method when no filenames are given and Stdin contains only one file that has a single line.
+     *  Expected: Returns a string of the file contents and terminates with a newline.
+     */
+    @Test
+    public void runStdinSingleLineWithDashShouldPrintSingleLine() throws Exception {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = {"-"};
+            pasteApplication.run(args, inputStream, outputStreamTwo);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Test mergeStdin method when no filenames are given and Stdin contains only one file that has multiple lines.
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
@@ -191,13 +175,29 @@ public class PasteApplicationTest {
     }
 
     /**
+     * Test mergeStdin method when no filenames are given and Stdin contains only one file that has a single line.
+     *  Expected: Returns a string of the file contents and terminates with a newline.
+     */
+    @Test
+    public void runStdinMultiLineWithDashShouldPrintMergedContents() throws Exception {
+        String input = oneLineFile.toPath().toString() + " " + oneLineFile.toPath().toString();
+        try(InputStream inputStream = new ByteArrayInputStream(input.getBytes())) {
+            String[] args = {"-"};
+            pasteApplication.run(args, inputStream, outputStreamTwo);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Test mergeFileAndStdin method when one filename is given and Stdin contains only one file.
      *  Expected: Returns a string with the two file contents merged (tab-concatenated).
      */
     @Test
     public void runMergeStdinAndSingleFileShouldMergeAllFilesAndPrintMergedContents() throws Exception {
         String tab = "\t";
-        try (InputStream inputStream = new FileInputStream(twoLinesFile)) {
+        String input = twoLinesFile.toPath().toString();
+        try (InputStream inputStream = new ByteArrayInputStream(input.getBytes())) {
             String[] fileNames = { twoLinesFile.toPath().toString() };
             String expectedOutput = FIRST_LINE + tab + FIRST_LINE + System.lineSeparator()
                     + SECOND_LINE + tab + SECOND_LINE + System.lineSeparator();
