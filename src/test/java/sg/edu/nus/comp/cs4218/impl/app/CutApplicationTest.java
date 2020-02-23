@@ -49,7 +49,23 @@ class CutApplicationTest {
     @Test
     void testRunNullOutputStream() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(defaultCutArgs, ourTestStdin, null));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_NO_OSTREAM);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_NO_OSTREAM);
+    }
+
+    @Test
+    void testRunUsingWithoutByteAndCharPos() {
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(
+                Arrays.asList("6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout
+        ));
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_MISSING_ARG);
+    }
+
+    @Test
+    void testRunUsingByteAndCharPos() {
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(
+                Arrays.asList("-b","-c", "6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout
+        ));
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
     }
 
     @Test
@@ -62,23 +78,7 @@ class CutApplicationTest {
     /**
      * Test cut application using cutFromFiles()
      */
-    // Erronorous Test cases (14 cases)
-    @Test
-    void testCutFromFilesWithoutAnyPosFlags() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                false, false, false, 1, 5, testFile1.toFile().getPath()
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_MISSING_ARG);
-    }
-
-    @Test
-    void testCutFromFilesUsingByteAndCharPos() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, 1, 5, testFile1.toFile().getPath()
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
+    // Erronorous Test cases (10 cases)
     @Test
     void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndASingleFileWithStartNumLessThanZero() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
@@ -118,22 +118,6 @@ class CutApplicationTest {
                 "no-File.txt"
         ));
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_FILE_NOT_FOUND);
-    }
-
-    @Test
-    void testCutFromFilesUsingBytePosAndNumRangeAndASingleFileWithInvalidFilename() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, (int) 12.44, 15, "noFile.txt1"
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
-    @Test
-    void testCutFromFilesUsingCharPosAndNumRangeAndMultipleFilesWithAtLeastOneInvalidFilename() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, (int) 12.44, 15, testFile1.toFile().getPath(),
-                "noFile.txt1"
-        ));
     }
 
     @Test
@@ -727,24 +711,7 @@ class CutApplicationTest {
     /**
      * Test cut application using cutFromStdin()
      */
-    // Erronorous Test cases (9 cases)
-    @Test
-    void testCutFromStdinWithoutAnyPosFlags() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
-                false, false, false, 1, 5, ourTestStdin
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_MISSING_ARG);
-    }
-
-    @Test
-    void testCutFromStdinUsingByteAndCharPos() {
-        Throwable thrown =
-                assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
-                true, true, false, 1, 5, ourTestStdin
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
+    // Erronorous Test cases (7 cases)
     @Test
     void testCutFromStdinUsingBytePosAnd2CommaSeparatedNumAndValidInputStreamWithStartNumLessThanZero() {
         Throwable thrown =

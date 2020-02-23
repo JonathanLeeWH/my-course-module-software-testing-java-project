@@ -62,7 +62,6 @@ public class CutApplication implements CutInterface {
         try {
             if (!output.toString().isEmpty()) {
                 stdout.write(output.toString().getBytes());
-                stdout.write(STRING_NEWLINE.getBytes());
             }
         } catch (IOException e) {
             throw new CutException(e, ERR_WRITE_STREAM);
@@ -73,12 +72,6 @@ public class CutApplication implements CutInterface {
     public String cutFromFiles(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, String... fileName) throws Exception {
         if (fileName == null) {
             throw new CutException(ERR_GENERAL);
-        }
-        if ((isCharPo) && (isBytePo)) {
-            throw new CutException(ERR_TOO_MANY_ARGS);
-        }
-        if ((!isCharPo) && (!isBytePo)) {
-            throw new CutException(ERR_MISSING_ARG);
         }
         if ((startIdx <= 0) || (endIdx <= 0)) {
             throw new CutException(ERR_LESS_THAN_ZERO);
@@ -127,12 +120,6 @@ public class CutApplication implements CutInterface {
         if (stdin == null) {
             throw new CutException(ERR_NULL_STREAMS);
         }
-        if ((isCharPo) && (isBytePo)) {
-            throw new CutException(ERR_TOO_MANY_ARGS);
-        }
-        if ((!isCharPo) && (!isBytePo)) {
-            throw new CutException(ERR_MISSING_ARG);
-        }
         if ((startIdx <= 0) || (endIdx <= 0)) {
             throw new CutException(ERR_LESS_THAN_ZERO);
         }
@@ -179,6 +166,9 @@ public class CutApplication implements CutInterface {
             }
             else if (isRange) {
                 if (start <= end) {
+                    if ((start <= 0) || (start > line.length())) {
+                        start = 1;
+                    }
                     if (end > line.length()) {
                         end = line.length();
                     }
