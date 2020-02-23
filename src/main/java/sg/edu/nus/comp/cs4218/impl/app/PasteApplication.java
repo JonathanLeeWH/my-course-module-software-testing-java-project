@@ -21,7 +21,7 @@ public class PasteApplication implements PasteInterface {
      */
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws PasteException {
-        int hasFile = 0, hasStdin = 0, sum = 0;
+        int hasFile = 0, hasStdin = 0, sum = 0; // Let hasStdin be 0 when there is no stdin, and 1 when there is at least one stdin. Let hasFile be 0 when there is no file name, and 2 when there is at least one file name.
         if (args.length == 0) { // When there are no filenames provided (i.e. stdin provided)
             if (stdin == null) { // if stdin is empty
                 throw new PasteException(ERR_NULL_STREAMS);
@@ -34,8 +34,6 @@ public class PasteApplication implements PasteInterface {
         } else {
             List<String> filesNamesList = new ArrayList<>(); // Since total number of files is unknown, use ArrayList.
             /*
-              Let hasStdin be 0 when there is no stdin, and 1 when there is at least one stdin.
-              Let hasFile be 0 when there is no file name, and 2 when there is at least one file name.
               Let sum = hasStdin + hasFile.
               A sum of 1: means only standard inputs are present in the argument.
                        2: means only filenames are present in the argument.
@@ -80,7 +78,7 @@ public class PasteApplication implements PasteInterface {
      * @throws Exception
      */
     public String mergeStdin(InputStream stdin) throws Exception {
-        return paste(stdinToBufferedReaderArray(stdin));
+        return paste(stdinToBRArray(stdin));
     }
 
     /**
@@ -106,14 +104,14 @@ public class PasteApplication implements PasteInterface {
      * @throws Exception
      */
     public String mergeFileAndStdin(InputStream stdin, String... fileName) throws Exception {
-        BufferedReader[] stdinBufferedReaders = stdinToBufferedReaderArray(stdin);
-        int totalSize = fileName.length + stdinBufferedReaders.length;
+        BufferedReader[] stdinBR = stdinToBRArray(stdin);
+        int totalSize = fileName.length + stdinBR.length;
         BufferedReader[] bufferedReaders = new BufferedReader[totalSize];
-        for (int j = 0; j < stdinBufferedReaders.length; j++) {
-            bufferedReaders[j] = stdinBufferedReaders[j];
+        for (int j = 0; j < stdinBR.length; j++) {
+            bufferedReaders[j] = stdinBR[j];
         }
-        int k = 0;
-        for (int i = stdinBufferedReaders.length; i < totalSize; i++) {
+
+        for (int i = stdinBR.length, k = 0; i < totalSize; i++) {
             bufferedReaders[i] = new BufferedReader(new FileReader(fileName[k]));
             k++;
         }
@@ -161,7 +159,7 @@ public class PasteApplication implements PasteInterface {
         return stringBuilder.toString().concat(newLine);
     }
 
-    private BufferedReader[] stdinToBufferedReaderArray(InputStream stdin) throws IOException {
+    private BufferedReader[] stdinToBRArray(InputStream stdin) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stdin));
         StringTokenizer stringTokenizer = new StringTokenizer(bufferedReader.readLine());
         List<String> tokens = new ArrayList<>();
