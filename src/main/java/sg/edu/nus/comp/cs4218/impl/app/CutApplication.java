@@ -43,6 +43,12 @@ public class CutApplication implements CutInterface {
         String[] files = parser.getFileNames();
 
         try {
+            if ((isCharPos) && (isBytePos)) {
+                throw new CutException(ERR_TOO_MANY_ARGS);
+            }
+            if ((!isCharPos) && (!isBytePos)) {
+                throw new CutException(ERR_MISSING_ARG);
+            }
             if (files == null) {
                 output.append(cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin));
             }
@@ -68,24 +74,38 @@ public class CutApplication implements CutInterface {
         if (fileName == null) {
             throw new CutException(ERR_GENERAL);
         }
+        if ((isCharPo) && (isBytePo)) {
+            throw new CutException(ERR_TOO_MANY_ARGS);
+        }
+        if ((!isCharPo) && (!isBytePo)) {
+            throw new CutException(ERR_MISSING_ARG);
+        }
+        if ((startIdx <= 0) || (endIdx <= 0)) {
+            throw new CutException(ERR_LESS_THAN_ZERO);
+        }
 
         List<String> lines = new ArrayList<>();
         List<String> results;
         for (String file : fileName) {
-            File node = IOUtils.resolveFilePath(file).toFile();
-            if (!node.exists()) {
-                throw new CutException(ERR_FILE_NOT_FOUND);
+            if (file.equals("-")) {
+                //cutFromStdin(isCharPo, isBytePo, isRange, startIdx, endIdx, System.in);
             }
-            if (node.isDirectory()) {
-                throw new CutException(ERR_IS_DIR);
-            }
-            if (!node.canRead()) {
-                throw new CutException(ERR_NO_PERM);
-            }
+            else {
+                File node = IOUtils.resolveFilePath(file).toFile();
+                if (!node.exists()) {
+                    throw new CutException(ERR_FILE_NOT_FOUND);
+                }
+                if (node.isDirectory()) {
+                    throw new CutException(ERR_IS_DIR);
+                }
+                if (!node.canRead()) {
+                    throw new CutException(ERR_NO_PERM);
+                }
 
-            try (InputStream input = IOUtils.openInputStream(file)) {
-                lines.addAll(IOUtils.getLinesFromInputStream(input));
-                IOUtils.closeInputStream(input);
+                try (InputStream input = IOUtils.openInputStream(file)) {
+                    lines.addAll(IOUtils.getLinesFromInputStream(input));
+                    IOUtils.closeInputStream(input);
+                }
             }
         }
 
@@ -107,6 +127,16 @@ public class CutApplication implements CutInterface {
         if (stdin == null) {
             throw new CutException(ERR_NULL_STREAMS);
         }
+        if ((isCharPo) && (isBytePo)) {
+            throw new CutException(ERR_TOO_MANY_ARGS);
+        }
+        if ((!isCharPo) && (!isBytePo)) {
+            throw new CutException(ERR_MISSING_ARG);
+        }
+        if ((startIdx <= 0) || (endIdx <= 0)) {
+            throw new CutException(ERR_LESS_THAN_ZERO);
+        }
+
         List<String> lines = IOUtils.getLinesFromInputStream(stdin);
         List<String> results;
         if (isCharPo) {
@@ -133,24 +163,54 @@ public class CutApplication implements CutInterface {
     private List<String> retrieveByCharPos(List<String> lines, Boolean isRange, int startIdx, int endIdx) {
         List<String> results = new ArrayList<>();
         for (String line: lines) {
-            if (endIdx == startIdx) {
-                char val = line.charAt(startIdx - 1);
-                results.add(String.valueOf(val));
+            int start = startIdx;
+            int end = endIdx;
+            if (start - 1 <= 0) {
+                start = 1;
+            }
+            if (end == start) {
+                if (start <= line.length()) {
+                    char val = line.charAt(start - 1);
+                    results.add(String.valueOf(val));
+                }
+                else {
+                    results.add("");
+                }
             }
             else if (isRange) {
-                String val = line.substring(startIdx - 1, endIdx);
-                results.add(val);
+                if (start <= end) {
+                    if (end > line.length()) {
+                        end = line.length();
+                    }
+                    String val = line.substring(start - 1, end);
+                    results.add(val);
+                }
+                else {
+                    results.add("");
+                }
             }
             else {
                 // This is assumed that size of list of comma separated numbers is 2.
-                char startVal = line.charAt(startIdx - 1);
-                char endVal = line.charAt(endIdx - 1);
-                if (startIdx > endIdx) {
-                    results.add(String.valueOf(endVal) + startVal);
+                StringBuilder sb = new StringBuilder();
+                char startVal = 0;
+                char endVal = 0;
+                if (start > end) {
+                    end = startIdx;
+                    start = endIdx;
                 }
-                else {
-                    results.add(String.valueOf(startVal) + endVal);
+                if (start - 1 < line.length()) {
+                    startVal = line.charAt(start - 1);
                 }
+                if ((end - 1 >= 0) && (end - 1 < line.length())) {
+                    endVal = line.charAt(end - 1);
+                }
+                if (startVal != 0) {
+                    sb.append(startVal);
+                }
+                if (endVal != 0) {
+                    sb.append(endVal);
+                }
+                results.add(sb.toString());
             }
         }
         return results;
@@ -167,19 +227,23 @@ public class CutApplication implements CutInterface {
      */
     private List<String> retrieveByBytePos(List<String> lines, Boolean isRange, int startIdx, int endIdx) {
         List<String> results = new ArrayList<>();
-        for (String line: lines) {
+        for (String line : lines) {
             int currBytePos = 1;
             if (endIdx == startIdx) {
-                for (char val: line.toCharArray()) {
+                boolean hasAdded = false;
+                for (char val : line.toCharArray()) {
                     int byteLength = String.valueOf(val).getBytes().length;
                     if ((startIdx == currBytePos) || ((startIdx > currBytePos) && (startIdx < (currBytePos + byteLength)))) {
                         results.add(String.valueOf(val));
+                        hasAdded = true;
                         break;
                     }
                     currBytePos += byteLength;
                 }
-            }
-            else {
+                if (!hasAdded) {
+                    results.add("");
+                }
+            } else {
                 results.add(getBytePosFromString(isRange, line, startIdx, endIdx));
             }
         }
@@ -197,25 +261,37 @@ public class CutApplication implements CutInterface {
      */
     private String getBytePosFromString(Boolean isRange, String line, int startIdx, int endIdx) {
         int currBytePos = 1;
+        int start = startIdx;
+        int end = endIdx;
         StringBuilder result = new StringBuilder();
         boolean hasStarted = false;
         boolean isWithinRange = false;
-        for (char val : line.toCharArray()) {
-            int byteLength = String.valueOf(val).getBytes().length;
-            int nextBytePos = currBytePos + byteLength;
-            if ((!hasStarted) && ((startIdx == currBytePos) || ((startIdx > currBytePos) && (startIdx < (nextBytePos))))) {
-                if (isRange) {
-                    isWithinRange = true;
-                }
-                hasStarted = true;
-                result.append(val);
-            } else if ((endIdx == currBytePos) || ((endIdx > currBytePos) && (endIdx < (nextBytePos)))) {
-                result.append(val);
-                break;
-            } else if (isWithinRange) {
-                result.append(val);
+        if ((isRange) && (start > end)) {
+            return result.toString();
+        }
+        else {
+            if (start > end) {
+                end = startIdx;
+                start = endIdx;
             }
-            currBytePos = nextBytePos;
+            for (char val : line.toCharArray()) {
+                int byteLength = String.valueOf(val).getBytes().length;
+                int nextBytePos = currBytePos + byteLength;
+                //if (end )
+                if ((!hasStarted) && ((start == currBytePos) || ((start > currBytePos) && (start < (nextBytePos))))) {
+                    if (isRange) {
+                        isWithinRange = true;
+                    }
+                    hasStarted = true;
+                    result.append(val);
+                } else if ((end == currBytePos) || ((end > currBytePos) && (end < (nextBytePos)))) {
+                    result.append(val);
+                    break;
+                } else if (isWithinRange) {
+                    result.append(val);
+                }
+                currBytePos = nextBytePos;
+            }
         }
         return result.toString();
     }

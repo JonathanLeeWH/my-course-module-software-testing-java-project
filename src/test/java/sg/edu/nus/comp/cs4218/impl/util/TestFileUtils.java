@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class TestFileUtils {
-    public static final String TESTDATA_DIR = "src/test/sg/edu/nus/comp/cs4218/testdata/";
+    public static final String TESTDATA_DIR = "src/test/java/sg/edu/nus/comp/cs4218/testdata/";
 
     public static void createEmptyFile(Path file) throws IOException {
         Files.createFile(file);

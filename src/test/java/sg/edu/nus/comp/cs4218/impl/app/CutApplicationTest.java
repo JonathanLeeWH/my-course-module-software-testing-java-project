@@ -54,15 +54,15 @@ class CutApplicationTest {
 
     @Test
     void testRunSuccess() throws CutException {
-        //Use a sample test file.
-        cutApplication.run(Arrays.asList("-c", "6", "README.md").toArray(new String[3]), ourTestStdin, ourTestStdout);
-        assertEquals("2\na\nr\n", ourTestStdout.toString());
+        cutApplication.run(Arrays.asList("-c", "6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout);
+        String expectedResult = "8\n" + "m\n" + "e\n" + "c\n" + "r\n" + "a";
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     /**
      * Test cut application using cutFromFiles()
      */
-    // Erronorous Test cases (13 cases)
+    // Erronorous Test cases (14 cases)
     @Test
     void testCutFromFilesWithoutAnyPosFlags() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
@@ -82,67 +82,42 @@ class CutApplicationTest {
     @Test
     void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndASingleFileWithStartNumLessThanZero() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, -2, 5, testFile2.toFile().getPath()
+                false, true, false, -2, 5, testFile2.toFile().getPath()
         ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_LESS_THAN_ZERO);
     }
 
     @Test
     void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndASingleFileWithEndNumLessThanZero() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, 12, 0, testFile1.toFile().getPath()
+                true, false, false, 12, 0, testFile1.toFile().getPath()
         ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
-    @Test
-    void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndASingleFileWithStartNumIsNotAInteger() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, (int) 12.44, 15, testFile1.toFile().getPath()
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
-    @Test
-    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndASingleFileWithEndNumIsNotAInteger() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, 12, (int) 19.01, testFile3.toFile().getPath()
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_LESS_THAN_ZERO);
     }
 
     @Test
     void testCutFromFilesUsingBytePosAndSingleNumAndASingleFileWithNumLessThanZero() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, (int) 12.44, 15, testFile1.toFile().getPath()
+                false, true, false, (int) -12.44, 15, testFile1.toFile().getPath()
         ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
-    @Test
-    void testCutFromFilesUsingBytePosAndSingleNumAndASingleFileWithNumIsNotAInteger() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
-                true, false, false, (int) 3.141, (int) 3.141,
-                ourTestStdin
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_INVALID_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_LESS_THAN_ZERO);
     }
 
     @Test
     void testCutFromFilesUsingCharPosAndNumRangeAndASingleFileWithFileNotFoundInDir() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, (int) 12.44, 15, "noFile.txt"
+                true, false, false, (int) 12.44, 15, "noFile.txt"
         ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_FILE_NOT_FOUND);
     }
 
     @Test
     void testCutFromFilesUsingBytePosAndNumRangeAndMultipleFilesWithAtLeastOneFileNotFoundInDir() {
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, true, false, (int) 12.44, 15, testFile1.toFile().getPath(),
+                false, true, false, (int) 12.44, 15, testFile1.toFile().getPath(),
                 "no-File.txt"
         ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_FILE_NOT_FOUND);
     }
 
     @Test
@@ -167,15 +142,13 @@ class CutApplicationTest {
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_GENERAL);
     }
 
-    // Single Test cases (1 case)
     @Test
     void testCutFromFilesUsingBytePosAndSingleNumAndEmptyFilenameString() throws Exception {
-        String actualResult = cutApplication.cutFromFiles(
+        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
                 false, true, false, 15, 15,
                 ""
-        );
-        String expectedResult = "";
-        assertEquals(expectedResult, actualResult);
+        ));
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_FILE_NOT_FOUND);
     }
 
     // Positive test cases (50 cases)
@@ -238,7 +211,7 @@ class CutApplicationTest {
         String actualResult = cutApplication.cutFromFiles(
                 true, false, false, 56, 18, testFile1.toFile().getPath()
         );
-        String expectedResult = "T \n" + "se\n" + "si\n" + "o \n" + "co\n" + " n";
+        String expectedResult = "T\n" + "se\n" + "si\n" + "o \n" + "co\n" + " n";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -252,7 +225,7 @@ class CutApplicationTest {
                 "d regression testing. Various testing coverage criteria will \n" +
                 "ot-cause of errors in failing test cases will also be investi\n" +
                 "rformance prediction, performance clustering and performance \n" +
-                "ucial skills on testing and debugging through hands-on assign\n";
+                "ucial skills on testing and debugging through hands-on assign";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -261,7 +234,7 @@ class CutApplicationTest {
         String actualResult = cutApplication.cutFromFiles(
                 true, false, true, 18, 17, testFile1.toFile().getPath()
         );
-        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "\n";
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -270,7 +243,7 @@ class CutApplicationTest {
         String actualResult = cutApplication.cutFromFiles(
                 true, false, false, 103, 103, testFile1.toFile().getPath()
         );
-        String expectedResult = "\n" + "e\n" + "d\n" + "f\n" + "l\n" + "\n";
+        String expectedResult = "\n" + "e\n" + "d\n" + "f\n" + "l\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -291,7 +264,8 @@ class CutApplicationTest {
                 false, true, false, 115, 1,
                 testFile1.toFile().getPath(), testFile2.toFile().getPath(), testFile3.toFile().getPath()
         );
-        String expectedResult = "";
+        String expectedResult = "C\n" + "Te\n" + "a\n" + "r\n" + "p\n" + "c\n" + "La\n" + "\n" + "Et\n" +
+                "\n" + "Tt\n" + "1\n" + "2\n" + "5\n" + "2\n" + "2\n" + "5\n" + "0";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -321,12 +295,12 @@ class CutApplicationTest {
     @Test
     void testCutFromFilesUsingBytePosAndSingleNumAndValidDistinctFiles() throws Exception {
         String actualResult = cutApplication.cutFromFiles(
-                false, true, true, 9, 9,
+                false, true, false, 9, 9,
                 testFile1.toFile().getPath(), testFile3.toFile().getPath()
         );
-        String expectedResult = "\n" + "e\n" + "c\n" +
-                " \n" + "i\n" + "\n" + "\n" +
-                "\n" + "\n" + "\n" + "\n" + "\n" + "";
+        String expectedResult = "S\n" + "ö\n" + "e\n" +
+                "s\n" + "n\n" + "s\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "0\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -534,7 +508,9 @@ class CutApplicationTest {
                 false, true, true, 10, 8,
                 testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath()
         );
-        String expectedResult = "";
+        String expectedResult = "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -636,7 +612,7 @@ class CutApplicationTest {
         String expectedResult = "p\n" + "\n" + " \n" + "\n" + "m\n" +
                 "p\n" + "\n" + " \n" + "\n" + "m\n" +
                 "p\n" + "\n" + " \n" + "\n" + "m\n" +
-                "p\n" + "\n" + " \n" + "\n" + "m\n";
+                "p\n" + "\n" + " \n" + "\n" + "m";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -775,7 +751,7 @@ class CutApplicationTest {
                 assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
                         false, true, false, -1, 15, ourTestStdin
                 ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_LESS_THAN_ZERO);
     }
 
     @Test
@@ -784,25 +760,7 @@ class CutApplicationTest {
                 assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
                         true, false, false, 15, 0, ourTestStdin
                 ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
-    @Test
-    void testCutFromStdinUsingCharPosAnd2CommaSeparatedNumAndValidInputStreamWithStartNumIsNotAInteger() {
-        Throwable thrown =
-                assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
-                        false, true, false, (int) 1.05, 15, ourTestStdin
-                ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
-    @Test
-    void testCutFromStdinUsingBytePosAnd2CommaSeparatedNumAndValidInputStreamWithEndNumIsNotAInteger() {
-        Throwable thrown =
-                assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
-                        false, true, false, 1, (int) 15.5, ourTestStdin
-                ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_LESS_THAN_ZERO);
     }
 
     @Test
@@ -811,16 +769,7 @@ class CutApplicationTest {
                 assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
                         false, true, false, (int) -12.65, (int) -5.5, ourTestStdin
                 ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_TOO_MANY_ARGS);
-    }
-
-    @Test
-    void testCutFromStdinUsingBytePosAndSingleNumAndValidInputStreamWithNumIsNotAInteger() throws Exception {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromStdin(
-                true, false, false, (int) 5.1, (int) 5.1,
-                ourTestStdin
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_INVALID_ARGS);
+        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_LESS_THAN_ZERO);
     }
 
     @Test
@@ -914,7 +863,7 @@ class CutApplicationTest {
     @Test
     void testCutFromStdinUsingCharPosAndNumRangeAndValidInputStreamWithStartNumLowerThanEndNum() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
-                true, false, false, 4, 14,
+                true, false, true, 4, 14,
                 ourTestStdin
         );
         String expectedResult = "berspringen";
@@ -924,7 +873,7 @@ class CutApplicationTest {
     @Test
     void testCutFromStdinUsingCharPosAndNumRangeAndValidInputStreamWithStartNumHigherThanEndNum() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
-                true, false, false, 13, 9,
+                true, false, true, 13, 9,
                 ourTestStdin
         );
         String expectedResult = "";

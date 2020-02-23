@@ -70,4 +70,6 @@ public class ErrorConstants {
     public static final String ERR_GENERAL = "Exception Caught";
     public static final String ERR_IO_EXCEPTION = "IOException";
 
+    //Integer constants
+    public static final String ERR_LESS_THAN_ZERO = "Index less than 0";
 }
