@@ -66,6 +66,10 @@ public class ErrorConstants {
     public static final String NO_FILE = "No file specified found";
     public static final String NO_OVERWRITE = "No overwrite and destination file exist";
 
+    //`ls` related
+
+    public static final String NO_FILE_OR_FOLDER = "No file or folder specified found";
+
     // General constants
     public static final String ERR_INVALID_APP = "Invalid app";
     public static final String ERR_NOT_SUPPORTED = "Not supported yet";
