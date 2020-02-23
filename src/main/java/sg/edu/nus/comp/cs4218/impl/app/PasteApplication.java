@@ -6,7 +6,7 @@ import sg.edu.nus.comp.cs4218.exception.PasteException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.StringTokenizer;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
@@ -26,7 +26,7 @@ public class PasteApplication implements PasteInterface {
             if (stdin == null) { // if stdin is empty
                 throw new PasteException(ERR_NULL_STREAMS);
             }
-            try { // if stdin is not empty
+            try { // if stdin is not empty.
                 stdout.write(mergeStdin(stdin).getBytes()); // print the output of the stdin
             } catch (Exception e) {
                 e.printStackTrace();
@@ -43,6 +43,9 @@ public class PasteApplication implements PasteInterface {
             */
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("-")) { // check if argument is a stdin type of argument.
+                    if (i != 0) {
+                        throw new PasteException(INVALID_DASH);
+                    }
                     hasStdin = 1;
                 } else { // else argument is a filename.
                     hasFile = 2;
@@ -77,8 +80,7 @@ public class PasteApplication implements PasteInterface {
      * @throws Exception
      */
     public String mergeStdin(InputStream stdin) throws Exception {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stdin));
-            return paste(bufferedReader);
+        return paste(stdinToBufferedReaderArray(stdin));
     }
 
     /**
@@ -104,11 +106,17 @@ public class PasteApplication implements PasteInterface {
      * @throws Exception
      */
     public String mergeFileAndStdin(InputStream stdin, String... fileName) throws Exception {
-        BufferedReader[] bufferedReaders = new BufferedReader[fileName.length + 1];
-        for (int i = 0; i < fileName.length; i++) {
-            bufferedReaders[i] = new BufferedReader(new FileReader(fileName[i]));
+        BufferedReader[] stdinBufferedReaders = stdinToBufferedReaderArray(stdin);
+        int totalSize = fileName.length + stdinBufferedReaders.length;
+        BufferedReader[] bufferedReaders = new BufferedReader[totalSize];
+        for (int j = 0; j < stdinBufferedReaders.length; j++) {
+            bufferedReaders[j] = stdinBufferedReaders[j];
         }
-        bufferedReaders[bufferedReaders.length - 1] = new BufferedReader(new InputStreamReader(stdin));
+        int k = 0;
+        for (int i = stdinBufferedReaders.length; i < totalSize; i++) {
+            bufferedReaders[i] = new BufferedReader(new FileReader(fileName[k]));
+            k++;
+        }
         return paste(bufferedReaders);
     }
 
@@ -150,6 +158,27 @@ public class PasteApplication implements PasteInterface {
             }
 
         }
-        return stringBuilder.toString();
+        return stringBuilder.toString().concat(newLine);
+    }
+
+    private BufferedReader[] stdinToBufferedReaderArray(InputStream stdin) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stdin));
+        StringTokenizer stringTokenizer = new StringTokenizer(bufferedReader.readLine());
+        List<String> tokens = new ArrayList<>();
+        while (stringTokenizer.hasMoreElements()) {
+            tokens.add(stringTokenizer.nextToken());
+        }
+
+        String[] fileNames = new String[tokens.size()];
+        // ArrayList to Array Conversion
+        for (int j = 0; j < tokens.size(); j++) {
+            // Assign each value to String array
+            fileNames[j] = tokens.get(j);
+        }
+        BufferedReader[] bufferedReaders = new BufferedReader[fileNames.length];
+        for (int j = 0; j < fileNames.length; j++) {
+            bufferedReaders[j] = new BufferedReader(new FileReader(fileNames[j]));
+        }
+        return bufferedReaders;
     }
 }
