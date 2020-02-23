@@ -78,7 +78,7 @@ public class CutApplication implements CutInterface {
         }
 
         List<String> lines = new ArrayList<>();
-        List<String> results;
+        List<String> results = new ArrayList<>();
         for (String file : fileName) {
             if (file.equals("-")) {
                 //cutFromStdin(isCharPo, isBytePo, isRange, startIdx, endIdx, System.in);
@@ -108,9 +108,6 @@ public class CutApplication implements CutInterface {
         else if (isBytePo) {
             results = retrieveByBytePos(lines, isRange, startIdx, endIdx);
         }
-        else {
-            throw new CutException(ERR_MISSING_ARG);
-        }
 
         return String.join(STRING_NEWLINE, results);
     }
@@ -125,15 +122,12 @@ public class CutApplication implements CutInterface {
         }
 
         List<String> lines = IOUtils.getLinesFromInputStream(stdin);
-        List<String> results;
+        List<String> results = new ArrayList<>();
         if (isCharPo) {
             results = retrieveByCharPos(lines, isRange, startIdx, endIdx);
         }
         else if (isBytePo) {
             results = retrieveByBytePos(lines, isRange, startIdx, endIdx);
-        }
-        else {
-            throw new CutException(ERR_MISSING_ARG);
         }
         return String.join(STRING_NEWLINE, results);
     }
