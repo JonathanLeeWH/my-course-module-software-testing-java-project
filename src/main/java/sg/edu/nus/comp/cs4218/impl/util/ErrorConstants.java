@@ -63,6 +63,9 @@ public class ErrorConstants {
     public static final String NO_FILE = "No file specified found";
     public static final String NO_OVERWRITE = "No overwrite and destination file exist";
 
+    // `Paste` related
+    public static final String INVALID_DASH = "Dash should only appear in the first argument";
+
     // General constants
     public static final String ERR_INVALID_APP = "Invalid app";
     public static final String ERR_NOT_SUPPORTED = "Not supported yet";
