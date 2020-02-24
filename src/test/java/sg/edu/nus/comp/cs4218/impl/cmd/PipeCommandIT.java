@@ -86,7 +86,7 @@ class PipeCommandIT {
     /**
      * Tests evaluate when a ShellException occurs in one part.
      * For example: lsa | echo How are you
-     * Expected: Throws ShellException as lsa is an invalid application.
+     * Expected: Throws ShellException as lsa is an invalid application. The echo command is not executed as stated in teh assumption and project specification.
      */
     @Test
     void evaluatePipeCommandWithACommandThrowingAShellExceptionShouldThrowException() throws Exception {
@@ -104,7 +104,7 @@ class PipeCommandIT {
      * Tests evaluate method when an AbstractApplicationException occurs in one part.
      * For example: cd folder1 | echo Welcome
      * Where folder1 is a directory which does not exists
-     * Expected: Throws CdException, a subclass of AbstractApplicationException, ERR_FILE_NOT_FOUND_
+     * Expected: Throws CdException, a subclass of AbstractApplicationException, ERR_FILE_NOT_FOUND
      */
     @Test
     void evaluatePipeCommandWithACommandThrowingASubClassOfApplicationCdExceptionShouldThrowCdException(@TempDir Path tempDir) {
