@@ -26,7 +26,7 @@ public class CdApplication implements CdInterface {
     /**
      * Runs the cd application with the specified arguments.
      * Assumption: The application must take in one arg. (cd without args is not supported)
-     *
+     * The application also does not support taking in more than one argument.
      * @param args   Array of arguments for the application.
      * @param stdin  An InputStream, not used.
      * @param stdout An OutputStream, not used.
@@ -38,7 +38,15 @@ public class CdApplication implements CdInterface {
         if (args == null) {
             throw new CdException(ERR_NULL_ARGS);
         }
-        changeToDirectory(args[0]);
+
+        if (args.length == 0) {
+            throw new CdException(ERR_MISSING_ARG);
+        } else if (args.length == 1) {
+            changeToDirectory(args[0]);
+        } else {
+            throw new CdException(ERR_TOO_MANY_ARGS);
+        }
+
     }
 
     private String getNormalizedAbsolutePath(String pathStr) throws CdException {

@@ -25,7 +25,7 @@ public class RmApplication implements RmInterface {
      * @throws Exception  
      */
     @Override
-    public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws Exception {
+    public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws RmException {
         RmException rmException = null;
         for (String current : fileName) {
             File node = IOUtils.resolveFilePath(current).toFile();
@@ -61,7 +61,7 @@ public class RmApplication implements RmInterface {
      * @param fileName input file to be deleted.
      * @throws Exception
      */
-    public void removeFileOnly(File fileName) throws Exception {
+    public void removeFileOnly(File fileName) throws RmException {
         try {
             if (!fileName.isDirectory()) {
                 Files.delete(fileName.toPath());
@@ -76,7 +76,7 @@ public class RmApplication implements RmInterface {
      * @param fileName  input file to be deleted.
      * @throws Exception
      */
-    public void removeFileAndEmptyFolderOnly(File fileName) throws Exception {
+    public void removeFileAndEmptyFolderOnly(File fileName) throws RmException {
         try {
             Files.delete(fileName.toPath());
         } catch (DirectoryNotEmptyException e) {
@@ -91,7 +91,7 @@ public class RmApplication implements RmInterface {
      * @param fileName input file to be deleted.
      * @throws Exception
      */
-    public void removeFilesAndFolderContent(File fileName) throws Exception {
+    public void removeFilesAndFolderContent(File fileName) throws RmException {
         if (fileName.isDirectory()) {
             File[] contents = fileName.listFiles();
             if (contents != null) {
@@ -110,13 +110,24 @@ public class RmApplication implements RmInterface {
 
     /**
      * Runs RmApplication with specified input data and specified output stream.
+     * Assumption:
+     * 1) The Arrays of arguments for RmApplication only allows file names and not relative or absolute path.
+     * For example: rm hello/1.txt where hello/1.txt is a path is not allowed as arguments.
+     * This matches the comment in skeleton RmInterface where the arguments passed to remove method which
+     * will be called by run method allows file names only.
+     * This differs from unix behaviour.
+     * 2) The rm command will allow throw one exception (the latest exception) when there are potentially one or more
+     * exceptions due to the files and/or folders passed into the rm command arguments.
+     * This behaviour differs from unix.
+     * 3) The rm command -rd or -r -d or -r flags (including the permutation of the flags) would attempt to delete all files and/or folders input as arguments for the rm command
+     * together with the contents of non empty folders. In other words, their behaviour is the same.
      * @param args Array of arguments for the RmApplication
      * @param stdin An InputStream, not used.
      * @param stdout An OutputStream, not used.
      * @throws AbstractApplicationException
      */
     @Override
-    public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
+    public void run(String[] args, InputStream stdin, OutputStream stdout) throws RmException {
         if (args == null) {
             throw new RmException(ERR_NULL_ARGS);
         }
@@ -135,15 +146,7 @@ public class RmApplication implements RmInterface {
         if (fileNames.length == 0) {
             throw new RmException(ERR_MISSING_ARG);
         } else {
-            try {
-                remove(emptyFolder, recursive, fileNames);
-            } catch (RmException rmException) {
-                throw rmException;
-            } catch(Exception e) {
-                throw (RmException) new RmException(e.getMessage()).initCause(e);
-            }
+            remove(emptyFolder, recursive, fileNames);
         }
-
-
     }
 }
