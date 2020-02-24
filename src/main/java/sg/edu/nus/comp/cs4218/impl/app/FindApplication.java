@@ -21,6 +21,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FILE_SEP;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
+@SuppressWarnings("PMD.PreserveStackTrace")
 public class FindApplication implements FindInterface {
     public static final String FILE_IDENT = CHAR_FLAG_PREFIX + "name";
     public static final String NO_FOLDER = "No folder specified";
@@ -182,12 +183,7 @@ public class FindApplication implements FindInterface {
         String tempResult;
         StringJoiner stringJoiner = new StringJoiner(STRING_NEWLINE);
         Pattern filePattern;
-        try{
-            filePattern = Pattern.compile(fileName);
-        }catch (PatternSyntaxException e) {
-            throw new FindException(WRONG_SYNTAX);
-        }
-
+        filePattern = checkFilePattern(fileName);
 
         for (String f : folderName) {
             String path = convertToAbsolutePath(f);
@@ -228,6 +224,16 @@ public class FindApplication implements FindInterface {
         result = stringJoiner.toString();
 
         return result;
+    }
+
+    private Pattern checkFilePattern(String fileName) throws FindException {
+        Pattern filePattern;
+        try{
+            filePattern = Pattern.compile(fileName);
+        }catch (PatternSyntaxException e) {
+            throw new FindException(WRONG_SYNTAX);
+        }
+        return filePattern;
     }
 
     /**

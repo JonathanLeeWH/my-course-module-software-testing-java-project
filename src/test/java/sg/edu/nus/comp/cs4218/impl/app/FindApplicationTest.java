@@ -8,6 +8,7 @@ import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.regex.PatternSyntaxException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -98,14 +99,14 @@ class FindApplicationTest {
     }
 
     @Test
-    void testFindSingleFolderContentFileExists() throws Exception {
+    void testFindSingleFolderContentFileExistsSuccess() throws Exception {
         String expectedResult = TEST_FOLDER + File.separator + TEST_FILE_NAME;
 
         assertEquals(expectedResult, application.findFolderContent(TEST_FILE_NAME, TEST_FOLDER));
     }
 
     @Test
-    void testFindMultipleFoldersContentSameFileExists() throws Exception {
+    void testFindMultipleFoldersContentSameFileExistsSuccess() throws Exception {
         String[] folders = new String[] {TEST_FOLDER, ANOTHER_FOLDER};
         String expectedResult = TEST_FOLDER + File.separator + NESTED_FOLDER + File.separator + ANOTHER_FILE_NAME + StringUtils.STRING_NEWLINE +
                 ANOTHER_FOLDER + File.separator + ANOTHER_FILE_NAME ;
@@ -114,7 +115,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testFindMultipleFoldersContentOnlyOneContainsFile() throws Exception {
+    void testFindMultipleFoldersContentOnlyOneContainsFileSuccess() throws Exception {
         String[] folders = new String[] {TEST_FOLDER, ANOTHER_FOLDER, EMPTY_FOLDER};
         String expectedResult = TEST_FOLDER + File.separator + NUMERIC_FILE_NAME + StringUtils.STRING_NEWLINE +
                 TEST_FOLDER + File.separator + NUMERIC_FOLDER + File.separator + NUMERIC_FILE_NAME ;
@@ -123,7 +124,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testFindMultipleFoldersContentFileNotExists() throws Exception {
+    void testFindMultipleFoldersContentFileNotExistsSuccess() throws Exception {
         String[] folders = new String[] {TEST_FOLDER, ANOTHER_FOLDER, EMPTY_FOLDER};
         String expectedResult = "";
 
@@ -131,15 +132,16 @@ class FindApplicationTest {
     }
 
     @Test
-    void testFindSingleFolderContentMultipleFileExists() throws Exception {
+    void testFindSingleFolderContentMultipleFileExistsSuccess() throws Exception {
         String expectedResult = TEST_FOLDER + File.separator + NUMERIC_FILE_NAME + StringUtils.STRING_NEWLINE +
                 TEST_FOLDER + File.separator + NUMERIC_FOLDER + File.separator + NUMERIC_FILE_NAME;
 
         assertEquals(expectedResult, application.findFolderContent(NUMERIC_FILE_NAME, TEST_FOLDER));
     }
 
+    //test is successful as file is not found but returns empty string.
     @Test
-    void testFindFolderContentFileNotExistsNoFileFound() throws Exception {
+    void testFindFolderContentFileNotExistsNoFileFoundSuccess() throws Exception {
         String fileNotExist = ".+" + TEST_FILE_NAME;
         String expectedResult = "";
 
@@ -148,18 +150,18 @@ class FindApplicationTest {
 
 
     @Test
-    void testFindFolderNotExistsContent() throws Exception {
+    void testFindFolderNotExistsContentThrowFileNotFoundException() throws Exception {
         String expectedResult = "find: " + INVALID_FOLDER + ": " + ErrorConstants.ERR_FILE_NOT_FOUND;
         assertEquals(expectedResult, application.findFolderContent(TEST_FILE_NAME, INVALID_FOLDER));
     }
 
     @Test
-    void testFindFolderInvalidPattern() {
+    void testFindFolderInvalidPatternThrowWrongSyntaxException() {
         assertThrows(FindException.class, () -> application.findFolderContent(INVALID_PATTERN, TEST_FOLDER));
     }
 
     @Test
-    void testRunOnlyWithoutFileIndentifierInvalid() {
+    void testRunOnlyWithoutFileIndentifierInvalidThrowNoFileSpecifiedException() {
         //no File name syntax after -name
         String[] args = new String[] { TEST_FOLDER, ANOTHER_FOLDER, TEST_FILE_NAME };
 
@@ -168,7 +170,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunOnlyWithoutFolderSpecifiedInvalid() {
+    void testRunOnlyWithoutFolderSpecifiedInvalidThrowNoFolderSpecifiedException() {
         String[] args = new String[] { NAME_FLAG, TEST_FILE_NAME };
 
         Exception actualException = assertThrows(FindException.class, () -> application.run(args, mockInputStream, mockOutputStream));
@@ -176,7 +178,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunOnlyWithoutFileSpecifiedInvalid() {
+    void testRunOnlyWithoutFileSpecifiedInvalidThrowNoFileSpecifiedException() {
         String[] args = new String[] {TEST_FOLDER, ANOTHER_FOLDER, NAME_FLAG };
 
         Exception actualException = assertThrows(FindException.class, () -> application.run(args, mockInputStream, mockOutputStream));
@@ -184,7 +186,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunWithoutFolderAndFileSpecifiedInvalid() {
+    void testRunWithoutFolderAndFileSpecifiedInvalidThrowNoFolderSpecifiedExceptio() {
         String[] args = new String[] { NAME_FLAG };
 
         Exception actualException = assertThrows(FindException.class, () -> application.run(args, mockInputStream, mockOutputStream));
@@ -192,7 +194,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunWithoutFolderAndFileIdentifierSpecifiedInvalid() {
+    void testRunWithoutFolderAndFileIdentifierSpecifiedInvalidThrowNoFileSpecifiedException() {
         //find 123.txt, where 123.txt is thought to be folder but no file specified and no file identifier
         String[] args = new String[] { NUMERIC_FILE_NAME };
 
@@ -201,7 +203,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunWithoutFileAndIdentifierSpecifiedInvalid() {
+    void testRunWithoutFileAndIdentifierSpecifiedInvalidThrowNoFileSpecifiedException() {
         String[] args = new String[] {EMPTY_FOLDER};
 
         Exception actualException = assertThrows(FindException.class, () -> application.run(args, mockInputStream, mockOutputStream));
@@ -209,7 +211,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunWithoutAnyArgumentInvalid() {
+    void testRunWithoutAnyArgumentInvalidThrowNoArgsException() {
         String[] args = new String[] {};
 
         Exception actualException = assertThrows(FindException.class, () -> application.run(args, mockInputStream, mockOutputStream));
@@ -217,7 +219,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunWithMultipleFoldersMultipleFilesInvalid() {
+    void testRunWithMultipleFoldersMultipleFilesInvalidThrowMultipleFilesException() {
         String [] args = new String[] {TEST_FOLDER, ANOTHER_FOLDER, NAME_FLAG, TEST_FILE_NAME,
                 ANOTHER_FILE_NAME };
 
@@ -226,7 +228,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunWithSingleFolderMultipleFilesInvalid() {
+    void testRunWithSingleFolderMultipleFilesInvalidThrowMultipleFileException() {
         String [] args = new String[] {EMPTY_FOLDER, NAME_FLAG, TEST_FILE_NAME,
                 ANOTHER_FILE_NAME };
 
@@ -235,7 +237,7 @@ class FindApplicationTest {
     }
 
     @Test
-    void testRunWithNullStdoutInvalid() {
+    void testRunWithNullStdoutInvalidThrowOutputStreamNullException() {
         String[] args = new String[] {ANOTHER_FOLDER, NAME_FLAG, ANOTHER_FILE_NAME };
 
         Exception actualException = assertThrows(FindException.class, () ->
@@ -243,9 +245,6 @@ class FindApplicationTest {
         assertEquals(actualException.getMessage(), OUTPUT_ERROR_MSG);
     }
 
-    /*********************************************
-     * Set of test cases to verify output result
-     *********************************************/
     @Test
     void testRunOutputFileLocationResult() throws Exception {
         String[] args = new String[] {TEST_FOLDER, NAME_FLAG, NUMERIC_FILE_NAME };
