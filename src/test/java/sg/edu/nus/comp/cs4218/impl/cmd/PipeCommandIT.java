@@ -48,7 +48,7 @@ class PipeCommandIT {
     }
 
     /**
-     * Tests evaluate method for a valid  <Call> | </Call> format
+     * Tests evaluate method for a valid  <Call> | <Call> format
      * For example: echo hello world | grep "world"
      * Expected: Outputs hello world terminated with a new line character.
      */
@@ -63,7 +63,7 @@ class PipeCommandIT {
     }
 
     /**
-     * Tests evaluate method for a valid  <Pipe> | </Call> format
+     * Tests evaluate method for a valid  <Pipe> | <Call> format
      * For example: ls | grep "4218" | grep "CS4218"
      * Assuming, ls would return a list of files with names, CS4218A, A4218A, CS3203A.
      * Expected: Outputs CS4218A terminated with a new line character.
