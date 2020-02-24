@@ -13,6 +13,7 @@ import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +31,9 @@ class SequenceCommandIT {
     private static final String ECHO_APP = "echo";
     private static final String INVALID_APP = "lsa";
     private static final String FOLDER_NAME_1 = "folder1";
+    private static final String FILE_NAME_1 = "CS4218A";
+    private static final String FILE_NAME_2 = "A4218A";
+    private static final String FILE_NAME_3 = "CS3203A";
 
     private OutputStream outputStream;
     private List<Command> commands;
@@ -61,6 +65,52 @@ class SequenceCommandIT {
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
         assertEquals("hello world" + System.lineSeparator() + "How are you" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method for a valid <Command> ; <Command> format
+     * In this case we will test one call commands and one pipe command
+     * Based on Grammar command can be <call> | <seq> | <pipe>
+     * For example: echo Goodnight ; ls | grep "CS4218"
+     * Expected: Outputs
+     * Goodnight
+     * CS4218A
+     */
+    @Test
+    void evaluateSequenceCommandWithValidCallCommandAndPipeCommandFormatShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        Files.createFile(tempDir.resolve(FILE_NAME_1));
+        Files.createFile(tempDir.resolve(FILE_NAME_2));
+        Files.createFile(tempDir.resolve(FILE_NAME_3));
+        LinkedList<CallCommand> callCommands = new LinkedList<>();
+        callCommands.add(new CallCommand(Collections.singletonList("ls"), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList("grep", "CS4218"), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Goodnight"), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new PipeCommand(callCommands));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals("Goodnight" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method for a valid <Command> ; <Command> format
+     * In this case we will test one call commands and one seq command
+     * Based on Grammar command can be <call> | <seq> | <pipe>
+     * For example: echo Good Afternoon ; echo Hi ; echo Sweet dreams
+     * Expected: Outputs
+     * Good Afternoon
+     * Hi
+     * Sweet dreams
+     */
+    @Test
+    void evaluateSequenceCommandWithValidCallCommandAndSequenceCommandFormatShouldOutputCorrect() throws AbstractApplicationException, ShellException {
+        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Good", "Afternoon"), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Hi"), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Sweet", "dreams"), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals("Good Afternoon" + System.lineSeparator() + "Hi" + System.lineSeparator() + "Sweet dreams" + System.lineSeparator(), outputStream.toString());
     }
 
     /**
