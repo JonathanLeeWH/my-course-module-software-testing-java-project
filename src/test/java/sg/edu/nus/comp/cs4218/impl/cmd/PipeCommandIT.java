@@ -35,11 +35,13 @@ class PipeCommandIT {
     private static final String FOLDER_NAME_1 = "folder1";
 
     private OutputStream outputStream;
+    private List<CallCommand> callCommands;
 
     @BeforeEach
     void setUp() {
         EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
         outputStream = new ByteArrayOutputStream();
+        callCommands = new LinkedList<>();
     }
 
     @AfterEach
@@ -54,7 +56,6 @@ class PipeCommandIT {
      */
     @Test
     void evaluatePipeCommandWithValidCallCommandAndCallCommandFormatShouldOutputCorrectly() throws AbstractApplicationException, ShellException {
-        List<CallCommand> callCommands = new LinkedList<>();
         callCommands.add(new CallCommand(Arrays.asList("echo", "hello", "world"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("grep", "world"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -74,7 +75,6 @@ class PipeCommandIT {
         Files.createFile(tempDir.resolve(FILE_NAME_1));
         Files.createFile(tempDir.resolve(FILE_NAME_2));
         Files.createFile(tempDir.resolve(FILE_NAME_3));
-        List<CallCommand> callCommands = new LinkedList<>();
         callCommands.add(new CallCommand(Collections.singletonList("ls"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("grep", "4218"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("grep", "CS4218"), new ApplicationRunner(), new ArgumentResolver()));
@@ -90,7 +90,6 @@ class PipeCommandIT {
      */
     @Test
     void evaluatePipeCommandWithACommandThrowingAShellExceptionShouldThrowException() throws Exception {
-        List<CallCommand> callCommands = new LinkedList<>();
         callCommands.add(new CallCommand(Collections.singletonList("lsa"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("echo", "How", "are", "you"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -111,7 +110,6 @@ class PipeCommandIT {
         Path folder = tempDir.resolve(FOLDER_NAME_1);
         EnvironmentHelper.currentDirectory = tempDir.toString();
         assertFalse(Files.isDirectory(folder)); // check that the folder does not exist.
-        List<CallCommand> callCommands = new LinkedList<>();
         callCommands.add(new CallCommand(Arrays.asList("cd", FOLDER_NAME_1), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("echo", "Welcome"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
