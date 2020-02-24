@@ -9,6 +9,7 @@ import sg.edu.nus.comp.cs4218.impl.util.Pair;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
@@ -30,6 +31,7 @@ public class CutApplication implements CutInterface {
         // Parse arguments.
         CutArgsParser parser = new CutArgsParser();
         StringBuilder output = new StringBuilder();
+        List<String> outputs = new ArrayList<>();
         try {
             parser.parse(args);
         } catch (InvalidArgsException e) {
@@ -50,10 +52,33 @@ public class CutApplication implements CutInterface {
                 throw new Exception(ERR_MISSING_ARG);
             }
             if (files == null) {
-                output.append(cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin));
+                outputs.add(cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin));
             }
             else {
-                output.append(cutFromFiles(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), files));
+                //Remove duplicate - and use the earliest -
+                List<String> newFiles = new ArrayList<>();
+                int dashIdx = -1;
+                for (int i = 0; i < files.length; i++) {
+                    if (!files[i].equals("-") || !newFiles.contains("-")) {
+                        if ((files[i].equals("-")) && (!newFiles.contains("-"))) {
+                            dashIdx = i;
+                        }
+                        newFiles.add(files[i]);
+                    }
+                }
+                if (dashIdx >= 0) {
+                    newFiles.remove(dashIdx);
+                }
+                files = newFiles.stream().toArray(file -> new String[newFiles.size()]);
+
+                outputs.add(cutFromFiles(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), files));
+                if (dashIdx >= 0) {
+                    outputs.add(dashIdx, cutFromStdin(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), stdin));
+                }
+            }
+
+            for (String out: outputs) {
+                output.append(out);
             }
         } catch (Exception e) {
             throw new CutException(e);
@@ -80,25 +105,20 @@ public class CutApplication implements CutInterface {
         List<String> lines = new ArrayList<>();
         List<String> results = new ArrayList<>();
         for (String file : fileName) {
-            if (file.equals("-")) {
-                //cutFromStdin(isCharPo, isBytePo, isRange, startIdx, endIdx, System.in);
+            File node = IOUtils.resolveFilePath(file).toFile();
+            if (!node.exists()) {
+                throw new CutException(ERR_FILE_NOT_FOUND);
             }
-            else {
-                File node = IOUtils.resolveFilePath(file).toFile();
-                if (!node.exists()) {
-                    throw new CutException(ERR_FILE_NOT_FOUND);
-                }
-                if (node.isDirectory()) {
-                    throw new CutException(ERR_IS_DIR);
-                }
-                if (!node.canRead()) {
-                    throw new CutException(ERR_NO_PERM);
-                }
+            if (node.isDirectory()) {
+                throw new CutException(ERR_IS_DIR);
+            }
+            if (!node.canRead()) {
+                throw new CutException(ERR_NO_PERM);
+            }
 
-                try (InputStream input = IOUtils.openInputStream(file)) {
-                    lines.addAll(IOUtils.getLinesFromInputStream(input));
-                    IOUtils.closeInputStream(input);
-                }
+            try (InputStream input = IOUtils.openInputStream(file)) {
+                lines.addAll(IOUtils.getLinesFromInputStream(input));
+                IOUtils.closeInputStream(input);
             }
         }
 
