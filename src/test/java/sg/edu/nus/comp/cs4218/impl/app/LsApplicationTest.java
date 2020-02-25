@@ -5,11 +5,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
+import sg.edu.nus.comp.cs4218.exception.LsException;
 
 import java.io.*;
 import java.util.ArrayList;
 
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -109,6 +113,17 @@ public class LsApplicationTest {
         String expectedResult = FILE_NAME_1 + System.lineSeparator() + FILE_NAME_2 + System.lineSeparator() + FILE_NAME_3 + System.lineSeparator() + FOLDER_NAME_1 + System.lineSeparator() + FOLDER_NAME_2;
         String[] foldersName = {};
         assertEquals(expectedResult, lsApplication.listFolderContent(false,false,foldersName));
+    }
+
+    @Test
+    public void runWhenMissingArgSpecifiedThrowsArgException() {
+
+        String[] constructArgs = new String [] {"hello"};
+        Exception exception = assertThrows(LsException.class, () -> {
+            lsApplication.run(constructArgs, System.in, System.out);
+        });
+
+        assertEquals(new LsException(NO_FILE_OR_FOLDER).getMessage(), exception.getMessage());
     }
 
     @Test

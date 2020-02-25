@@ -30,6 +30,9 @@ public class ErrorConstants {
     public static final String ERR_NO_PERM = "Permission denied";
     public static final String ERR_NON_EMPTY_DIR = "Non empty directory";
 
+    // `cp` related
+    public static final String ERR_SRC_DEST_SAME = "The source file and the destination file are the same file.";
+
     // `date` related
     public static final String ERR_INVALID_FORMAT_PREFIX = "Invalid format. Date format must start with '+'";
     public static final String ERR_INVALID_FORMAT_FIELD = "Invalid format. Missing or unknown character after '%'";
@@ -65,6 +68,10 @@ public class ErrorConstants {
 
     // `Paste` related
     public static final String INVALID_DASH = "Dash should only appear in the first argument";
+
+    //`ls` related
+
+    public static final String NO_FILE_OR_FOLDER = "No file or folder specified found";
 
     // General constants
     public static final String ERR_INVALID_APP = "Invalid app";

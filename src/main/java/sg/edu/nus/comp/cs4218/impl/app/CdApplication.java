@@ -26,7 +26,7 @@ public class CdApplication implements CdInterface {
     /**
      * Runs the cd application with the specified arguments.
      * Assumption: The application must take in one arg. (cd without args is not supported)
-     *
+     * The application also does not support taking in more than one argument.
      * @param args   Array of arguments for the application.
      * @param stdin  An InputStream, not used.
      * @param stdout An OutputStream, not used.
