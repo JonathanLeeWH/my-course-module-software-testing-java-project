@@ -65,10 +65,10 @@ class PasteApplicationTest {
      *  Expected: Throws FileNotFound Exception
      */
     @Test
-    void runInvalidFileShouldThrowFileNotFoundException() {
+    void runInvalidFileShouldThrowPasteException() {
         String invalidFile = "invalidTest";
         String[] args = { invalidFile };
-        assertThrows(FileNotFoundException.class, () -> {
+        assertThrows(PasteException.class, () -> {
             pasteApplication.mergeFile(args);
         });
     }
@@ -94,9 +94,9 @@ class PasteApplicationTest {
      *  Expected: Throws FileNotFound Exception
      */
     @Test
-    void runEmptyFileNameShouldThrowFileNotFoundException() {
+    void runEmptyFileNameShouldThrowPasteException() {
         String[] args = { oneLineFile.toPath().toString(), ""};
-        assertThrows(FileNotFoundException.class, () -> {
+        assertThrows(PasteException.class, () -> {
             pasteApplication.mergeFile(args);
         });
     }
@@ -297,6 +297,38 @@ class PasteApplicationTest {
     void runDoubleDashShouldThrowPasteException() {
         try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
             String[] args = {"-", "-"};
+            assertThrows(PasteException.class, () -> {
+                pasteApplication.run(args, inputStream, osPrint);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *  Test run method with null outputStream.
+     *  Expected: String of merged contents from the input files.
+     */
+    @Test
+    void runNullStdinWithoutArgsShouldThrowPasteException() {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = new String[0];
+            assertThrows(PasteException.class, () -> {
+                pasteApplication.run(args, null, osPrint);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *  Test run method with null outputStream.
+     *  Expected: String of merged contents from the input files.
+     */
+    @Test
+    void runInvalidDashPositionShouldThrowPasteException() {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = {oneLineFile.toPath().toString(), "-"};
             assertThrows(PasteException.class, () -> {
                 pasteApplication.run(args, inputStream, osPrint);
             });
