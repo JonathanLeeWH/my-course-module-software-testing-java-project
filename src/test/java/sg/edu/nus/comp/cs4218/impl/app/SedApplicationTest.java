@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.SedException;
 
 import java.io.*;
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
-public class SedApplicationTest {
+class SedApplicationTest {
     private static SedApplication sedApplication;
     private static final String TEST_FILE_TYPE = ".txt";
     private static final String EMPTY_FILE = "testFileZero";
@@ -28,7 +29,7 @@ public class SedApplicationTest {
     private static OutputStream outputStreamZero, outputStreamOne, outputStreamTwo;
 
     @BeforeAll
-    public static void setupBeforeTest() {
+    static void setupBeforeTest() {
         sedApplication = new SedApplication();
         try {
             emptyFile = File.createTempFile(EMPTY_FILE, TEST_FILE_TYPE);
@@ -46,7 +47,7 @@ public class SedApplicationTest {
     }
 
     @AfterAll
-    public static void tearDownAfterTesting() {
+    static void tearDownAfterTesting() {
         emptyFile.deleteOnExit();
         fileWithTwoLines.deleteOnExit();
         fileWithOneLine.deleteOnExit();
@@ -59,8 +60,12 @@ public class SedApplicationTest {
         }
     }
 
+    /**
+     * Test
+     *
+     */
     @Test
-    public void runStdinUsingSingleLineFileShouldReplaceWithReplacementTextInTheReplacementIndex() throws Exception {
+    void runStdinUsingSingleLineFileShouldReplaceWithReplacementTextInTheReplacementIndex() throws Exception {
         String expectedOutput = "replaceTwo\t line twoLine aline" + STRING_NEWLINE;
         String pattern = LINE;
         String replacement = REPLACE;
@@ -70,8 +75,12 @@ public class SedApplicationTest {
                 sedApplication.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdinOne));
     }
 
+    /**
+     * Test
+     *
+     */
     @Test
-    public void runStdinUsingMultiLineFileShouldReplaceWithReplacementTextInTheReplacementIndexForAllLines() throws Exception {
+    void runStdinUsingMultiLineFileShouldReplaceWithReplacementTextInTheReplacementIndexForAllLines() throws Exception {
         String expectedOutput = "replaceTwo"+ STRING_NEWLINE + " replace twoLine aline" + STRING_NEWLINE;
         String pattern = LINE;
         String replacement = REPLACE;
@@ -81,8 +90,12 @@ public class SedApplicationTest {
                 (pattern, replacement, replacementIndex, stdinTwo));
     }
 
+    /**
+     * Test
+     *
+     */
     @Test
-    public void runFileNameUsingSingleLineFileShouldReplaceWithReplacementTextInTheReplacementIndex() throws Exception {
+    void runFileNameUsingSingleLineFileShouldReplaceWithReplacementTextInTheReplacementIndex() throws Exception {
         String expectedOutput = "replaceTwo\t line twoLine aline" + STRING_NEWLINE;
         String pattern = LINE;
         String replacement = REPLACE;
@@ -91,8 +104,12 @@ public class SedApplicationTest {
                 (pattern, replacement, replacementIndex, fileWithOneLine.toPath().toString()));
     }
 
+    /**
+     * Test
+     *
+     */
     @Test
-    public void runFileNameUsingMultiLineFileShouldReplaceWithReplacementTextInTheReplacementIndexForAllLines() throws Exception {
+    void runFileNameUsingMultiLineFileShouldReplaceWithReplacementTextInTheReplacementIndexForAllLines() throws Exception {
         String expectedOutput = "replaceTwo"+ STRING_NEWLINE + " replace twoLine aline" + STRING_NEWLINE;
         String pattern = LINE;
         String replacement = REPLACE;
@@ -101,8 +118,12 @@ public class SedApplicationTest {
                 (pattern, replacement, replacementIndex, fileWithTwoLines.toPath().toString()));
     }
 
+    /**
+     * Test
+     *
+     */
     @Test
-    public void runEmptyRegexShouldThrowException() {
+    void runEmptyRegexShouldThrowException() {
         String pattern = "";
         String replacement = " ";
         int replacementIndex = 1;
@@ -113,8 +134,12 @@ public class SedApplicationTest {
         assertEquals(thrown.getMessage(),ERR_EMPTY_REGEX);
     }
 
+    /**
+     * Test
+     *
+     */
     @Test
-    public void runNullRegexShouldThrowException() {
+    void runNullRegexShouldThrowException() {
         String pattern = null;
         String replacement = " ";
         int replacementIndex = 1;
@@ -125,8 +150,12 @@ public class SedApplicationTest {
         assertEquals(thrown.getMessage(),ERR_NULL_ARGS);
     }
 
+    /**
+     * Test
+     *
+     */
     @Test
-    public void runInvalidReplacementIndexShouldThrowException() throws Exception {
+    void runInvalidReplacementIndexShouldThrowException() throws Exception {
         String pattern = LINE;
         String replacement = REPLACE;
         int replacementIndex = -1;
@@ -137,10 +166,181 @@ public class SedApplicationTest {
         assertEquals(thrown.getMessage(), ERR_INVALID_REP_X);
     }
 
+    /**
+     * Test
+     *
+     */
     @Test
-    public void runOtherSeparatingCharacterShouldWorkTheSameWay() throws SedException {
+    void runOtherSeparatingCharacterShouldWorkTheSameWay() throws SedException {
         String[] args = {"s|line|replace|1"};
         InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
         sedApplication.run(args, stdinTwo, outputStreamOne);
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runDirectory() {
+        assertThrows(Exception.class, () -> {
+            sedApplication.replaceSubstringInFile
+                    ("", "replacement", 1, EnvironmentHelper.currentDirectory);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runInvalidFileName() {
+        assertThrows(Exception.class, () -> {
+            sedApplication.replaceSubstringInFile
+                    ("valid", "replacement", 1, "invalidFile");
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runNullFileName() {
+        assertThrows(Exception.class, () -> {
+            sedApplication.replaceSubstringInFile
+                    ("valid", "replacement", 1, null);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runNullArgs() {
+        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
+        assertThrows(Exception.class, () -> {
+            sedApplication.run
+                    (null, stdinTwo, outputStreamTwo);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runEmptyArgs() {
+        String[] args = new String[0];
+        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
+        assertThrows(Exception.class, () -> {
+            sedApplication.run
+                    (args, stdinTwo, outputStreamTwo);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runNullStdout() {
+        String[] args = {"s|line|replace|1"};
+        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
+        assertThrows(Exception.class, () -> {
+            sedApplication.run
+                    (args, stdinTwo, null);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runInvalidFirstArgument() throws SedException {
+        String[] args = {"invalid|line|replace|1"};
+        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
+        assertThrows(Exception.class, () -> {
+            sedApplication.run
+                    (args, stdinTwo, outputStreamOne);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runInvalidReplacementIndex() throws SedException {
+        String[] args = {"s|line|replace|-1"};
+        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
+        assertThrows(Exception.class, () -> {
+            sedApplication.run
+                    (args, stdinTwo, outputStreamOne);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runZeroReplacementIndex() throws SedException {
+        String[] args = {"s|line|replace|0"};
+        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
+        assertThrows(Exception.class, () -> {
+            sedApplication.run
+                    (args, stdinTwo, outputStreamOne);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runReplacementIndexTwo() throws Exception {
+        InputStream stdinTwo = new FileInputStream(fileWithOneLine.toPath().toString());
+        assertEquals("lineTwo replace twoLine aline" + System.lineSeparator(), sedApplication.replaceSubstringInStdin("line", "replace", 2, stdinTwo));
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runNullStdin() {
+        assertThrows(Exception.class, () -> {
+            sedApplication.replaceSubstringInStdin
+                    ("valid", "replacement", 1, null);
+        });
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runValidFileNamesInRun() throws FileNotFoundException, SedException {
+        String[] args = {"s|line|replace|1", fileWithOneLine.toPath().toString()};
+        InputStream stdinTwo = new FileInputStream(fileWithOneLine.toPath().toString());
+        OutputStream osPrint = new ByteArrayOutputStream();
+        sedApplication.run(args, stdinTwo, outputStreamOne);
+        assertEquals("", osPrint.toString());
+    }
+
+    /**
+     * Test
+     *
+     */
+    @Test
+    void runValidFileNames() throws FileNotFoundException, SedException {
+        String[] args = {"s|line|replace|1", fileWithOneLine.toPath().toString()};
+        InputStream stdinTwo = new FileInputStream(fileWithOneLine.toPath().toString());
+        OutputStream osPrint = new ByteArrayOutputStream();
+        sedApplication.run(args, stdinTwo, outputStreamOne);
+        assertEquals("", osPrint.toString());
     }
 }
