@@ -22,6 +22,9 @@ public class PasteApplication implements PasteInterface {
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws PasteException {
         int hasFile = 0, hasStdin = 0, sum = 0; // Let hasStdin be 0 when there is no stdin, and 1 when there is at least one stdin. Let hasFile be 0 when there is no file name, and 2 when there is at least one file name.
+        if (stdout == null) { // if stdin is empty
+            throw new PasteException(ERR_NULL_STREAMS);
+        }
         if (args.length == 0) { // When there are no filenames provided (i.e. stdin provided)
             if (stdin == null) { // if stdin is empty
                 throw new PasteException(ERR_NULL_STREAMS);
@@ -78,6 +81,9 @@ public class PasteApplication implements PasteInterface {
      * @throws Exception
      */
     public String mergeStdin(InputStream stdin) throws Exception {
+        if (stdin == null) {
+            throw new PasteException(ERR_NULL_STREAMS);
+        }
         return paste(stdinToBRArray(stdin));
     }
 
@@ -124,9 +130,8 @@ public class PasteApplication implements PasteInterface {
      * @param bufferedReaders
      *            buffered readers to merge content
      * @return the merged string
-     * @throws PasteException
      */
-    private String paste(BufferedReader... bufferedReaders) throws PasteException {
+    private String paste(BufferedReader... bufferedReaders) {
         String tab = "\t", newLine = System.lineSeparator();
         StringBuilder stringBuilder = new StringBuilder();
         boolean hasMoreLines = true;
