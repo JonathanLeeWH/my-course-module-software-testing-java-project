@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
@@ -20,6 +21,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FILE_SEP;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
+@SuppressWarnings("PMD.PreserveStackTrace")
 public class FindApplication implements FindInterface {
     public static final String FILE_IDENT = CHAR_FLAG_PREFIX + "name";
     public static final String NO_FOLDER = "No folder specified";
@@ -28,6 +30,8 @@ public class FindApplication implements FindInterface {
     public static final String MULTIPLE_FILES = "Only one filename is allowed";
     public static final String PERMISSION_DENIED = "Permission Denied";
     public static final String NULL_POINTER = "Null Pointer Exception";
+    public static final String WRONG_SYNTAX = "Wrong Pattern Syntax";
+    public static final String NO_ARGS = "No args specified";
 
     /**
      * Runs the find application with the specified arguments.
@@ -46,6 +50,10 @@ public class FindApplication implements FindInterface {
         try {
             if (args == null) {
                 throw new Exception(NULL_POINTER);
+            }
+
+            if(args.length == 0) {
+                throw new FindException(NO_ARGS);
             }
 
             String fileName = getArguments(args, folderNames);
@@ -174,8 +182,8 @@ public class FindApplication implements FindInterface {
         String result = "";
         String tempResult;
         StringJoiner stringJoiner = new StringJoiner(STRING_NEWLINE);
-
-        Pattern filePattern = Pattern.compile(fileName);
+        Pattern filePattern;
+        filePattern = checkFilePattern(fileName);
 
         for (String f : folderName) {
             String path = convertToAbsolutePath(f);
@@ -202,19 +210,30 @@ public class FindApplication implements FindInterface {
             listOfFolderNames = getFoldersFrom(folder);
 
             String[] folderNamesArr = updatePath(listOfFolderNames, f);
+            tempResult = formatResult(filePattern, listOfFileNames, f);
+            if (!tempResult.isEmpty()) {
+                stringJoiner.add(tempResult);
+            }
             tempResult = findInFolders(fileName, folderNamesArr);
             if (!tempResult.isEmpty()) {
                 stringJoiner.add(tempResult);
             }
 
-            tempResult = formatResult(filePattern, listOfFileNames, f);
-            if (!tempResult.isEmpty()) {
-                stringJoiner.add(tempResult);
-            }
+
         }
         result = stringJoiner.toString();
 
         return result;
+    }
+
+    private Pattern checkFilePattern(String fileName) throws FindException {
+        Pattern filePattern;
+        try{
+            filePattern = Pattern.compile(fileName);
+        }catch (PatternSyntaxException e) {
+            throw new FindException(WRONG_SYNTAX);
+        }
+        return filePattern;
     }
 
     /**
