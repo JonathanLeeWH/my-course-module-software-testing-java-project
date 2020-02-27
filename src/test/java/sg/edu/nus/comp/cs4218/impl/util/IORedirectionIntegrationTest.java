@@ -27,7 +27,6 @@ public class IORedirectionIntegrationTest {
     private static final String MOCK_ROOT_FOLDER1 = MOCK_ROOT_DIR + File.separator + MOCK_FOLDER;
     private static final String LS_OUTPUT = MOCK_FILE_NAME + System.lineSeparator() + "" + MOCK_FOLDER;
 
-    private static final String CAT_COMMAND = "cat";
     private static final String ECHO_COMMAND = "echo";
 
     private static final String OUTPUT_FILE_1 = "outputFile1.txt";
@@ -108,14 +107,14 @@ public class IORedirectionIntegrationTest {
 
     @Test
     void inputRedirectionArgumentNotGivenTest() {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList(CAT_COMMAND, INPUT_REDIR_CHAR);
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("ls", INPUT_REDIR_CHAR);
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(NoSuchElementException.class, () -> callCommand.evaluate(mockIs, mockBos));
     }
 
     @Test
     void fileNotExistForInputRedirectionTest() {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList(CAT_COMMAND, INPUT_REDIR_CHAR,
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("ls", INPUT_REDIR_CHAR,
                 FILE_NOT_EXIST);
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(ShellException.class, () -> callCommand.evaluate(mockIs, mockBos));
@@ -123,7 +122,7 @@ public class IORedirectionIntegrationTest {
 
     @Test
     void folderForInputRedirectionTest() {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList(CAT_COMMAND, INPUT_REDIR_CHAR,
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("ls", INPUT_REDIR_CHAR,
                 FOLDER1);
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(ShellException.class, () -> callCommand.evaluate(mockIs, mockBos));
@@ -237,7 +236,7 @@ public class IORedirectionIntegrationTest {
 
     @Test
     void outputRedirectionArgumentNotGivenTest() {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList(CAT_COMMAND, OUTPUT_REDIR_CHAR);
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("ls", OUTPUT_REDIR_CHAR);
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(NoSuchElementException.class, () -> callCommand.evaluate(mockIs, mockBos));
     }
@@ -384,7 +383,7 @@ public class IORedirectionIntegrationTest {
 
     @Test
     void inputAndOutputRedirectionInputArgumentNotGivenTest() {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList(CAT_COMMAND, INPUT_REDIR_CHAR,
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("ls", INPUT_REDIR_CHAR,
                 OUTPUT_REDIR_CHAR, OUTPUT_FILE_1);
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(ShellException.class, () -> callCommand.evaluate(mockIs, mockBos));
@@ -392,7 +391,7 @@ public class IORedirectionIntegrationTest {
 
     @Test
     void inputAndOutputRedirectionOutputArgumentNotGivenTest() {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList(CAT_COMMAND, INPUT_REDIR_CHAR,
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("ls", INPUT_REDIR_CHAR,
                 FILENAME1, OUTPUT_REDIR_CHAR);
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(NoSuchElementException.class, () -> callCommand.evaluate(mockIs, mockBos));
@@ -400,26 +399,10 @@ public class IORedirectionIntegrationTest {
 
     @Test
     void inputAndOutputRedirectionInputAndOutputArgumentNotGivenTest() {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList(CAT_COMMAND, INPUT_REDIR_CHAR,
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("ls", INPUT_REDIR_CHAR,
                 OUTPUT_REDIR_CHAR);
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(ShellException.class, () -> callCommand.evaluate(mockIs, mockBos));
-    }
-
-    @Test
-    void inputAndOutputRedirectionReverseOrderTest() throws Exception {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList(CAT_COMMAND,
-                OUTPUT_REDIR_CHAR, OUTPUT_FILE_1, INPUT_REDIR_CHAR, FILENAME1);
-        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
-        callCommand.evaluate(mockIs, mockBos);
-
-        // Check that the correct output is written to OUTPUT_FILE_1
-        String outputFromFile1 = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
-        String expectedOutput = FILE_1_CONTENT;
-        assertEquals(expectedOutput, outputFromFile1);
-
-        // Check that nothing is written to stdout
-        assertEquals(EMPTY_STRING, mockBos.toString());
     }
 
     @Test
