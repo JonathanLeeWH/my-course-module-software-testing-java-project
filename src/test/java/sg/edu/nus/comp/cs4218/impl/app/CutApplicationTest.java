@@ -106,14 +106,6 @@ class CutApplicationTest {
     }
 
     @Test
-    void testRunUsingCharPosAnd2CommaSeparatedNumAndFileIsDashWithStartNumHigherThanEndNum() throws Exception {
-        List<String> args = Arrays.asList("-c", "143,18", "-");
-        cutApplication.run(args.toArray(new String[0]), ourTestStdin, ourTestStdout);
-        String expectedResult = "";
-        assertEquals(expectedResult, ourTestStdout.toString());
-    }
-
-    @Test
     void testRunUsingBytePosAndNumRangeAndHavingDashBetweenMultipleFilesWithStartNumLowerThanEndNum() throws Exception {
         List<String> args = Arrays.asList("-b", "10-19", testFile3.toFile().getPath(),
                 testFile1.toFile().getPath(), testFile3.toFile().getPath(), "-", "-");
@@ -121,20 +113,6 @@ class CutApplicationTest {
         String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "oftware Te\n" + "ödülè cö\n" +
                 "ssion test\n" + "e of error\n" + "ce predict\n" + "kills on t\n" +
                 "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "ringen\n";
-        assertEquals(expectedResult, ourTestStdout.toString());
-    }
-
-    @Test
-    void testRunUsingCharPosAndNumRangeAndHavingDashBetweenMultipleFilesWithStartNumLowerThanEndNum() throws Exception {
-        List<String> args = Arrays.asList("-c", "7-23", "-", testFile2.toFile().getPath(), testFile1.toFile().getPath(), "-",
-                "-", "-", testFile1.toFile().getPath(), testFile3.toFile().getPath(), "-", "-");
-        cutApplication.run(args.toArray(new String[0]), ourTestStdin, ourTestStdout);
-        String expectedResult = "springen\n" + "ipsum dolor sit a\n" + "\n" + "d quis viverra ni\n" +
-                "\n" + " massa tincidunt \n" + ": Software Testin\n" + "ödülè cövèrs thè \n" +
-                "gression testing.\n" + "ause of errors in\n" + "mance prediction,\n" + "l skills on testi\n" +
-                ": Software Testin\n" + "ödülè cövèrs thè \n" + "gression testing.\n" +
-                "ause of errors in\n" + "mance prediction,\n" + "l skills on testi\n" +
-                ".0\n" + "\n" + "\n" + "\n" + "\n" + "200\n" + "10\n";
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
@@ -227,6 +205,24 @@ class CutApplicationTest {
     }
 
     @Test
+    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndValidSingleFileWithStartNumHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, Integer.MAX_VALUE, 2 , testFile1.toFile().getPath()
+        );
+        String expectedResult = "S\n" + "h\n" + "n\n" + "o\n" + "e\n" + "r";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndValidSingleFileWithEndNumHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, 2, Integer.MAX_VALUE, testFile1.toFile().getPath()
+        );
+        String expectedResult = "S\n" + "h\n" + "n\n" + "o\n" + "e\n" + "r";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
     void testCutFromFilesUsingBytePosAndNumRangeAndValidSingleFileWithStartNumLowerThanEndNum() throws Exception {
         String actualResult = cutApplication.cutFromFiles(
                 false, true, true, 6, 12, testFile1.toFile().getPath()
@@ -244,12 +240,46 @@ class CutApplicationTest {
         assertEquals(expectedResult, actualResult);
     }
 
+
+    @Test
+    void testCutFromFilesUsingBytePosAndNumRangeAndValidSingleFileWithStartNumHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, true, Integer.MAX_VALUE, 715, testFile2.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "";
+        assertEquals(expectedResult, actualResult);
+    }
+
+
+    @Test
+    void testCutFromFilesUsingBytePosAndNumRangeAndValidSingleFileWithEndNumHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, true, 600, Integer.MAX_VALUE, testFile2.toFile().getPath()
+        );
+        String expectedResult = "ique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "\n" +
+                "orta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n" +
+                "rttitor eget dolor morbi non arcu.";
+        assertEquals(expectedResult, actualResult);
+    }
+
+
     @Test
     void testCutFromFilesUsingBytePosAndSingleNumAndValidSingleFile() throws Exception {
         String actualResult = cutApplication.cutFromFiles(
                 false, true, false, 5, 5, testFile1.toFile().getPath()
         );
         String expectedResult = "1\n" + "š\n" + "r\n" + "-\n" + "o\n" + "i";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAndSingleNumAndValidSingleFileWithIndexHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, Integer.MAX_VALUE, Integer.MAX_VALUE, testFile1.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -270,6 +300,25 @@ class CutApplicationTest {
         String expectedResult = "T\n" + "se\n" + "si\n" + "o \n" + "co\n" + " n";
         assertEquals(expectedResult, actualResult);
     }
+
+    @Test
+    void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndValidSingleFileWithStartNumHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, Integer.MAX_VALUE, 76, testFile2.toFile().getPath()
+        );
+        String expectedResult = "p\n" + "\n" + "e\n" + "\n" + "u";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndValidSingleFileWithEndNumHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, 81, Integer.MAX_VALUE, testFile2.toFile().getPath()
+        );
+        String expectedResult = "n\n" + "\n" + "t\n" + "\n" + " ";
+        assertEquals(expectedResult, actualResult);
+    }
+
 
     @Test
     void testCutFromFilesUsingCharPosAndNumRangeAndValidSingleFileWithStartNumLowerThanEndNum() throws Exception {
@@ -295,11 +344,39 @@ class CutApplicationTest {
     }
 
     @Test
+    void testCutFromFilesUsingCharPosAndNumRangeAndValidSingleFileWithStartNumHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, true, Integer.MAX_VALUE, 17, testFile3.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "\n";
+        assertEquals(expectedResult, actualResult);
+    }
+
+
+    @Test
+    void testCutFromFilesUsingCharPosAndNumRangeAndValidSingleFileWithEndNumHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, true, 18, Integer.MAX_VALUE, testFile3.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "\n";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
     void testCutFromFilesUsingCharPosAndSingleNumAndValidSingleFile() throws Exception {
         String actualResult = cutApplication.cutFromFiles(
                 true, false, false, 103, 103, testFile1.toFile().getPath()
         );
         String expectedResult = "\n" + "e\n" + "d\n" + "f\n" + "l\n" + "";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAndSingleNumAndValidSingleFileWithIndexHigherThanAnyNumLinesInFile() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, Integer.MAX_VALUE, Integer.MAX_VALUE, testFile1.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -322,6 +399,28 @@ class CutApplicationTest {
         );
         String expectedResult = "C\n" + "Te\n" + "a\n" + "r\n" + "p\n" + "c\n" + "La\n" + "\n" + "Et\n" +
                 "\n" + "Tt\n" + "1\n" + "2\n" + "5\n" + "2\n" + "2\n" + "5\n" + "0";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndValidDistinctFilesWithStartNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, Integer.MAX_VALUE, 8,
+                testFile1.toFile().getPath(), testFile2.toFile().getPath(), testFile3.toFile().getPath()
+        );
+        String expectedResult = " \n" + "m\n" + "r\n" + "u\n" + "a\n" + " \n" + "p\n" + "\n" + " \n" + "\n" +
+                "m\n" + "0\n" + "\n" + "\n" + "\n" + "\n" + "0\n" + "0";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndValidDistinctFilesWithEndNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, 8, Integer.MAX_VALUE,
+                testFile1.toFile().getPath(), testFile2.toFile().getPath(), testFile3.toFile().getPath()
+        );
+        String expectedResult = " \n" + "m\n" + "r\n" + "u\n" + "a\n" + " \n" + "p\n" + "\n" + " \n" + "\n" +
+                "m\n" + "0\n" + "\n" + "\n" + "\n" + "\n" + "0\n" + "0";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -349,6 +448,37 @@ class CutApplicationTest {
     }
 
     @Test
+    void testCutFromFilesUsingBytePosAndNumRangeAndValidDistinctFilesWithStartNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, true, Integer.MAX_VALUE, 1,
+                testFile2.toFile().getPath(), testFile3.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAndNumRangeAndValidDistinctFilesWithEndNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, true, 9, Integer.MAX_VALUE,
+                testFile1.toFile().getPath(), testFile2.toFile().getPath()
+        );
+        String expectedResult = "Software Testing\n" +
+                "ödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "ession testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "se of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "nce prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "skills on testing and debugging through hands-on assignments.\n" +
+                "sum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "\n" +
+                "quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n" +
+                "assa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
     void testCutFromFilesUsingBytePosAndSingleNumAndValidDistinctFiles() throws Exception {
         String actualResult = cutApplication.cutFromFiles(
                 false, true, false, 9, 9,
@@ -357,6 +487,18 @@ class CutApplicationTest {
         String expectedResult = "S\n" + "ö\n" + "e\n" +
                 "s\n" + "n\n" + "s\n" + "\n" + "\n" +
                 "\n" + "\n" + "\n" + "0\n" + "";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAndSingleNumAndValidDistinctFilesWithIndexHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, Integer.MAX_VALUE, Integer.MAX_VALUE,
+                testFile1.toFile().getPath(), testFile3.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -381,6 +523,28 @@ class CutApplicationTest {
                 "1\n" + "2\n" + "5\n" + "2\n" + "2\n" + "5\n" + "0";
         assertEquals(expectedResult, actualResult);
     }
+
+    @Test
+    void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndValidDistinctFilesWithStartNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, Integer.MAX_VALUE, 1,
+                testFile2.toFile().getPath(), testFile3.toFile().getPath()
+        );
+        String expectedResult = "L\n" + "\n" + "E\n" + "\n" + "T\n" +
+                "1\n" + "2\n" + "5\n" + "2\n" + "2\n" + "5\n" + "0";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndValidDistinctFilesWithEndNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, 274, Integer.MAX_VALUE,
+                testFile1.toFile().getPath(), testFile2.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "s\n" + "\n" + "d\n" + "\n" + "n";
+        assertEquals(expectedResult, actualResult);
+    }
+
 
     @Test
     void testCutFromFilesUsingCharPosAndNumRangeAndValidDistinctFilesWithStartNumLowerThanEndNum() throws Exception {
@@ -414,13 +578,49 @@ class CutApplicationTest {
     }
 
     @Test
+    void testCutFromFilesUsingCharPosAndNumRangeAndValidDistinctFilesWithStartNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, true, Integer.MAX_VALUE, 1,
+                testFile2.toFile().getPath(), testFile1.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAndNumRangeAndValidDistinctFilesWithEndNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, true, 200, Integer.MAX_VALUE,
+                testFile2.toFile().getPath(), testFile1.toFile().getPath()
+        );
+        String expectedResult = "rsus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "\n" +
+                "ra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n" +
+                "icula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
     void testCutFromFilesUsingCharPosAndSingleNumAndValidDistinctFiles() throws Exception {
         String actualResult = cutApplication.cutFromFiles(
-                true, false, true, 250, 250,
+                true, false, false, 250, 250,
                 testFile2.toFile().getPath(), testFile1.toFile().getPath()
         );
         String expectedResult = "t\n" + "\n" + "a\n" + "\n" + "i\n" + "\n" +
                 "\n" + "\n" + "\n" + "\n" + "";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAndSingleNumAndValidDistinctFilesWithIndexHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, Integer.MAX_VALUE, Integer.MAX_VALUE,
+                testFile2.toFile().getPath(), testFile3.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -443,6 +643,27 @@ class CutApplicationTest {
         );
         String expectedResult = "pq\n" + "\n" + " u\n" + "\n" + "mr\n" +
                 "pq\n" + "\n" + " u\n" + "\n" + "mr";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndValidSimilarFilesWithStartNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, Integer.MAX_VALUE, 144,
+                testFile2.toFile().getPath(), testFile2.toFile().getPath()
+        );
+        String expectedResult = "i\n" + "\n" + "g\n" + "\n" + "s\n" + "i\n" + "\n" + "g\n" + "\n" + "s";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAnd2CommaSeparatedNumAndValidSimilarFilesWithEndNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, 120, Integer.MAX_VALUE,
+                testFile2.toFile().getPath(), testFile2.toFile().getPath()
+        );
+        String expectedResult = "q\n" + "\n" + "u\n" + "\n" + "r\n" + "q\n" +
+                "\n" + "u\n" + "\n" + "r";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -471,6 +692,36 @@ class CutApplicationTest {
     }
 
     @Test
+    void testCutFromFilesUsingBytePosAndNumRangeAndValidSimilarFilesWithStartNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, true, Integer.MAX_VALUE, 8,
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "";
+        assertEquals(expectedResult, actualResult);
+    }
+
+
+    @Test
+    void testCutFromFilesUsingBytePosAndNumRangeAndValidSimilarFilesWithEndNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, true, 90, Integer.MAX_VALUE,
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath()
+        );
+        String expectedResult = "\n" + "ït testing, integration testing,\n" + "thods for finding the\n" +
+                " and analysis for\n" + " Students will acquire\n" +
+                "\n" + "\n" +
+                "ït testing, integration testing,\n" + "thods for finding the\n" +
+                " and analysis for\n" + " Students will acquire\n" +
+                "\n" + "\n" +
+                "ït testing, integration testing,\n" + "thods for finding the\n" +
+                " and analysis for\n" + " Students will acquire\n";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
     void testCutFromFilesUsingBytePosAndSingleNumAndValidSimilarFiles() throws Exception {
         String actualResult = cutApplication.cutFromFiles(
                 false, true, false, 3, 3,
@@ -482,6 +733,17 @@ class CutApplicationTest {
                 " \n" + ",\n" + ",\n" + ",\n" + "1\n" + "1\n" + "0\n" + " \n" +
                 ",\n" + ",\n" + ",\n" + "1\n" + "1\n" + "0\n" +
                 " \n" + ",\n" + ",\n" + ",\n" + "1\n" + "1";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingBytePosAndSingleNumAndValidSimilarFilesWithIndexHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                false, true, false, Integer.MAX_VALUE, Integer.MAX_VALUE,
+                testFile3.toFile().getPath(), testFile3.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -512,6 +774,30 @@ class CutApplicationTest {
                 "48\n" + "ìm\n" + "de\n" + "oc\n" + "rr\n" + "ua\n" +
                 "48\n" + "ìm\n" + "de\n" + "oc\n" + "rr\n" + "ua\n" +
                 "48\n" + "ìm\n" + "de\n" + "oc\n" + "rr\n" + "ua";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndValidSimilarFilesWithStartNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, Integer.MAX_VALUE, 3,
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath()
+        );
+        String expectedResult = "4\n" + "ì\n" + "d\n" + "o\n" + "r\n" + "u\n" +
+                "4\n" + "ì\n" + "d\n" + "o\n" + "r\n" + "u\n" +
+                "4\n" + "ì\n" + "d\n" + "o\n" + "r\n" + "u";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAnd2CommaSeparatedNumAndValidSimilarFilesWithEndNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, 6, Integer.MAX_VALUE,
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath()
+        );
+        String expectedResult = "8\n" + "m\n" + "e\n" + "c\n" + "r\n" + "a\n" +
+                "8\n" + "m\n" + "e\n" + "c\n" + "r\n" + "a\n" +
+                "8\n" + "m\n" + "e\n" + "c\n" + "r\n" + "a";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -559,6 +845,58 @@ class CutApplicationTest {
     }
 
     @Test
+    void testCutFromFilesUsingCharPosAndNumRangeAndValidSimilarFilesWithStartNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, true, Integer.MAX_VALUE, 4,
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath(),
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath(),
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath(),
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAndNumRangeAndValidSimilarFilesWithEndNumHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, true, 55, Integer.MAX_VALUE,
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath(),
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath(),
+                testFile1.toFile().getPath(), testFile1.toFile().getPath(), testFile1.toFile().getPath()
+        );
+        String expectedResult = "\n" + "re testing including unït testing, integration testing,\n" +
+                "ria will be discussed. Debugging methods for finding the\n" + "e investigated. The use öf testing and analysis for\n" +
+                "formance debugging will be studied. Students will acquire\n" + "on assignments.\n" + "\n" +
+                "re testing including unït testing, integration testing,\n" + "ria will be discussed. Debugging methods for finding the\n" +
+                "e investigated. The use öf testing and analysis for\n" + "formance debugging will be studied. Students will acquire\n" +
+                "on assignments.\n" + "\n" + "re testing including unït testing, integration testing,\n" +
+                "ria will be discussed. Debugging methods for finding the\n" + "e investigated. The use öf testing and analysis for\n" +
+                "formance debugging will be studied. Students will acquire\n" + "on assignments.\n" + "\n" +
+                "re testing including unït testing, integration testing,\n" + "ria will be discussed. Debugging methods for finding the\n" +
+                "e investigated. The use öf testing and analysis for\n" + "formance debugging will be studied. Students will acquire\n" +
+                "on assignments.\n" + "\n" + "re testing including unït testing, integration testing,\n" +
+                "ria will be discussed. Debugging methods for finding the\n" + "e investigated. The use öf testing and analysis for\n" +
+                "formance debugging will be studied. Students will acquire\n" + "on assignments.\n" + "\n" +
+                "re testing including unït testing, integration testing,\n" + "ria will be discussed. Debugging methods for finding the\n" +
+                "e investigated. The use öf testing and analysis for\n" + "formance debugging will be studied. Students will acquire\n" +
+                "on assignments.\n" + "\n" + "re testing including unït testing, integration testing,\n" +
+                "ria will be discussed. Debugging methods for finding the\n" + "e investigated. The use öf testing and analysis for\n" +
+                "formance debugging will be studied. Students will acquire\n" + "on assignments.\n" + "\n" +
+                "re testing including unït testing, integration testing,\n" + "ria will be discussed. Debugging methods for finding the\n" +
+                "e investigated. The use öf testing and analysis for\n" + "formance debugging will be studied. Students will acquire\n" +
+                "on assignments.\n" + "\n" + "re testing including unït testing, integration testing,\n" +
+                "ria will be discussed. Debugging methods for finding the\n" + "e investigated. The use öf testing and analysis for\n" +
+                "formance debugging will be studied. Students will acquire\n" + "on assignments.";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
     void testCutFromFilesUsingCharPosAndSingleNumAndValidSimilarFiles() throws Exception {
         String actualResult = cutApplication.cutFromFiles(
                 true, false, false, 8, 8,
@@ -569,6 +907,18 @@ class CutApplicationTest {
                 "p\n" + "\n" + " \n" + "\n" + "m\n" +
                 "p\n" + "\n" + " \n" + "\n" + "m\n" +
                 "p\n" + "\n" + " \n" + "\n" + "m";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCutFromFilesUsingCharPosAndSingleNumAndValidSimilarFilesWithIndexHigherThanAnyNumLinesInFiles() throws Exception {
+        String actualResult = cutApplication.cutFromFiles(
+                true, false, false, Integer.MAX_VALUE, Integer.MAX_VALUE,
+                testFile2.toFile().getPath(), testFile2.toFile().getPath(), testFile2.toFile().getPath()
+        );
+        String expectedResult = "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" +
+                "\n" + "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -642,7 +992,7 @@ class CutApplicationTest {
     }
 
     @Test
-    void testCutFromStdinUsingBytePosAnd2CommaSeparatedNumAndValidInputStreamWithStartNumHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingBytePosAnd2CommaSeparatedNumAndValidInputStreamWithStartNumHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 false, true, false, Integer.MAX_VALUE, 3,
                 ourTestStdin
@@ -652,7 +1002,7 @@ class CutApplicationTest {
     }
 
     @Test
-    void testCutFromStdinUsingBytePosAnd2CommaSeparatedNumAndValidInputStreamWithEndNumHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingBytePosAnd2CommaSeparatedNumAndValidInputStreamWithEndNumHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 false, true, false, 4, Integer.MAX_VALUE,
                 ourTestStdin
@@ -683,7 +1033,7 @@ class CutApplicationTest {
 
 
     @Test
-    void testCutFromStdinUsingBytePosAndNumRangeAndValidInputStreamWithStartNumHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingBytePosAndNumRangeAndValidInputStreamWithStartNumHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 false, true, true, Integer.MAX_VALUE, 13,
                 ourTestStdin
@@ -693,7 +1043,7 @@ class CutApplicationTest {
     }
 
     @Test
-    void testCutFromStdinUsingBytePosAndNumRangeAndValidInputStreamWithEndNumHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingBytePosAndNumRangeAndValidInputStreamWithEndNumHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 false, true, true, 15, Integer.MAX_VALUE,
                 ourTestStdin
@@ -713,7 +1063,7 @@ class CutApplicationTest {
     }
 
     @Test
-    void testCutFromStdinUsingBytePosAndSingleNumAndValidInputStreamWithIndexHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingBytePosAndSingleNumAndValidInputStreamWithIndexHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 false, true, false, Integer.MAX_VALUE, Integer.MAX_VALUE,
                 ourTestStdin
@@ -744,7 +1094,7 @@ class CutApplicationTest {
 
 
     @Test
-    void testCutFromStdinUsingCharPosAnd2CommaSeparatedNumAndValidInputStreamWithStartNumHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingCharPosAnd2CommaSeparatedNumAndValidInputStreamWithStartNumHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 true, false, false, Integer.MAX_VALUE, 1,
                 ourTestStdin
@@ -755,7 +1105,7 @@ class CutApplicationTest {
 
 
     @Test
-    void testCutFromStdinUsingCharPosAnd2CommaSeparatedNumAndValidInputStreamWithEndNumHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingCharPosAnd2CommaSeparatedNumAndValidInputStreamWithEndNumHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 true, false, false, 14, Integer.MAX_VALUE,
                 ourTestStdin
@@ -785,7 +1135,7 @@ class CutApplicationTest {
     }
 
     @Test
-    void testCutFromStdinUsingCharPosAndNumRangeAndValidInputStreamWithStartNumHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingCharPosAndNumRangeAndValidInputStreamWithStartNumHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 true, false, true, Integer.MAX_VALUE, 2,
                 ourTestStdin
@@ -795,7 +1145,7 @@ class CutApplicationTest {
     }
 
     @Test
-    void testCutFromStdinUsingCharPosAndNumRangeAndValidInputStreamWithEndNumHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingCharPosAndNumRangeAndValidInputStreamWithEndNumHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 true, false, true, 2, Integer.MAX_VALUE,
                 ourTestStdin
@@ -815,7 +1165,7 @@ class CutApplicationTest {
     }
 
     @Test
-    void testCutFromStdinUsingCharPosAndSingleNumAndValidInputStreamWithIndexHigherThanLineLength() throws Exception {
+    void testCutFromStdinUsingCharPosAndSingleNumAndValidInputStreamWithIndexHigherThanAnyNumLinesInInputStream() throws Exception {
         String actualResult = cutApplication.cutFromStdin(
                 true, false, false, Integer.MAX_VALUE, Integer.MAX_VALUE,
                 ourTestStdin

@@ -191,9 +191,6 @@ public class CutApplication implements CutInterface {
             }
             else if (isRange) {
                 if ((start <= end) && (start < line.length())) {
-                    if ((start <= 0)) {
-                        start = 1;
-                    }
                     if (end > line.length()) {
                         end = line.length();
                     }
