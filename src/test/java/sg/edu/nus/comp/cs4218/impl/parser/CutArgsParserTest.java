@@ -1,18 +1,13 @@
 package sg.edu.nus.comp.cs4218.impl.parser;
 
 import org.junit.jupiter.api.*;
-import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
-import sg.edu.nus.comp.cs4218.impl.app.CutApplication;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static sg.edu.nus.comp.cs4218.impl.parser.ArgsParser.ILLEGAL_FLAG_MSG;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_LESS_THAN_ZERO;
 
 public class CutArgsParserTest {
     private CutArgsParser cutArgsParser;
