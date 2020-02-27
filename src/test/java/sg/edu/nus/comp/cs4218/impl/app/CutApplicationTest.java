@@ -23,7 +23,6 @@ class CutApplicationTest {
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
-    private final Path testFileNoReadPer = Paths.get(TestFileUtils.TESTDATA_DIR + "testNoReadAccess.html");
 
     @BeforeEach
     public void setUp() {
@@ -171,9 +170,11 @@ class CutApplicationTest {
 
     @Test
     void testCutFromFilesUsingCharPosAndSingleNumAndFileNameWhereFileHasNoReadAccess() {
+        testFile1.toFile().setReadable(false);
         Throwable thrown = assertThrows(CutException.class, () -> cutApplication.cutFromFiles(
-                true, false, false, 1, 1, testFileNoReadPer.toFile().getPath()
+                true, false, false, 1, 1, testFile1.toFile().getPath()
         ));
+        testFile1.toFile().setReadable(true);
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ERR_NO_PERM);
     }
 
