@@ -19,6 +19,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class SortApplication implements SortInterface {
+    public static final String COMMAND = "sort";
 
     /**
      * Runs the sort application with the specified arguments.
