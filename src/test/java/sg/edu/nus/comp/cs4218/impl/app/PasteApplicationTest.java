@@ -3,51 +3,59 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import sg.edu.nus.comp.cs4218.exception.PasteException;
+
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PasteApplicationTest {
-    private static final String TEST_FILE_TYPE = ".txt";
-    private static final String EMPTY_FILE_NAME= "testFileZero";
-    private static final String TWO_LINES_FILE = "testFileOne";
-    private static final String ONE_LINE_FILE= "testFileTwo";
-    private static final String EMPTY_FILE = "";
-    private static final String TWO_LINES = "First Line" + System.lineSeparator() + "Second Line";
-    private static final String ONE_LINE = "Only One Line";
+class PasteApplicationTest {
+    private static final String FILE_TYPE = ".txt";
+    private static final String EMPTY_FILE = "testFileZero";
+    private static final String ONE_LINE_FILE = "singleLineFile";
+    private static final String TWO_LINES_FILE = "twoLinesFile";
+    private static final String EMPTY = "";
+    private static final String TWO_LINES = "Line One" + System.lineSeparator() + "Line Two";
+    private static final String ONE_LINE = "Line One";
+
     private static File emptyFile;
-    private static File fileWithTwoLines;
-    private static File fileWithOneLine;
+    private static File twoLinesFile;
+    private static File oneLineFile;
     private static PasteApplication pasteApplication;
-    private static OutputStream outputStreamZero, outputStreamOne, outputStreamTwo;
+    private static OutputStream osZero, osTwo, osOne, osPrint;
+    private static final String FIRST_LINE = "Line One";
+    private static final String SECOND_LINE = "Line Two";
 
     @BeforeAll
-    public static void setupBeforeTest() throws IOException {
+    static void setupBeforeTest() {
         pasteApplication = new PasteApplication();
         try {
-            emptyFile = File.createTempFile(EMPTY_FILE_NAME, TEST_FILE_TYPE);
-            fileWithTwoLines = File.createTempFile(TWO_LINES_FILE, TEST_FILE_TYPE);
-            fileWithOneLine = File.createTempFile(ONE_LINE_FILE, TEST_FILE_TYPE);
-            outputStreamZero = new FileOutputStream(emptyFile);
-            outputStreamOne = new FileOutputStream(fileWithTwoLines);
-            outputStreamTwo = new FileOutputStream(fileWithOneLine);
-            outputStreamZero.write(EMPTY_FILE.getBytes()   );
-            outputStreamOne.write(TWO_LINES.getBytes());
-            outputStreamTwo.write(ONE_LINE.getBytes());
+            emptyFile = File.createTempFile(EMPTY_FILE, FILE_TYPE);
+            twoLinesFile = File.createTempFile(TWO_LINES_FILE, FILE_TYPE);
+            oneLineFile = File.createTempFile(ONE_LINE_FILE, FILE_TYPE);
+            osZero = new FileOutputStream(emptyFile);
+            osTwo = new FileOutputStream(twoLinesFile);
+            osOne = new FileOutputStream(oneLineFile);
+            osZero.write(EMPTY.getBytes()   );
+            osTwo.write(TWO_LINES.getBytes());
+            osOne.write(ONE_LINE.getBytes());
+            osPrint = new ByteArrayOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @AfterAll
-    public static void tearDownAfterTesting() {
+    static void tearDownAfterTesting() {
         emptyFile.deleteOnExit();
-        fileWithTwoLines.deleteOnExit();
-        fileWithOneLine.deleteOnExit();
+        twoLinesFile.deleteOnExit();
+        oneLineFile.deleteOnExit();
         try {
-            outputStreamZero.close();
-            outputStreamOne.close();
-            outputStreamTwo.close();
+            osZero.close();
+            osTwo.close();
+            osOne.close();
+            osPrint.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,11 +66,28 @@ public class PasteApplicationTest {
      *  Expected: Throws FileNotFound Exception
      */
     @Test
-    public void executeInvalidFileThrowsFileNotFoundException() {
-        String[] args = { "invalidTest" };
+    void runInvalidFileShouldThrowPasteException() {
+        String invalidFile = "invalidTest";
+        String[] args = { invalidFile };
         assertThrows(FileNotFoundException.class, () -> {
             pasteApplication.mergeFile(args);
         });
+    }
+
+    /**
+     *  Test run when dash is not in the first argument.
+     *  Expected: Throws FileNotFound Exception
+     */
+    @Test
+    void runDashInSecondArgumentShouldThrowPasteException() {
+        String[] args = {"ok.txt", "-"};
+        try (InputStream inputStream = new FileInputStream(twoLinesFile)) {
+            assertThrows(PasteException.class, () -> {
+                pasteApplication.run(args, inputStream, osTwo);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -70,22 +95,22 @@ public class PasteApplicationTest {
      *  Expected: Throws FileNotFound Exception
      */
     @Test
-    public void executeEmptyFileNameThrowFileNotFoundException() {
-        String[] args = { fileWithOneLine.toPath().toString(), ""};
+    void runEmptyFileNameShouldThrowPasteException() {
+        String[] args = { oneLineFile.toPath().toString(), " "};
         assertThrows(FileNotFoundException.class, () -> {
             pasteApplication.mergeFile(args);
         });
     }
 
     /**
-     * Test mergeFile method when filename is empty.
-     *  Expected: Throws FileNotFound Exception
+     * Test mergeFile method when file content is empty.
+     *  Expected: Print Nothing.
      */
     @Test
-    public void executePrintNothingWhenOneEmptyFileIsGivenSuccess() throws Exception {
+    void runEmptyFileContentShouldPrintNothing() throws Exception {
         String[] fileNames = new String[1];
         fileNames[0] = emptyFile.toPath().toString();
-        assertEquals("", pasteApplication.mergeFile(fileNames));
+        assertEquals(System.lineSeparator(), pasteApplication.mergeFile(fileNames));
     }
 
     /**
@@ -93,10 +118,10 @@ public class PasteApplicationTest {
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
     @Test
-    public void executePrintTwoLinesWhenATwoLinesFileIsGivenSuccess() throws Exception {
+    void runTwoLinesFileShouldPrintTwoLines() throws Exception {
         String[] fileName = new String[1];
-        fileName[0] = fileWithTwoLines.toPath().toString();
-        assertEquals(TWO_LINES, pasteApplication.mergeFile(fileName));
+        fileName[0] = twoLinesFile.toPath().toString();
+        assertEquals(TWO_LINES + System.lineSeparator(), pasteApplication.mergeFile(fileName));
     }
 
     /**
@@ -104,11 +129,10 @@ public class PasteApplicationTest {
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
     @Test
-    public void executePrintSingleLineWhenOneSingleLineFileIsGivenSuccess() throws Exception {
+    void runOneLineFileShouldPrintOneLines() throws Exception {
         String[] fileName = new String[1];
-        fileName[0] = fileWithOneLine.toPath().toString();
-        String actualOutput = pasteApplication.mergeFile(fileName);
-        assertEquals(ONE_LINE, actualOutput);
+        fileName[0] = oneLineFile.toPath().toString();
+        assertEquals(ONE_LINE + System.lineSeparator(), pasteApplication.mergeFile(fileName));
     }
 
     /**
@@ -116,11 +140,38 @@ public class PasteApplicationTest {
      *  Expected: Returns a string with the two file contents merged (tab-concatenated).
      */
     @Test
-    public void executeMergeMultipleFilesSuccess() throws Exception {
-        String[] args = { fileWithTwoLines.toPath().toString(), fileWithOneLine.toPath().toString() };
-        String expectedOutput = "First Line" + "\t" + "Only One Line" + System.lineSeparator() + "Second Line";
+    void runMergeMultipleFilesShouldMergeAllFilesAndPrintMergedContents() throws Exception {
+        String tab = "\t";
+        String[] args = { twoLinesFile.toPath().toString(), oneLineFile.toPath().toString() };
+        String expectedOutput = FIRST_LINE + tab + FIRST_LINE + System.lineSeparator()
+                + SECOND_LINE + System.lineSeparator();
         String actualOutput = pasteApplication.mergeFile(args);
         assertEquals(expectedOutput, actualOutput);
+    }
+
+    /**
+     * Test mergeFile method when three filenames (including one empty file) are given.
+     *  Expected: Returns a string with the three file contents merged (tab-concatenated).
+     */
+    @Test
+    void runMergeMultipleFilesThatIncludesOneEmptyFileShouldMergeAllFilesAndPrintMergedContents() throws Exception {
+        String tab = "\t";
+        String[] args = { twoLinesFile.toPath().toString(), oneLineFile.toPath().toString(), emptyFile.toPath().toString() };
+        String expectedOutput = FIRST_LINE + tab + FIRST_LINE + System.lineSeparator()
+                + SECOND_LINE + System.lineSeparator();
+        String actualOutput = pasteApplication.mergeFile(args);
+        assertEquals(expectedOutput, actualOutput);
+    }
+
+    /**
+     * Test mergeStdin method with null stdin.
+     *  Expected: PasteException
+     */
+    @Test
+    void runNullStdinShouldThrowPasteException() {
+        assertThrows(PasteException.class, () -> {
+            pasteApplication.mergeStdin(null);
+        });
     }
 
     /**
@@ -128,10 +179,10 @@ public class PasteApplicationTest {
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
     @Test
-    public void executePrintSingleLineWhenStdinSingleLineSuccess() throws Exception {
-        try (InputStream inputStream = new FileInputStream(fileWithOneLine)) {
-            assertEquals(ONE_LINE, pasteApplication.mergeStdin(inputStream));
-        }  catch (Exception e) {
+    void runStdinSingleLineShouldPrintSingleLine() throws Exception {
+        try(InputStream inputStream = new FileInputStream(oneLineFile)) {
+            assertEquals(ONE_LINE + System.lineSeparator(), pasteApplication.mergeStdin(inputStream));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -141,10 +192,10 @@ public class PasteApplicationTest {
      *  Expected: Returns a string of the file contents and terminates with a newline.
      */
     @Test
-    public void executePrintStdinMultipleLinesSuccess() throws Exception {
-        try (InputStream inputStream = new FileInputStream(fileWithTwoLines)) {
-            assertEquals(TWO_LINES, pasteApplication.mergeStdin(inputStream));
-        } catch (Exception e) {
+    void runStdinMultipleLinesOnMergeStdinMethodShouldPrintMultipleLines() throws Exception {
+        try(InputStream inputStream = new FileInputStream(twoLinesFile)) {
+            assertEquals(TWO_LINES + System.lineSeparator(), pasteApplication.mergeStdin(inputStream));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -154,16 +205,136 @@ public class PasteApplicationTest {
      *  Expected: Returns a string with the two file contents merged (tab-concatenated).
      */
     @Test
-    public void executeMergeStdinAndSingleFileSuccess() throws Exception {
-        try (InputStream inputStream = new FileInputStream(fileWithTwoLines)) {
-            String firstLine = "First Line";
-            String secondLine = "Second Line";
-            String[] fileNames = { fileWithTwoLines.toPath().toString() };
-            String expectedOutput = firstLine + "\t" + firstLine + System.lineSeparator() + secondLine + "\t" + secondLine;
+    void runMergeStdinAndSingleFileShouldMergeAllFilesAndPrintMergedContents() throws Exception {
+        String tab = "\t";
+        String input = twoLinesFile.toPath().toString();
+        try (InputStream inputStream = new ByteArrayInputStream(input.getBytes())) {
+            String[] fileNames = { twoLinesFile.toPath().toString() };
+            String expectedOutput = FIRST_LINE + tab + FIRST_LINE + System.lineSeparator()
+                    + SECOND_LINE + tab + SECOND_LINE + System.lineSeparator();
             assertEquals(expectedOutput, pasteApplication.mergeFileAndStdin(inputStream, fileNames));
-        } catch (Exception e) {
+        }
+    }
+
+    /**
+     * Test mergeStdin method when no filenames are given and Stdin contains only one file that has a single line.
+     *  Expected: Returns a string of the file contents and terminates with a newline.
+     */
+    @Test
+    void runStdinMultiLineWithDashShouldPrintMergedContents() throws Exception {
+        String input = oneLineFile.toPath().toString() + " " + oneLineFile.toPath().toString();
+        try(InputStream inputStream = new ByteArrayInputStream(input.getBytes())) {
+            String[] args = {"-"};
+            pasteApplication.run(args, inputStream, osOne);
+        } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    /**
+     * Test mergeStdin method when no filenames are given and Stdin contains only one file that has a single line.
+     *  Expected: Returns a string of the file contents and terminates with a newline.
+     */
+    @Test
+    void runStdinSingleLineWithDashShouldPrintSingleLine() throws Exception {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = {"-"};
+            pasteApplication.run(args, inputStream, osOne);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test run method with null outputStream.
+     *  Expected: PasteException.
+     */
+    @Test
+    void runNullOutputStreamShouldThrowPasteException() {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = {"-"};
+            assertThrows(PasteException.class, () -> {
+                pasteApplication.run(args, inputStream, null);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *  Test run method with null outputStream.
+     *  Expected: String of merged contents from the input files.
+     */
+    @Test
+    void runBothStdinAndFileNamesInRunShouldReturnMergedContents() throws Exception {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = {"-", oneLineFile.toPath().toString()};
+            pasteApplication.run(args, inputStream, osPrint);
+            assertEquals(FIRST_LINE + "\t" + FIRST_LINE + System.lineSeparator(),
+                osPrint.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *  Test run method with null outputStream.
+     *  Expected: String of merged contents from the input files.
+     */
+    @Test
+    void runNullStdinAndNullStdoutInRunShouldThrowPasteException() {
+        String[] args = {"-", oneLineFile.toPath().toString()};
+        assertThrows(PasteException.class, () -> {
+            pasteApplication.run(args, null, null);
+        });
+    }
+
+
+    /**
+     *  Test run method with null outputStream.
+     *  Expected: String of merged contents from the input files.
+     */
+    @Test
+    void runDoubleDashShouldThrowPasteException() {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = {"-", "-"};
+            assertThrows(PasteException.class, () -> {
+                pasteApplication.run(args, inputStream, osPrint);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *  Test run method with null outputStream.
+     *  Expected: String of merged contents from the input files.
+     */
+    @Test
+    void runNullStdinWithoutArgsShouldThrowPasteException() {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = new String[0];
+            assertThrows(PasteException.class, () -> {
+                pasteApplication.run(args, null, osPrint);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *  Test run method with null outputStream.
+     *  Expected: String of merged contents from the input files.
+     */
+    @Test
+    void runInvalidDashPositionShouldThrowPasteException() {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+            String[] args = {oneLineFile.toPath().toString(), "-"};
+            assertThrows(PasteException.class, () -> {
+                pasteApplication.run(args, inputStream, osPrint);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -273,10 +273,10 @@ public class LsApplicationTest {
     void testListFolderContentNoArgRecursiveSuccess() throws Exception {
         String expectedResult = FILE_NAME_1 + System.lineSeparator() +FILE_NAME_2 + System.lineSeparator() + FILE_NAME_3 + System.lineSeparator() + FOLDER_NAME_1 + System.lineSeparator()
                 + FOLDER_NAME_2 + System.lineSeparator() + System.lineSeparator()
-                + "./" + FOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator()
-                + "./" + FOLDER_NAME_1 + File.separator + SUBFOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + System.lineSeparator()
-                + "./" + FOLDER_NAME_2 + ":" + System.lineSeparator() + FILE_NAME_2 + System.lineSeparator() + SUBFOLDER_NAME_2 + System.lineSeparator() + System.lineSeparator()
-                + "./" + FOLDER_NAME_2 + File.separator + SUBFOLDER_NAME_2 + ":";
+                + "." + File.separator + FOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator()
+                + "." + File.separator + FOLDER_NAME_1 + File.separator + SUBFOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + System.lineSeparator()
+                + "." + File.separator + FOLDER_NAME_2 + ":" + System.lineSeparator() + FILE_NAME_2 + System.lineSeparator() + SUBFOLDER_NAME_2 + System.lineSeparator() + System.lineSeparator()
+                + "." + File.separator + FOLDER_NAME_2 + File.separator + SUBFOLDER_NAME_2 + ":";
 
         String[] folderName = {};
         assertEquals(expectedResult, lsApplication.listFolderContent(false,true,

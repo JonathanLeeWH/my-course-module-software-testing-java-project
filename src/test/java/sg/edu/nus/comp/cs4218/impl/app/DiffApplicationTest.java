@@ -3,13 +3,14 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
 import sg.edu.nus.comp.cs4218.exception.DiffException;
 
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DiffApplicationTest {
+public class DiffApplicationTest {
 
     private static final String FILE_ONE_TEXT = "Same line" + System.lineSeparator() + "Different line";
     private static final String FILE_TWO_TEXT = "Same line" + System.lineSeparator() + "Same line";
@@ -42,15 +43,18 @@ class DiffApplicationTest {
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
     }
-    /*
+    
     @Test
     void runNullStdoutShouldThrowDiffException() throws Exception {
         String[] args = {FILE_ONE_NAME, FILE_TWO_NAME};
         assertThrows(DiffException.class, () -> {
             diffApplication.run(args, null, null);
         });
-    }
 
+    public static void tearDown() throws Exception {
+        fileOne.deleteOnExit();
+        fileTwo.deleteOnExit();
+    }
 
     @Test
     void runOnlyOneArgShouldThrowDiffException() throws Exception {
@@ -158,6 +162,4 @@ class DiffApplicationTest {
             diffApplication.diffFileAndStdin(null, inputStream, true, true, true);
         });
     }
-    
-     */
 }

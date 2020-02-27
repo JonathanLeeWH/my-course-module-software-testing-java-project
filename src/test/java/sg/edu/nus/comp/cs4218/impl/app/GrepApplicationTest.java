@@ -302,7 +302,7 @@ class GrepApplicationTest {
         });
     }
 
-    /*
+    
     @Test
     void runInvalidDashWithDoubleIGrepArgument() throws FileNotFoundException {
         String[] args = {"-ii", "-c", "line", "fileOne.txt"};
@@ -320,7 +320,4 @@ class GrepApplicationTest {
             grepApplication.run(args, inputStream, outputStream);
         });
     }
-
-     */
-
 }
