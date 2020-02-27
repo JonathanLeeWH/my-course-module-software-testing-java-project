@@ -42,7 +42,7 @@ class DiffApplicationTest {
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
     }
-
+    /*
     @Test
     void runNullStdoutShouldThrowDiffException() throws Exception {
         String[] args = {FILE_ONE_NAME, FILE_TWO_NAME};
@@ -60,7 +60,6 @@ class DiffApplicationTest {
         });
     }
 
-    /*
     @Test
     void runNullStdinShouldThrowDiffException() throws Exception {
         String[] args = {FILE_ONE_NAME, "-"};
