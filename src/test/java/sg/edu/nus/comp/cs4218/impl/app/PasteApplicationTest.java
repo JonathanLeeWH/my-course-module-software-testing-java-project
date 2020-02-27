@@ -142,8 +142,8 @@ class PasteApplicationTest {
     void runMergeMultipleFilesShouldMergeAllFilesAndPrintMergedContents() throws Exception {
         String tab = "\t";
         String[] args = { twoLinesFile.toPath().toString(), oneLineFile.toPath().toString() };
-        String expectedOutput = FIRST_LINE + tab + "Line One" + System.lineSeparator()
-                + "Line Two" + System.lineSeparator();
+        String expectedOutput = FIRST_LINE + tab + "FIRST_LINE" + System.lineSeparator()
+                + "SECOND_LINE" + System.lineSeparator();
         String actualOutput = pasteApplication.mergeFile(args);
         assertEquals(expectedOutput, actualOutput);
     }
@@ -156,8 +156,8 @@ class PasteApplicationTest {
     void runMergeMultipleFilesThatIncludesOneEmptyFileShouldMergeAllFilesAndPrintMergedContents() throws Exception {
         String tab = "\t";
         String[] args = { twoLinesFile.toPath().toString(), oneLineFile.toPath().toString(), emptyFile.toPath().toString() };
-        String expectedOutput = FIRST_LINE + tab + "Line One" + System.lineSeparator()
-                + "Line Two" + System.lineSeparator();
+        String expectedOutput = FIRST_LINE + tab + "FIRST_LINE" + System.lineSeparator()
+                + "SECOND_LINE" + System.lineSeparator();
         String actualOutput = pasteApplication.mergeFile(args);
         assertEquals(expectedOutput, actualOutput);
     }
