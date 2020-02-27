@@ -1,8 +1,7 @@
 package sg.edu.nus.comp.cs4218.impl.parser;
 
 import sg.edu.nus.comp.cs4218.exception.CutException;
-import sg.edu.nus.comp.cs4218.impl.util.ErrorConstants;
-import sg.edu.nus.comp.cs4218.impl.util.Pair;
+import sg.edu.nus.comp.cs4218.impl.util.MyPair;
 
 public class CutArgsParser extends ArgsParser{
 
@@ -33,7 +32,7 @@ public class CutArgsParser extends ArgsParser{
       *
      * @return A pair of integers with the start and end position
      */
-    public Pair<Integer, Integer> getPositions() throws CutException {
+    public MyPair<Integer, Integer> getPositions() throws CutException {
         String list = nonFlagArgs.get(INDEX_LIST);
         int startPos = 0;
         int endPos;
@@ -61,7 +60,7 @@ public class CutArgsParser extends ArgsParser{
                 throw new CutException("cut: Values has to be more than 0.");
             }
         }
-        return new Pair<>(startPos, endPos);
+        return new MyPair<>(startPos, endPos);
     }
 
     public String[] getFileNames() {

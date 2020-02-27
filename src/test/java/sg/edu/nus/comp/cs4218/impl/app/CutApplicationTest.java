@@ -20,10 +20,10 @@ class CutApplicationTest {
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
     private static final String TEST_STDIN_MSG_1 = "drüberspringen";
-    private Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
-    private Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
-    private Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
-    private Path testFileNoReadPer = Paths.get(TestFileUtils.TESTDATA_DIR + "testNoReadAccess.html");
+    private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
+    private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
+    private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
+    private final Path testFileNoReadPer = Paths.get(TestFileUtils.TESTDATA_DIR + "testNoReadAccess.html");
 
     @BeforeEach
     public void setUp() {
