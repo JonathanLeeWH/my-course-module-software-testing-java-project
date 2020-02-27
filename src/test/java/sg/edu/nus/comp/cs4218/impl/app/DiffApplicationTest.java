@@ -43,18 +43,6 @@ public class DiffApplicationTest {
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
     }
-    
-    @Test
-    void runNullStdoutShouldThrowDiffException() throws Exception {
-        String[] args = {FILE_ONE_NAME, FILE_TWO_NAME};
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, null, null);
-        });
-
-    public static void tearDown() throws Exception {
-        fileOne.deleteOnExit();
-        fileTwo.deleteOnExit();
-    }
 
     @Test
     void runOnlyOneArgShouldThrowDiffException() throws Exception {
