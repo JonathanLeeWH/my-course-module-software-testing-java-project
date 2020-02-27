@@ -31,6 +31,9 @@ public class SedApplication implements SedInterface {
         if (args == null) {
             throw new SedException(ERR_NULL_ARGS);
         }
+        if (args.length == 0) {
+            throw new SedException(ERR_NO_ARGS);
+        }
         if (stdout == null) {
             throw new SedException(ERR_NULL_STREAMS);
         }
@@ -119,16 +122,19 @@ public class SedApplication implements SedInterface {
         SedArguments.validate(regexp, replacement, replacementIndex);
 
         List<String> input = IOUtils.getLinesFromInputStream(stdin);
-
+        IOUtils.closeInputStream(stdin);
         StringBuilder output = new StringBuilder();
         for (String line : input) {
             StringBuilder builder = new StringBuilder();
             if (replacementIndex == 1) {
                 builder.append(line.replaceFirst(regexp, replacement));
                 output.append(builder.toString()).append(STRING_NEWLINE);
-            } else {
+            } else if (replacementIndex <= input.size()){
                 builder.append(replaceString(line, regexp, replacement, replacementIndex));
                 output.append(builder.toString()).append(STRING_NEWLINE);
+            } else {
+                String returnString = input.toString();
+                return returnString.substring(1,returnString.length()-1) + System.lineSeparator();
             }
         }
         return output.toString();
