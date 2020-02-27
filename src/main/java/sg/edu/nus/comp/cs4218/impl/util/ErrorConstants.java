@@ -67,6 +67,10 @@ public class ErrorConstants {
     public static final String NO_FILE = "No file specified found";
     public static final String NO_OVERWRITE = "No overwrite and destination file exist";
 
+    // `Paste` related
+    public static final String INVALID_DASH = "Dash should only appear in the first argument";
+    public static final String FILE_NOT_FOUND = "Invalid filename provided";
+
     //`ls` related
 
     public static final String NO_FILE_OR_FOLDER = "No file or folder specified found";
