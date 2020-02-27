@@ -3,7 +3,6 @@ package sg.edu.nus.comp.cs4218.impl.util;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import org.junit.jupiter.api.*;
-import sg.edu.nus.comp.cs4218.impl.util.IORedirectionHandler;
 
 import java.io.*;
 import java.util.ArrayList;
