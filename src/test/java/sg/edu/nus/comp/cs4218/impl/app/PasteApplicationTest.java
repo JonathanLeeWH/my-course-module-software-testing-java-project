@@ -68,7 +68,7 @@ class PasteApplicationTest {
     void runInvalidFileShouldThrowPasteException() {
         String invalidFile = "invalidTest";
         String[] args = { invalidFile };
-        assertThrows(PasteException.class, () -> {
+        assertThrows(FileNotFoundException.class, () -> {
             pasteApplication.mergeFile(args);
         });
     }
@@ -95,8 +95,8 @@ class PasteApplicationTest {
      */
     @Test
     void runEmptyFileNameShouldThrowPasteException() {
-        String[] args = { oneLineFile.toPath().toString(), ""};
-        assertThrows(PasteException.class, () -> {
+        String[] args = { oneLineFile.toPath().toString(), " "};
+        assertThrows(FileNotFoundException.class, () -> {
             pasteApplication.mergeFile(args);
         });
     }

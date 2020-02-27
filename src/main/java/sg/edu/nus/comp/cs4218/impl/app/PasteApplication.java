@@ -36,12 +36,6 @@ public class PasteApplication implements PasteInterface {
             }
         } else {
             List<String> filesNamesList = new ArrayList<>(); // Since total number of files is unknown, use ArrayList.
-            /*
-              Let sum = hasStdin + hasFile.
-              A sum of 1: means only standard inputs are present in the argument.
-                       2: means only filenames are present in the argument.
-                       3: means both standard inputs and filenames are present in the argument.
-            */
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("-")) { // check if argument is a stdin type of argument.
                     hasStdin = 1;
@@ -54,25 +48,20 @@ public class PasteApplication implements PasteInterface {
                 }
             }
             String[] allFileNames = new String[filesNamesList.size()];
-            //Convert List of Filenames to String Array to pass into the subsequent merging method.
-            for (int j = 0; j < filesNamesList.size(); j++) {
+            for (int j = 0; j < filesNamesList.size(); j++) { //Convert List of Filenames to String Array to pass into the subsequent merging method.
                 allFileNames[j] = filesNamesList.get(j);
             }
             sum = hasFile + hasStdin;
             try {
-                if (sum == 1) {
+                if (sum == 1) { //1: means only standard inputs are present in the argument.
                     stdout.write(mergeStdin(stdin).getBytes());
-                } else if (sum == 2) { // only file present
+                } else if (sum == 2) { //2: means only filenames are present in the argument.
                     stdout.write(mergeFile(allFileNames).getBytes());
-                } else { // one argument is stdin, while the other is fileName
-                    try {
-                        stdout.write(mergeFileAndStdin(stdin, allFileNames).getBytes());
-                    } catch (PasteException e) {
-                        throw new PasteException(FILE_NOT_FOUND);
+                } else { //  3: means both standard inputs and filenames are present in the argument.
+                    stdout.write(mergeFileAndStdin(stdin, allFileNames).getBytes());
                     }
-                }
             } catch (Exception e) {
-                e.printStackTrace();
+                 e.printStackTrace();
             }
         }
     }
@@ -100,11 +89,7 @@ public class PasteApplication implements PasteInterface {
     public String mergeFile(String... fileName) throws Exception {
         BufferedReader[] bufferedReaders = new BufferedReader[fileName.length];
         for (int i = 0; i < fileName.length; i++) {
-            try {
-                bufferedReaders[i] = new BufferedReader(new FileReader(fileName[i]));
-            } catch (FileNotFoundException e) {
-                throw new PasteException(FILE_NOT_FOUND);
-            }
+            bufferedReaders[i] = new BufferedReader(new FileReader(fileName[i]));
         }
         return paste(bufferedReaders);
     }
@@ -120,9 +105,7 @@ public class PasteApplication implements PasteInterface {
         BufferedReader[] stdinBR = stdinToBRArray(stdin);
         int totalSize = fileName.length + stdinBR.length;
         BufferedReader[] bufferedReaders = new BufferedReader[totalSize];
-        for (int j = 0; j < stdinBR.length; j++) {
-            bufferedReaders[j] = stdinBR[j];
-        }
+        System.arraycopy(stdinBR, 0, bufferedReaders, 0, stdinBR.length);
 
         for (int i = stdinBR.length, k = 0; i < totalSize; i++) {
             bufferedReaders[i] = new BufferedReader(new FileReader(fileName[k]));
@@ -138,7 +121,7 @@ public class PasteApplication implements PasteInterface {
      *            buffered readers to merge content
      * @return the merged string
      */
-    private String paste(BufferedReader... bufferedReaders) {
+    private String paste(BufferedReader... bufferedReaders) throws PasteException, IOException {
         String tab = "\t", newLine = System.lineSeparator();
         StringBuilder stringBuilder = new StringBuilder();
         boolean hasMoreLines = true;
@@ -159,14 +142,13 @@ public class PasteApplication implements PasteInterface {
                     else if (currentLine != null) {
                         stringBuilder.append(tab).append(currentLine);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (IOException e) {
+                   e.printStackTrace();
                 }
             }
             if (allLinesNull) {
                 hasMoreLines = false;
             }
-
         }
         return stringBuilder.toString().concat(newLine);
     }
