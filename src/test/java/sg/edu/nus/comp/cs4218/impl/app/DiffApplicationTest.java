@@ -42,7 +42,7 @@ public class DiffApplicationTest {
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
     }
-
+/*
     @Test
     public void execute_nullStdout_throwDiffException() throws Exception {
         String[] args = {FILE_ONE_NAME, FILE_TWO_NAME};
@@ -72,4 +72,6 @@ public class DiffApplicationTest {
         //assertEquals(NO_DIFF_OUTPUT, stdoutOne.toString());
         //fail();
     }
+
+ */
 }
