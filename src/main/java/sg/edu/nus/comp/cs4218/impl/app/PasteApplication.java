@@ -22,7 +22,7 @@ public class PasteApplication implements PasteInterface {
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws PasteException {
         int hasFile = 0, hasStdin = 0, sum = 0; // Let hasStdin be 0 when there is no stdin, and 1 when there is at least one stdin. Let hasFile be 0 when there is no file name, and 2 when there is at least one file name.
-        if (stdout == null) { // if stdin is empty
+        if (stdout == null) { // if stdout is empty
             throw new PasteException(ERR_NULL_STREAMS);
         }
         if (args.length == 0) { // When there are no filenames provided (i.e. stdin provided)
@@ -44,10 +44,10 @@ public class PasteApplication implements PasteInterface {
             */
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("-")) { // check if argument is a stdin type of argument.
+                    hasStdin = 1;
                     if (i != 0) {
                         throw new PasteException(INVALID_DASH);
                     }
-                    hasStdin = 1;
                 } else { // else argument is a filename.
                     hasFile = 2;
                     filesNamesList.add(args[i]);
@@ -62,11 +62,14 @@ public class PasteApplication implements PasteInterface {
             try {
                 if (sum == 1) {
                     stdout.write(mergeStdin(stdin).getBytes());
-                }
-                else if (sum == 2) { // only file present
+                } else if (sum == 2) { // only file present
                     stdout.write(mergeFile(allFileNames).getBytes());
                 } else { // one argument is stdin, while the other is fileName
-                    stdout.write(mergeFileAndStdin(stdin, allFileNames).getBytes());
+                    try {
+                        stdout.write(mergeFileAndStdin(stdin, allFileNames).getBytes());
+                    } catch (PasteException e) {
+                        throw new PasteException(FILE_NOT_FOUND);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -97,7 +100,11 @@ public class PasteApplication implements PasteInterface {
     public String mergeFile(String... fileName) throws Exception {
         BufferedReader[] bufferedReaders = new BufferedReader[fileName.length];
         for (int i = 0; i < fileName.length; i++) {
-            bufferedReaders[i] = new BufferedReader(new FileReader(fileName[i]));
+            try {
+                bufferedReaders[i] = new BufferedReader(new FileReader(fileName[i]));
+            } catch (FileNotFoundException e) {
+                throw new PasteException(FILE_NOT_FOUND);
+            }
         }
         return paste(bufferedReaders);
     }

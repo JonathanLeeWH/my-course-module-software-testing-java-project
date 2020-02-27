@@ -349,11 +349,11 @@ class SedApplicationTest {
     }
 
     /**
-     * Test valid filenames
-     *
+     * Test valid filename in run method with a file with two lines/
+     * Expected: print both lines with replacements based on replacement index.
      */
     @Test
-    void runValidFileNamesInRunMethodWithTwoLinesShouldPrintFileContentsWithReplacements() throws FileNotFoundException, SedException {
+    void runValidFileNameInRunMethodWithTwoLinesShouldPrintFileContentsWithReplacements() throws FileNotFoundException, SedException {
         String[] args = {"s|line|replace|1", fileWithTwoLines.toPath().toString()};
         InputStream stdinTwo = new FileInputStream(fileWithTwoLines.toPath().toString());
         OutputStream osPrint = new ByteArrayOutputStream();
