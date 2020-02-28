@@ -28,20 +28,20 @@ public class CutArgsParserTest {
 
     @Test
     public void testParseUsingIsBytePosAnd2CommaSeparatedNumWithValidNums() throws InvalidArgsException {
-        cutArgsParser.parse("-b", "1,2", testFile1.toFile().getPath());
+        cutArgsParser.parse("-b", "5,8", testFile1.toFile().getPath());
         assertTrue(cutArgsParser.isBytePos());
         assertFalse(cutArgsParser.isCharPos());
     }
 
     @Test
     public void testParseUsingIsRangeAnd2CommaSeparatedNumWithValidNums() throws InvalidArgsException {
-        cutArgsParser.parse("-b", "1,2", testFile1.toFile().getPath());
+        cutArgsParser.parse("-b", "11,12", testFile1.toFile().getPath());
         assertFalse(cutArgsParser.isRange());
     }
 
     @Test
     public void testParseUsingIsRangeAndNumRangeWithValidNums() throws InvalidArgsException {
-        cutArgsParser.parse("-b", "1-2", testFile1.toFile().getPath());
+        cutArgsParser.parse("-b", "1-4", testFile1.toFile().getPath());
         assertTrue(cutArgsParser.isRange());
     }
 
@@ -53,14 +53,14 @@ public class CutArgsParserTest {
 
     @Test
     public void testParseUsingGetPositionsAnd2CommaSeparatedNumWithValidNum() throws InvalidArgsException {
-        cutArgsParser.parse("-b", "1,2", testFile1.toFile().getPath());
+        cutArgsParser.parse("-b", "1,5", testFile1.toFile().getPath());
         assertEquals(1, cutArgsParser.getPositions().getKey());
         assertEquals(2, cutArgsParser.getPositions().getValue());
     }
 
     @Test
     public void testParseUsingGetPositionsAndNumRangeWithValidNum() throws InvalidArgsException {
-        cutArgsParser.parse("-b", "2-12", testFile1.toFile().getPath());
+        cutArgsParser.parse("-b", "7-12", testFile1.toFile().getPath());
         assertEquals(2, cutArgsParser.getPositions().getKey());
         assertEquals(12, cutArgsParser.getPositions().getValue());
     }
