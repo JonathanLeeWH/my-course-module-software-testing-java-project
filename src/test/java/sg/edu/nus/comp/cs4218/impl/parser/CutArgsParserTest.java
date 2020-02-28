@@ -20,72 +20,72 @@ public class CutArgsParserTest {
 
     // Positive test cases
     @Test
-    public void testParseUsingIsCharPosAnd2CommaSeparatedNumWithValidNums() throws InvalidArgsException {
+    public void testParseUsingIsCharPosAnd2CommaSeparatedNumWithValidNumsShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-c", "1,2", testFile1.toFile().getPath());
         assertFalse(cutArgsParser.isBytePos());
         assertTrue(cutArgsParser.isCharPos());
     }
 
     @Test
-    public void testParseUsingIsBytePosAnd2CommaSeparatedNumWithValidNums() throws InvalidArgsException {
+    public void testParseUsingIsBytePosAnd2CommaSeparatedNumWithValidNumsShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "5,8", testFile1.toFile().getPath());
         assertTrue(cutArgsParser.isBytePos());
         assertFalse(cutArgsParser.isCharPos());
     }
 
     @Test
-    public void testParseUsingIsRangeAnd2CommaSeparatedNumWithValidNums() throws InvalidArgsException {
+    public void testParseUsingIsRangeAnd2CommaSeparatedNumWithValidNumsShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "11,12", testFile1.toFile().getPath());
         assertFalse(cutArgsParser.isRange());
     }
 
     @Test
-    public void testParseUsingIsRangeAndNumRangeWithValidNums() throws InvalidArgsException {
+    public void testParseUsingIsRangeAndNumRangeWithValidNumsShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "1-4", testFile1.toFile().getPath());
         assertTrue(cutArgsParser.isRange());
     }
 
     @Test
-    public void testParseUsingIsRangeAndSingleNumWithValidNum() throws InvalidArgsException {
+    public void testParseUsingIsRangeAndSingleNumWithValidNumShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "1", testFile1.toFile().getPath());
         assertFalse(cutArgsParser.isRange());
     }
 
     @Test
-    public void testParseUsingGetPositionsAnd2CommaSeparatedNumWithValidNum() throws InvalidArgsException {
+    public void testParseUsingGetPositionsAnd2CommaSeparatedNumWithValidNumShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "1,5", testFile1.toFile().getPath());
         assertEquals(1, cutArgsParser.getPositions().getKey());
         assertEquals(5, cutArgsParser.getPositions().getValue());
     }
 
     @Test
-    public void testParseUsingGetPositionsAndNumRangeWithValidNum() throws InvalidArgsException {
+    public void testParseUsingGetPositionsAndNumRangeWithValidNumShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "7-12", testFile1.toFile().getPath());
         assertEquals(7, cutArgsParser.getPositions().getKey());
         assertEquals(12, cutArgsParser.getPositions().getValue());
     }
 
     @Test
-    public void testParseUsingGetPositionsAndSingleNumWithValidNum() throws InvalidArgsException {
+    public void testParseUsingGetPositionsAndSingleNumWithValidNumShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "4", testFile1.toFile().getPath());
         assertEquals(4, cutArgsParser.getPositions().getKey());
         assertEquals(4, cutArgsParser.getPositions().getValue());
     }
 
     @Test
-    public void testParseUsingGetFileNamesAndSingleNumWithValidNumAndNoFile() throws InvalidArgsException {
+    public void testParseUsingGetFileNamesAndSingleNumWithValidNumAndNoFileShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "4");
         assertNull(cutArgsParser.getFileNames());
     }
 
     @Test
-    public void testParseUsingGetFileNamesAndSingleNumWithValidNumAndSingleFile() throws InvalidArgsException {
+    public void testParseUsingGetFileNamesAndSingleNumWithValidNumAndSingleFileShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "4", testFile1.toFile().getPath());
         assertArrayEquals(new String[]{testFile1.toFile().getPath()}, cutArgsParser.getFileNames());
     }
 
     @Test
-    public void testParseUsingGetFileNamesAndSingleNumWithValidNumAndMultipleFiles() throws InvalidArgsException {
+    public void testParseUsingGetFileNamesAndSingleNumWithValidNumAndMultipleFilesShouldRunSuccessfully() throws InvalidArgsException {
         cutArgsParser.parse("-b", "4", testFile1.toFile().getPath(), testFile1.toFile().getPath());
         assertArrayEquals(new String[]{testFile1.toFile().getPath(), testFile1.toFile().getPath()}, cutArgsParser.getFileNames());
     }
