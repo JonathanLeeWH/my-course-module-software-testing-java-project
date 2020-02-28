@@ -338,7 +338,8 @@ public class LsApplication implements LsInterface {
      * @return
      */
     private Path resolvePath(String directory) {
-        if (directory.charAt(0) == '/') {
+        File file = new File(directory);
+        if (file.isAbsolute()) {
             // This is an absolute path
             return Paths.get(directory).normalize();
         }

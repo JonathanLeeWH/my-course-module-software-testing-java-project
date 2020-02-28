@@ -35,11 +35,13 @@ class PipeCommandIT {
     private static final String FOLDER_NAME_1 = "folder1";
 
     private OutputStream outputStream;
+    private List<CallCommand> callCommands;
 
     @BeforeEach
     void setUp() {
         EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
         outputStream = new ByteArrayOutputStream();
+        callCommands = new LinkedList<>();
     }
 
     @AfterEach
@@ -48,13 +50,12 @@ class PipeCommandIT {
     }
 
     /**
-     * Tests evaluate method for a valid  <Call> | </Call> format
+     * Tests evaluate method for a valid  <Call> | <Call> format
      * For example: echo hello world | grep "world"
      * Expected: Outputs hello world terminated with a new line character.
      */
     @Test
     void evaluatePipeCommandWithValidCallCommandAndCallCommandFormatShouldOutputCorrectly() throws AbstractApplicationException, ShellException {
-        List<CallCommand> callCommands = new LinkedList<>();
         callCommands.add(new CallCommand(Arrays.asList("echo", "hello", "world"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("grep", "world"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -63,7 +64,7 @@ class PipeCommandIT {
     }
 
     /**
-     * Tests evaluate method for a valid  <Pipe> | </Call> format
+     * Tests evaluate method for a valid  <Pipe> | <Call> format
      * For example: ls | grep "4218" | grep "CS4218"
      * Assuming, ls would return a list of files with names, CS4218A, A4218A, CS3203A.
      * Expected: Outputs CS4218A terminated with a new line character.
@@ -74,7 +75,6 @@ class PipeCommandIT {
         Files.createFile(tempDir.resolve(FILE_NAME_1));
         Files.createFile(tempDir.resolve(FILE_NAME_2));
         Files.createFile(tempDir.resolve(FILE_NAME_3));
-        List<CallCommand> callCommands = new LinkedList<>();
         callCommands.add(new CallCommand(Collections.singletonList("ls"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("grep", "4218"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("grep", "CS4218"), new ApplicationRunner(), new ArgumentResolver()));
@@ -86,11 +86,10 @@ class PipeCommandIT {
     /**
      * Tests evaluate when a ShellException occurs in one part.
      * For example: lsa | echo How are you
-     * Expected: Throws ShellException as lsa is an invalid application.
+     * Expected: Throws ShellException as lsa is an invalid application. The echo command is not executed as stated in teh assumption and project specification.
      */
     @Test
     void evaluatePipeCommandWithACommandThrowingAShellExceptionShouldThrowException() throws Exception {
-        List<CallCommand> callCommands = new LinkedList<>();
         callCommands.add(new CallCommand(Collections.singletonList("lsa"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("echo", "How", "are", "you"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -104,14 +103,13 @@ class PipeCommandIT {
      * Tests evaluate method when an AbstractApplicationException occurs in one part.
      * For example: cd folder1 | echo Welcome
      * Where folder1 is a directory which does not exists
-     * Expected: Throws CdException, a subclass of AbstractApplicationException, ERR_FILE_NOT_FOUND_
+     * Expected: Throws CdException, a subclass of AbstractApplicationException, ERR_FILE_NOT_FOUND
      */
     @Test
     void evaluatePipeCommandWithACommandThrowingASubClassOfApplicationCdExceptionShouldThrowCdException(@TempDir Path tempDir) {
         Path folder = tempDir.resolve(FOLDER_NAME_1);
         EnvironmentHelper.currentDirectory = tempDir.toString();
         assertFalse(Files.isDirectory(folder)); // check that the folder does not exist.
-        List<CallCommand> callCommands = new LinkedList<>();
         callCommands.add(new CallCommand(Arrays.asList("cd", FOLDER_NAME_1), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("echo", "Welcome"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
