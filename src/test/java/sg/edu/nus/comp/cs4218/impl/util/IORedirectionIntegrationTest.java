@@ -15,9 +15,9 @@ import java.io.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("PMD.CloseResource")
 public class IORedirectionIntegrationTest {
 
     private static final String MOCK_ROOT_DIR = "ROOT";
@@ -74,7 +74,7 @@ public class IORedirectionIntegrationTest {
         File mockDirectory = new File(MOCK_ROOT_FOLDER1);
         mockDirectory.mkdir();
 
-        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));//NOPMD
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
         writer1.write(FILE_1_CONTENT);
         writer1.flush();
         writer1.close();
