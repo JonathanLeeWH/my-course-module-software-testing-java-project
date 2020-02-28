@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
 public class SortApplicationTest {
     private SortApplication sortApplication;
     private String[] defaultSortArgs;

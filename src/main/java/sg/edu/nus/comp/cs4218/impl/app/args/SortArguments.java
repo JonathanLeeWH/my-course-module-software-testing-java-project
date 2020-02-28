@@ -1,8 +1,12 @@
 package sg.edu.nus.comp.cs4218.impl.app.args;
 
+import sg.edu.nus.comp.cs4218.impl.parser.ArgsParser;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_ARGS;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_ARGS;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 
 public class SortArguments {
@@ -26,10 +30,14 @@ public class SortArguments {
      * @param args Array of arguments to parse
      * @throws Exception
      */
-    public void parse(String... args) {
+    public void parse(String... args) throws Exception {
+        if (args == null) {
+            throw new Exception(ERR_NULL_ARGS);
+        }
+
         boolean parsingFlag = true, skip = false;
         // Parse arguments
-        if (args != null && args.length > 0) {
+        if (args.length > 0) {
             for (String arg : args) {
                 if (arg.isEmpty()) {
                     continue;
@@ -41,14 +49,7 @@ public class SortArguments {
                         if (c == CHAR_FLAG_PREFIX || c == CHAR_FIRST_W_NUM || c == CHAR_REV_ORDER || c == CHAR_CASE_IGNORE) {
                             continue;
                         }
-                        parsingFlag = false;
-                        this.files.add(arg.trim());
-                        skip = true;
-                        break;//NOPMD
-                    }
-                    if (skip) {
-                        skip = false;
-                        continue;
+                        throw new Exception(ArgsParser.ILLEGAL_FLAG_MSG + c);
                     }
 
                     for (char c : arg.toCharArray()) {

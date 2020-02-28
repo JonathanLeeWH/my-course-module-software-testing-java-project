@@ -38,9 +38,9 @@ public class SortApplication implements SortInterface {
             throw new SortException(ERR_NULL_STREAMS);
         }
         SortArguments sortArgs = new SortArguments();
-        sortArgs.parse(args);
         StringBuilder output = new StringBuilder();
         try {
+            sortArgs.parse(args);
             if (sortArgs.getFiles().isEmpty()) {
                 output.append(sortFromStdin(sortArgs.isFirstWordNumber(), sortArgs.isReverseOrder(), sortArgs.isCaseIndependent(), stdin));
             } else {
