@@ -15,9 +15,9 @@ import java.io.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("PMD.CloseResource")
 public class IORedirectionIntegrationTest {
 
     private static final String MOCK_ROOT_DIR = "ROOT";
