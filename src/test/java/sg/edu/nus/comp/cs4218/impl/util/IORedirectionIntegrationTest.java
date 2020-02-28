@@ -74,7 +74,7 @@ public class IORedirectionIntegrationTest {
         File mockDirectory = new File(MOCK_ROOT_FOLDER1);
         mockDirectory.mkdir();
 
-        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));//NOPMD
         writer1.write(FILE_1_CONTENT);
         writer1.flush();
         writer1.close();

@@ -3,7 +3,7 @@ package sg.edu.nus.comp.cs4218.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringsArgListHelper {
+public final class StringsArgListHelper {
 
     private StringsArgListHelper() {}
 

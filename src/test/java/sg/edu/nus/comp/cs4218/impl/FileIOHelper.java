@@ -9,9 +9,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileIOHelper {
+@SuppressWarnings("PMD.CloseResource")
+public final class FileIOHelper {
 
-    private FileIOHelper() {}
+    private  FileIOHelper() {}
 
     public static void createFileFolder(String filePath, boolean isDirectory) throws IOException {
         File dir = new File(filePath);
