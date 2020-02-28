@@ -49,7 +49,14 @@ public class SortArguments {
                         if (c == CHAR_FLAG_PREFIX || c == CHAR_FIRST_W_NUM || c == CHAR_REV_ORDER || c == CHAR_CASE_IGNORE) {
                             continue;
                         }
-                        throw new Exception(ArgsParser.ILLEGAL_FLAG_MSG + c);
+                        parsingFlag = false;
+                        this.files.add(arg.trim());
+                        skip = true;
+                        break;//NOPMD
+                    }
+                    if (skip) {
+                        skip = false;
+                        continue;
                     }
 
                     for (char c : arg.toCharArray()) {
