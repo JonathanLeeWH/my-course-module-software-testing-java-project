@@ -21,7 +21,6 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_SYNTAX;
  * <p>
  * Command format: (<non-keyword> or <quoted>) *
  */
-@SuppressWarnings("PMD.CloseResource")
 public class CallCommand implements Command {
     private final List<String> argsList;
     private final ApplicationRunner appRunner;
@@ -55,23 +54,8 @@ public class CallCommand implements Command {
             appRunner.runApp(app, parsedArgsList.toArray(new String[0]), inputStream, outputStream);
         }
 
-//        try (InputStream inputStream = redirHandler.getInputStream();
-//             OutputStream outputStream = redirHandler.getOutputStream()) {
-//
-//            // Handle quoting + globing + command substitution
-//            List<String> parsedArgsList = argumentResolver.parseArguments(noRedirArgsList);
-//            if (!parsedArgsList.isEmpty()) {
-//                String app = parsedArgsList.remove(0);
-//                appRunner.runApp(app, parsedArgsList.toArray(new String[0]), inputStream, outputStream);
-//
-//            }
-//        } catch (IOException e) {
-//            /**
-//             * TODO: Need to check if the exception thrown is correct.
-//             */
-//            throw (ShellException) new ShellException(ERR_IO_EXCEPTION).initCause(e);
-//        }
-
+        IOUtils.closeInputStream(inputStream);
+        IOUtils.closeOutputStream(outputStream);
     }
 
     @Override
