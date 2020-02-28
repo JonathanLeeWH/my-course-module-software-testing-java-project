@@ -32,7 +32,7 @@ public class PasteApplication implements PasteInterface {
             try { // if stdin is not empty.
                 stdout.write(mergeStdin(stdin).getBytes()); // print the output of the stdin
             } catch (Exception e) {
-                throw new PasteException(FILE_NOT_FOUND);
+                throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
             }
         } else {
             List<String> filesNamesList = new ArrayList<>(); // Since total number of files is unknown, use ArrayList.
@@ -59,9 +59,9 @@ public class PasteApplication implements PasteInterface {
                     stdout.write(mergeFile(allFileNames).getBytes());
                 } else { //  3: means both standard inputs and filenames are present in the argument.
                     stdout.write(mergeFileAndStdin(stdin, allFileNames).getBytes());
-                    }
+                }
             } catch (Exception e) {
-                throw new PasteException(FILE_NOT_FOUND);
+                throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
             }
         }
     }
@@ -86,10 +86,10 @@ public class PasteApplication implements PasteInterface {
      * @param fileName Array of file names to be read and merged
      * @throws PasteException FILE_NOT_FOUND
      */
-    public String mergeFile(String... fileName) throws PasteException {
+    public String mergeFile(String... fileName) throws PasteException, IOException {
         BufferedReader[] bufferedReaders = new BufferedReader[fileName.length];
         try {
-            FileReader fileReader = null;
+            FileReader fileReader = null; //NOPMD
             for (int i = 0; i < fileName.length; i++) {
                 fileReader = new FileReader(fileName[i]);
                 bufferedReaders[i] = new BufferedReader(fileReader);
@@ -98,10 +98,8 @@ public class PasteApplication implements PasteInterface {
             assert fileReader != null;
             fileReader.close();
             return output;
-        } catch (FileNotFoundException e) {
-            throw new PasteException(FILE_NOT_FOUND);
-        } catch (IOException e) {
-            throw new PasteException(IO_ERROR);
+        } catch (Exception e) {
+            throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
         }
     }
 
@@ -113,23 +111,23 @@ public class PasteApplication implements PasteInterface {
      * @throws PasteException ERR_NULL_STREAMS
      */
     public String mergeFileAndStdin(InputStream stdin, String... fileName) throws Exception {
+        BufferedReader[] stdinBR = stdinToBRArray(stdin);
+        int totalSize = fileName.length + stdinBR.length;
+        BufferedReader[] bufferedReaders = new BufferedReader[totalSize];
+        System.arraycopy(stdinBR, 0, bufferedReaders, 0, stdinBR.length);
         try {
-            BufferedReader[] stdinBR = stdinToBRArray(stdin);
-            int totalSize = fileName.length + stdinBR.length;
-            BufferedReader[] bufferedReaders = new BufferedReader[totalSize];
-            System.arraycopy(stdinBR, 0, bufferedReaders, 0, stdinBR.length);
-
+            FileReader fileReader = null; //NOPMD
             for (int i = stdinBR.length, k = 0; i < totalSize; i++) {
-                FileReader fileReader = new FileReader(fileName[k]);
+                fileReader = new FileReader(fileName[k]);
                 bufferedReaders[i] = new BufferedReader(fileReader);
-                k++;
-                fileReader.close();
             }
-            return paste(bufferedReaders);
-        } catch (PasteException e) {
-            throw new PasteException(FILE_NOT_FOUND);
+            String output = paste(bufferedReaders);
+            assert fileReader != null;
+            fileReader.close();
+            return output;
+        } catch (Exception e) {
+            throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
         }
-
     }
 
     /**
@@ -139,15 +137,13 @@ public class PasteApplication implements PasteInterface {
      *            buffered readers to merge content
      * @return the merged string
      */
-    private String paste(BufferedReader... bufferedReaders) throws PasteException {
+    private String paste(BufferedReader... bufferedReaders) throws IOException {
         String tab = "\t", newLine = System.lineSeparator();
         StringBuilder stringBuilder = new StringBuilder();
         boolean hasMoreLines = true;
         while (hasMoreLines) {
             boolean allLinesNull = true;
-            try {
                 for (int i = 0; i < bufferedReaders.length; i++) {
-
                     String currentLine = bufferedReaders[i].readLine();
                     if (currentLine != null && allLinesNull) {
                         allLinesNull = false;
@@ -162,9 +158,6 @@ public class PasteApplication implements PasteInterface {
                         stringBuilder.append(tab).append(currentLine);
                     }
                 }
-            } catch (IOException e) {
-                throw new PasteException(FILE_NOT_FOUND);
-            }
             if (allLinesNull) {
                 hasMoreLines = false;
             }
@@ -193,7 +186,7 @@ public class PasteApplication implements PasteInterface {
             }
             return bufferedReaders;
         } catch (IOException e) {
-            throw new PasteException(FILE_NOT_FOUND);
+            throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
         }
 
     }

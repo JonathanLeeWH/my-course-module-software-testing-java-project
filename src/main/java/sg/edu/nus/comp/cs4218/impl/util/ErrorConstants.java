@@ -70,7 +70,6 @@ public class ErrorConstants {
     // `Paste` related
     public static final String INVALID_DASH = "Dash should only appear in the first argument";
     public static final String FILE_NOT_FOUND = "Invalid filename provided";
-    public static final String IO_ERROR = "An IO error has occurred";
 
     //`ls` related
 
