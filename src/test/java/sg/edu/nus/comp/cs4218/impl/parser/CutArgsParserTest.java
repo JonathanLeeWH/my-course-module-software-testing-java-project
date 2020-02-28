@@ -34,7 +34,7 @@ public class CutArgsParserTest {
     }
 
     @Test
-    public void testParseUsingIsRangeAnd2CommaSeparatedNumWithValidNumsShouldRunSuccessfully() throws InvalidArgsException {
+    public void testParseUsingIsRangeAnd2CommaSeparatedNumWithValidNumsShouldDetectNumIsNotRange() throws InvalidArgsException {
         cutArgsParser.parse("-b", "11,12", testFile1.toFile().getPath());
         assertFalse(cutArgsParser.isRange());
     }
