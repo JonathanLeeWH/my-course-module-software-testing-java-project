@@ -65,7 +65,7 @@ public class WcArgumentsTest {
     }
 
     @Test
-    public void testParseWithReverseOrderOnlyShouldRunSuccessfully() throws Exception {
+    public void testParseWithIsLinesOnlyShouldRunSuccessfully() throws Exception {
         wcArguments.parse("-l");
         assertFalse(wcArguments.isBytes());
         assertTrue(wcArguments.isLines());
@@ -74,7 +74,7 @@ public class WcArgumentsTest {
     }
 
     @Test
-    public void testParseWithCaseIndependentOnlyShouldRunSuccessfully() throws Exception {
+    public void testParseWithIsWordsOnlyShouldRunSuccessfully() throws Exception {
         wcArguments.parse("-w");
         assertFalse(wcArguments.isBytes());
         assertFalse(wcArguments.isLines());

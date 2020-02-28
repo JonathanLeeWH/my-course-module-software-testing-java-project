@@ -151,7 +151,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, false, false,
                 testFile3.toFile().toString()
@@ -161,7 +161,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, false, false,
                 testFile1.toFile().toString(), testFile1.toFile().toString()
@@ -171,7 +171,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, false, false,
                 testFile3.toFile().toString(), testFile1.toFile().toString()
@@ -181,7 +181,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithReverseOrderArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsLinesArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, true, false,
                 testFile3.toFile().toString()
@@ -191,7 +191,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithReverseOrderArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsLinesArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, true, false,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
@@ -201,7 +201,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithReverseOrderArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsLinesArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, true, false,
                 testFile3.toFile().toString(), testFile1.toFile().toString()
@@ -211,7 +211,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithCaseIndependentArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsWordsArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, false, true,
                 testFile2.toFile().toString()
@@ -221,7 +221,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithCaseIndependentArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsWordsArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, false, true,
                 testFile3.toFile().toString(), testFile3.toFile().toString()
@@ -231,7 +231,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithCaseIndependentArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsWordsArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, false, true,
                 testFile1.toFile().toString(), testFile2.toFile().toString()
@@ -241,7 +241,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndReverseOrderArgAndASingleFileShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsLinesArgAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, true, false,
                 testFile2.toFile().toString()
@@ -251,7 +251,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndReverseOrderArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsLinesArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, true, false,
                 testFile1.toFile().toString(), testFile1.toFile().toString()
@@ -261,7 +261,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndReverseOrderArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsLinesArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, true, false,
                 testFile2.toFile().toString(), testFile3.toFile().toString()
@@ -271,7 +271,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndCaseIndependentArgAndASingleFileShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsWordsArgAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, false, true,
                 testFile3.toFile().toString()
@@ -281,7 +281,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndCaseIndependentArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsWordsArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, false, true,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
@@ -291,7 +291,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndCaseIndependentArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsWordsArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, false, true,
                 testFile2.toFile().toString(), testFile3.toFile().toString()
@@ -301,7 +301,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithReverseOrderAndCaseIndependentArgAndASingleFileShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsLinesAndIsWordsArgAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, true, true,
                 testFile2.toFile().toString()
@@ -311,7 +311,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithReverseOrderAndCaseIndependentArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsLinesAndIsWordsArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, true, true,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
@@ -321,7 +321,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithReverseOrderAndCaseIndependentArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsLinesAndIsWordsArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 false, true, true,
                 testFile1.toFile().toString(), testFile3.toFile().toString()
@@ -331,7 +331,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndASingleFileShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsLinesAndIsWordsArgAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, true, true,
                 testFile1.toFile().toString()
@@ -341,7 +341,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsLinesAndIsWordsArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, true, true,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
@@ -351,7 +351,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
+    void testCountFromFilesWithIsBytesAndIsLinesAndIsWordsArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromFiles(
                 true, true, true,
                 testFile1.toFile().toString(), testFile2.toFile().toString(), testFile3.toFile().toString()
@@ -395,7 +395,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromStdinWithFirstWordNumArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
+    void testCountFromStdinWithIsBytesArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromStdin(
                 true, false, false,
                 ourTestStdin
@@ -405,7 +405,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromStdinWithReverseOrderArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
+    void testCountFromStdinWithIsLinesArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromStdin(
                 false, true, false,
                 ourTestStdin
@@ -415,7 +415,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromStdinWithCaseIndependentArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
+    void testCountFromStdinWithIsWordsArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromStdin(
                 false, false, true,
                 ourTestStdin
@@ -425,7 +425,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromStdinWithFirstWordNumAndReverseOrderArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
+    void testCountFromStdinWithIsBytesAndIsLinesArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromStdin(
                 true, true, false,
                 ourTestStdin
@@ -435,7 +435,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromStdinWithFirstWordNumAndCaseIndependentArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
+    void testCountFromStdinWithIsBytesAndIsWordsArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromStdin(
                 true, false, true,
                 ourTestStdin
@@ -445,7 +445,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromStdinWithReverseOrderAndCaseIndependentArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
+    void testCountFromStdinWithIsLinesAndIsWordsArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromStdin(
                 false, true, true,
                 ourTestStdin
@@ -455,7 +455,7 @@ public class WcApplicationTest {
     }
 
     @Test
-    void testCountFromStdinWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
+    void testCountFromStdinWithIsBytesAndIsLinesAndIsWordsArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = wcApplication.countFromStdin(
                 true, true, true,
                 ourTestStdin
