@@ -55,13 +55,13 @@ public class CutArgsParserTest {
     public void testParseUsingGetPositionsAnd2CommaSeparatedNumWithValidNum() throws InvalidArgsException {
         cutArgsParser.parse("-b", "1,5", testFile1.toFile().getPath());
         assertEquals(1, cutArgsParser.getPositions().getKey());
-        assertEquals(2, cutArgsParser.getPositions().getValue());
+        assertEquals(5, cutArgsParser.getPositions().getValue());
     }
 
     @Test
     public void testParseUsingGetPositionsAndNumRangeWithValidNum() throws InvalidArgsException {
         cutArgsParser.parse("-b", "7-12", testFile1.toFile().getPath());
-        assertEquals(2, cutArgsParser.getPositions().getKey());
+        assertEquals(7, cutArgsParser.getPositions().getKey());
         assertEquals(12, cutArgsParser.getPositions().getValue());
     }
 
