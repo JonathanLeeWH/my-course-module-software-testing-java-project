@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.SortException;
+import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -20,7 +21,7 @@ public class SortApplicationTest {
     private String[] defaultSortArgs;
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
-    private static final String TEST_STDIN_MSG_1 = "1 test 1 2";
+    private static final String TEST_STDIN_MSG_1 = "11\n1 test 1 2\n5\n+";
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
@@ -28,7 +29,7 @@ public class SortApplicationTest {
     @BeforeEach
     void setUp() {
         sortApplication = new SortApplication();
-        defaultSortArgs = Arrays.asList("-n").toArray(new String[1]);
+        defaultSortArgs = Collections.singletonList("-n").toArray(new String[1]);
         ourTestStdin = new ByteArrayInputStream(TEST_STDIN_MSG_1.getBytes());
         ourTestStdout = new ByteArrayOutputStream();
     }
@@ -44,23 +45,24 @@ public class SortApplicationTest {
      */
     // Error test cases
     @Test
-    void testRunNullOutputStream() {
+    void testRunWithNullOutputStreamShouldThrowSortException() {
         Throwable thrown = assertThrows(SortException.class, () -> sortApplication.run(defaultSortArgs, ourTestStdin, null));
-        assertEquals(thrown.getMessage(), SortApplication.COMMAND + ": " + ERR_NO_OSTREAM);
+        assertEquals(thrown.getMessage(), SortApplication.COMMAND + ": " + ERR_NULL_STREAMS);
     }
 
     // Positive test cases
     @Test
-    void testRunWithMultipleFiles() throws SortException {
-        sortApplication.run(Arrays.asList("-rn", testFile3.toFile().getPath()).toArray(new String[2]), ourTestStdin, ourTestStdout);
-        String expectedResult = "";
+    void testRunWithMultipleFilesShouldRunSuccessfully() throws SortException {
+        sortApplication.run(Arrays.asList("-n", testFile3.toFile().getPath()).toArray(new String[2]), ourTestStdin, ourTestStdout);
+        String expectedResult = "001, 010\n" + "1.0, 5.0\n" + "2, 3\n" + "21, 4\n" +
+                "22, 41\n" + "51, 15\n" + "551, 1200\n";
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
-    void testRunWithNoFiles() throws SortException {
+    void testRunWithNoFilesShouldRunSuccessfully() throws SortException {
         sortApplication.run(Collections.singletonList("-nr").toArray(new String[1]), ourTestStdin, ourTestStdout);
-        String expectedResult = "";
+        String expectedResult = "11\n5\n1 test 1 2\n+\n";
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
@@ -69,261 +71,435 @@ public class SortApplicationTest {
      */
     // Error test cases
     @Test
-    void testSortFromFilesWithFileNotFound() {
-        Throwable thrown = assertThrows(SortException.class, () -> sortApplication.sortFromFiles(
+    void testSortFromFilesUsingASingleFileWithFileNotFoundInDirShouldThrowException() {
+        Throwable thrown = assertThrows(Exception.class, () -> sortApplication.sortFromFiles(
                 false, false, false,
                 "no-file.txt"
         ));
-        assertEquals(thrown.getMessage(), SortApplication.COMMAND + ": " + ERR_FILE_NOT_FOUND);
+        assertEquals(thrown.getMessage(), ERR_FILE_NOT_FOUND);
     }
 
     @Test
-    void testSortFromFilesWithFilesNotFound() {
-        Throwable thrown = assertThrows(SortException.class, () -> sortApplication.sortFromFiles(
+    void testSortFromFilesUsingMultipleFilesWithAtLeastOneFileNotFoundInDirShouldThrowException() {
+        Throwable thrown = assertThrows(Exception.class, () -> sortApplication.sortFromFiles(
                 false, false, false,
                 testFile3.toFile().toString(), "no-file.txt"
         ));
-        assertEquals(thrown.getMessage(), SortApplication.COMMAND + ": " + ERR_FILE_NOT_FOUND);
+        assertEquals(thrown.getMessage(), ERR_FILE_NOT_FOUND);
     }
 
+    @Test
+    void testSortFromFilesWithNullFileNameShouldThrowException() {
+        Throwable thrown = assertThrows(Exception.class, () -> sortApplication.sortFromFiles(
+                false, false, false,
+                ((String[]) null)
+        ));
+        assertEquals(thrown.getMessage(), ERR_NULL_ARGS);
+    }
+
+    @Test
+    void testSortFromFilesUsingASingleFileWithFileHasNoReadAccessShouldThrowException() {
+        testFile1.toFile().setReadable(false);
+        Throwable thrown = assertThrows(Exception.class, () -> sortApplication.sortFromFiles(
+                true, false, false,
+                testFile1.toFile().getPath()
+        ));
+        testFile1.toFile().setReadable(true);
+        assertEquals(thrown.getMessage(), ERR_NO_PERM);
+    }
+
+    @Test
+    void testSortFromFilesUsingASingleFileWithFilenameIsADirShouldThrowException() {
+        Throwable thrown = assertThrows(Exception.class, () -> sortApplication.sortFromFiles(
+                true, false, false,
+                TestFileUtils.TESTDATA_DIR
+        ));
+        assertEquals(thrown.getMessage(), ERR_IS_DIR);
+    }
     // Positive test cases
     @Test
-    void testSortFromFilesWithNoFlagArgsAndASingleFile() throws Exception {
+    void testSortFromFilesWithNoFlagArgsAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, false, false,
                 testFile1.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "CS4218: Software Testing\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithNoFlagArgsAndAllValidSimilarFiles() throws Exception {
+    void testSortFromFilesWithNoFlagArgsAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, false, false,
                 testFile3.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "001, 010\n" + "001, 010\n" + "1.0, 5.0\n" + "1.0, 5.0\n" + "2, 3\n" + "2, 3\n" +
+                "21, 4\n" + "21, 4\n" + "22, 41\n" + "22, 41\n" + "51, 15\n" + "51, 15\n" + "551, 1200\n" + "551, 1200";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithNoFlagArgsAndAllValidDistinctFiles() throws Exception {
+    void testSortFromFilesWithNoFlagArgsAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, false, false,
                 testFile2.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "\n" + "\n" + "CS4218: Software Testing\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumArgOnlyAndASingleFile() throws Exception {
+    void testSortFromFilesWithFirstWordNumArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, false, false,
                 testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "001, 010\n" + "1.0, 5.0\n" + "2, 3\n" + "21, 4\n" + "22, 41\n" + "51, 15\n" + "551, 1200";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumArgOnlyAndAllValidSimilarFiles() throws Exception {
+    void testSortFromFilesWithFirstWordNumArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, false, false,
                 testFile1.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "CS4218: Software Testing\n" + "CS4218: Software Testing\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumArgOnlyAndAllValidDistinctFiles() throws Exception {
+    void testSortFromFilesWithFirstWordNumArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, false, false,
                 testFile3.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "CS4218: Software Testing\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "001, 010\n" +
+                "1.0, 5.0\n" +
+                "2, 3\n" +
+                "21, 4\n" +
+                "22, 41\n" +
+                "51, 15\n" +
+                "551, 1200\n";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithReverseOrderArgOnlyAndASingleFile() throws Exception {
+    void testSortFromFilesWithReverseOrderArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, true, false,
                 testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "551, 1200\n" + "51, 15\n" + "22, 41\n" +
+                "21, 4\n" + "2, 3\n" + "1.0, 5.0\n" + "001, 010";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithReverseOrderArgOnlyAndAllValidSimilarFiles() throws Exception {
+    void testSortFromFilesWithReverseOrderArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, true, false,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n" + "\n" + "\n" + "";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithReverseOrderArgOnlyAndAllValidDistinctFiles() throws Exception {
+    void testSortFromFilesWithReverseOrderArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, true, false,
                 testFile3.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "CS4218: Software Testing\n" +
+                "551, 1200\n" + "51, 15\n" + "22, 41\n" + "21, 4\n" + "2, 3\n" + "1.0, 5.0\n" + "001, 010";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithCaseIndependentArgOnlyAndASingleFile() throws Exception {
+    void testSortFromFilesWithCaseIndependentArgOnlyAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, false, true,
                 testFile2.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "\n" + "\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithCaseIndependentArgOnlyAndAllValidSimilarFiles() throws Exception {
+    void testSortFromFilesWithCaseIndependentArgOnlyAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, false, true,
                 testFile3.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "001, 010\n" + "001, 010\n" + "1.0, 5.0\n" + "1.0, 5.0\n" +
+                "2, 3\n" + "2, 3\n" + "21, 4\n" + "21, 4\n" + "22, 41\n" +
+                "22, 41\n" + "51, 15\n" + "51, 15\n" + "551, 1200\n" + "551, 1200";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithCaseIndependentArgOnlyAndAllValidDistinctFiles() throws Exception {
+    void testSortFromFilesWithCaseIndependentArgOnlyAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, false, true,
                 testFile1.toFile().toString(), testFile2.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "\n" + "\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" + "CS4218: Software Testing\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndReverseOrderArgAndASingleFile() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndReverseOrderArgAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, true, false,
                 testFile2.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndReverseOrderArgAndAllValidSimilarFiles() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndReverseOrderArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, true, false,
                 testFile1.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "CS4218: Software Testing\n" + "CS4218: Software Testing";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndReverseOrderArgAndAllValidDistinctFiles() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndReverseOrderArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, true, false,
                 testFile2.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "551, 1200\n" +
+                "51, 15\n" +
+                "22, 41\n" +
+                "21, 4\n" +
+                "2, 3\n" +
+                "1.0, 5.0\n" +
+                "001, 010\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n" +
+                "\n";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndCaseIndependentArgAndASingleFile() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndCaseIndependentArgAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, false, true,
                 testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "001, 010\n" + "1.0, 5.0\n" + "2, 3\n" + "21, 4\n" + "22, 41\n" + "51, 15\n" + "551, 1200";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndCaseIndependentArgAndAllValidSimilarFiles() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndCaseIndependentArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, false, true,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "\n" + "\n" + "\n" + "\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndCaseIndependentArgAndAllValidDistinctFiles() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndCaseIndependentArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, false, true,
                 testFile2.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "\n" +
+                "\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "001, 010\n" +
+                "1.0, 5.0\n" +
+                "2, 3\n" +
+                "21, 4\n" +
+                "22, 41\n" +
+                "51, 15\n" +
+                "551, 1200\n";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithReverseOrderAndCaseIndependentArgAndASingleFile() throws Exception {
+    void testSortFromFilesWithReverseOrderAndCaseIndependentArgAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, true, true,
                 testFile2.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithReverseOrderAndCaseIndependentArgAndAllValidSimilarFiles() throws Exception {
+    void testSortFromFilesWithReverseOrderAndCaseIndependentArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, true, true,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n" + "\n" + "\n";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithReverseOrderAndCaseIndependentArgAndAllValidDistinctFiles() throws Exception {
+    void testSortFromFilesWithReverseOrderAndCaseIndependentArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 false, true, true,
                 testFile1.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "CS4218: Software Testing\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "551, 1200\n" + "51, 15\n" + "22, 41\n" + "21, 4\n" + "2, 3\n" + "1.0, 5.0\n" + "001, 010";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndASingleFile() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndASingleFileShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, true, true,
                 testFile1.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "CS4218: Software Testing\n";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndAllValidSimilarFiles() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndAllValidSimilarFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, true, true,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "\n" + "\n" + "\n";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndAllValidDistinctFiles() throws Exception {
+    void testSortFromFilesWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndAllValidDistinctFilesShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromFiles(
                 true, true, true,
                 testFile1.toFile().toString(), testFile2.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = "";
+        String expectedResult = "551, 1200\n" +
+                "51, 15\n" +
+                "22, 41\n" +
+                "21, 4\n" +
+                "2, 3\n" +
+                "1.0, 5.0\n" +
+                "001, 010\n" +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for\n" +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire\n" +
+                "crucial skills on testing and debugging through hands-on assignments.\n" +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the\n" +
+                "Turpis massa tincidunt dui ut ornare lectus sit. Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Est velit egestas dui id ornare arcu odio ut sem. Facilisi nullam vehicula ipsum a. Et netus et malesuada fames ac turpis egestas. Euismod lacinia at quis risus sed vulputate odio. Placerat orci nulla pellentesque dignissim enim sit. Metus aliquam eleifend mi in nulla posuere. Amet venenatis urna cursus eget. Elit sed vulputate mi sit. Lorem ipsum dolor sit amet consectetur adipiscing elit duis. Curabitur gravida arcu ac tortor dignissim. A pellentesque sit amet porttitor eget dolor morbi non arcu.\n" +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing,\n" +
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam malesuada bibendum arcu vitae. Nam libero justo laoreet sit amet cursus sit amet. Egestas tellus rutrum tellus pellentesque eu. Proin nibh nisl condimentum id venenatis a condimentum. Magna etiam tempor orci eu lobortis. Vel facilisis volutpat est velit egestas dui. Sed viverra ipsum nunc aliquet bibendum enim facilisis gravida. Id aliquet risus feugiat in ante. Tincidunt augue interdum velit euismod in pellentesque. Vitae sapien pellentesque habitant morbi tristique. Feugiat pretium nibh ipsum consequat nisl.\n" +
+                "Euismod quis viverra nibh cras pulvinar mattis nunc. Nam libero justo laoreet sit amet cursus sit amet dictum. Auctor augue mauris augue neque gravida in fermentum et. Nunc eget lorem dolor sed viverra ipsum nunc aliquet. Mauris nunc congue nisi vitae. Sed adipiscing diam donec adipiscing. Luctus venenatis lectus magna fringilla. Quis auctor elit sed vulputate mi sit. Elit at imperdiet dui accumsan sit amet nulla facilisi. Semper viverra nam libero justo laoreet sit amet cursus sit. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Volutpat sed cras ornare arcu dui. Leo vel orci porta non. Maecenas sed enim ut sem viverra aliquet eget sit amet. In egestas erat imperdiet sed euismod nisi porta lorem. Amet volutpat consequat mauris nunc congue. Sodales ut etiam sit amet.\n" +
+                "CS4218: Software Testing\n" +
+                "\n" +
+                "\n";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -332,16 +508,16 @@ public class SortApplicationTest {
      */
     // Error test cases
     @Test
-    void testSortFromStdinWithNullInputStream() {
-        Throwable thrown = assertThrows(SortException.class, () -> sortApplication.sortFromStdin(
+    void testSortFromStdinWithNullInputStreamShouldThrowException() {
+        Throwable thrown = assertThrows(Exception.class, () -> sortApplication.sortFromStdin(
                 false, false, false, null
         ));
-        assertEquals(thrown.getMessage(), SortApplication.COMMAND + ": " + ERR_NULL_STREAMS);
+        assertEquals(thrown.getMessage(), ERR_NULL_STREAMS);
     }
 
     // Single Test cases
     @Test
-    void testSortFromStdinWithEmptyInputStream() throws Exception {
+    void testSortFromStdinWithEmptyInputStreamShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 false, false, false,
                 new ByteArrayInputStream(new byte[0])
@@ -352,82 +528,82 @@ public class SortApplicationTest {
 
     // Positive test cases
     @Test
-    void testSortFromStdinWithNoFlagArgsAndValidStandardInput() throws Exception {
+    void testSortFromStdinWithNoFlagArgsAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 false, false, false,
                 ourTestStdin
         );
-        String expectedResult = "";
+        String expectedResult = "+\n" + "1 test 1 2\n" + "11\n" + "5";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromStdinWithFirstWordNumArgOnlyAndValidStandardInput() throws Exception {
+    void testSortFromStdinWithFirstWordNumArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 true, false, false,
                 ourTestStdin
         );
-        String expectedResult = "";
+        String expectedResult = "+\n" + "1 test 1 2\n" + "5\n" + "11";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromStdinWithReverseOrderArgOnlyAndValidStandardInput() throws Exception {
+    void testSortFromStdinWithReverseOrderArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 false, true, false,
                 ourTestStdin
         );
-        String expectedResult = "";
+        String expectedResult = "5\n" + "11\n" + "1 test 1 2\n" + "+";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromStdinWithCaseIndependentArgOnlyAndValidStandardInput() throws Exception {
+    void testSortFromStdinWithCaseIndependentArgOnlyAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 false, false, true,
                 ourTestStdin
         );
-        String expectedResult = "";
+        String expectedResult = "+\n" + "1 test 1 2\n" + "11\n" + "5";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromStdinWithFirstWordNumAndReverseOrderArgAndValidStandardInput() throws Exception {
+    void testSortFromStdinWithFirstWordNumAndReverseOrderArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 true, true, false,
                 ourTestStdin
         );
-        String expectedResult = "";
+        String expectedResult = "11\n" + "5\n" + "1 test 1 2\n" + "+";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromStdinWithFirstWordNumAndCaseIndependentArgAndValidStandardInput() throws Exception {
+    void testSortFromStdinWithFirstWordNumAndCaseIndependentArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 true, false, true,
                 ourTestStdin
         );
-        String expectedResult = "";
+        String expectedResult = "+\n" + "1 test 1 2\n" + "5\n" + "11";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromStdinWithReverseOrderAndCaseIndependentArgAndValidStandardInput() throws Exception {
+    void testSortFromStdinWithReverseOrderAndCaseIndependentArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 false, true, true,
                 ourTestStdin
         );
-        String expectedResult = "";
+        String expectedResult = "5\n" + "11\n" + "1 test 1 2\n" + "+";
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void testSortFromStdinWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndValidStandardInput() throws Exception {
+    void testSortFromStdinWithFirstWordNumAndReverseOrderAndCaseIndependentArgAndValidStandardInputShouldRunSuccessfully() throws Exception {
         String actualResult = sortApplication.sortFromStdin(
                 true, true, true,
                 ourTestStdin
         );
-        String expectedResult = "";
+        String expectedResult = "11\n" + "5\n" + "1 test 1 2\n" + "+";
         assertEquals(expectedResult, actualResult);
     }
 }
