@@ -77,6 +77,7 @@ public final class CommandBuilder {
 
             switch (firstChar) {
                 case CHAR_REDIR_INPUT:
+                    tokens.add(String.valueOf(firstChar));
                     break;
                 case CHAR_REDIR_OUTPUT:
                     // add as a separate token on its own

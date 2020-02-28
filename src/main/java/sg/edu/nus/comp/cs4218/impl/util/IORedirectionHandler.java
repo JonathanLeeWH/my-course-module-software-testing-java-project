@@ -3,12 +3,14 @@ package sg.edu.nus.comp.cs4218.impl.util;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_MULTIPLE_STREAMS;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_SYNTAX;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_REDIR_INPUT;
@@ -21,7 +23,9 @@ public class IORedirectionHandler {
     private final OutputStream origOutputStream;
     private List<String> noRedirArgsList;
     private InputStream inputStream;
+    private InputStream prevInputStream;
     private OutputStream outputStream;
+    private OutputStream prevOutputStream;
 
     public IORedirectionHandler(List<String> argsList, InputStream origInputStream,
                                 OutputStream origOutputStream, ArgumentResolver argumentResolver) {
@@ -39,6 +43,8 @@ public class IORedirectionHandler {
         }
 
         noRedirArgsList = new LinkedList<>();
+        prevInputStream = origInputStream;
+        prevOutputStream = origOutputStream;
 
         // extract redirection operators (with their corresponding files) from argsList
         ListIterator<String> argsIterator = argsList.listIterator();
@@ -55,6 +61,7 @@ public class IORedirectionHandler {
             String file = argsIterator.next();
 
             if (isRedirOperator(file)) {
+                throw new ShellException(ERR_SYNTAX);
             }
 
             // handle quoting + globing + command substitution in file arg
@@ -68,16 +75,19 @@ public class IORedirectionHandler {
             // replace existing inputStream / outputStream
             if (arg.equals(String.valueOf(CHAR_REDIR_INPUT))) {
                 IOUtils.closeInputStream(inputStream);
-                if (!inputStream.equals(origInputStream)) { // Already have a stream
+                if (!inputStream.equals(prevInputStream)) { // Already have a stream
                     throw new ShellException(ERR_MULTIPLE_STREAMS);
                 }
+                File currFile = new File(file);
                 inputStream = IOUtils.openInputStream(file);
+                prevInputStream = inputStream;
             } else if (arg.equals(String.valueOf(CHAR_REDIR_OUTPUT))) {
                 IOUtils.closeOutputStream(outputStream);
-                if (!outputStream.equals(origOutputStream)) { // Already have a stream
+                if (!outputStream.equals(prevOutputStream)) { // Already have a stream
                     throw new ShellException(ERR_MULTIPLE_STREAMS);
                 }
                 outputStream = IOUtils.openOutputStream(file);
+                prevOutputStream = outputStream;
             }
         }
     }
