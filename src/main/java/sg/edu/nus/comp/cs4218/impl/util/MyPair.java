@@ -8,16 +8,16 @@ import java.util.Objects;
  * @param <K> Data Type of the supplied key
  * @param <V> Data Type of the supplied value
  */
-public class Pair<K, V> implements Serializable {
-    private K key;
-    private V value;
+public class MyPair<K, V> implements Serializable {
+    private final K key;
+    private final V value;
 
     /**
      * Construct a new pair
      * @param key The key for this pair
      * @param value The value for this pair
      */
-    public Pair(K key, V value) {
+    public MyPair(K key, V value) {
         this.key = key;
         this.value = value;
     }
@@ -38,21 +38,21 @@ public class Pair<K, V> implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 31 * hash + (key != null ? key.hashCode() : 0);
-        hash = 31 * hash + (value != null ? value.hashCode() : 0);
+        hash = 31 * hash + (key == null ? 0 : key.hashCode());
+        hash = 31 * hash + (value == null ? 0 : value.hashCode());
         return hash;
     }
 
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o instanceof Pair) {
-            Pair pair = (Pair) o;
-            if (!Objects.equals(key, pair.key)) {
+        if (obj instanceof MyPair) {
+            MyPair myPair = (MyPair) obj;
+            if (!Objects.equals(key, myPair.key)) {
                 return false;
             }
-            return Objects.equals(value, pair.value);
+            return Objects.equals(value, myPair.value);
         }
         return false;
     }
