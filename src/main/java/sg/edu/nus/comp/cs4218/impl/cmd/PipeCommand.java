@@ -51,6 +51,7 @@ public class PipeCommand implements Command {
             } catch (ShellException e) {
                 shellException = e;
             }
+            IOUtils.closeOutputStream(nextOutputStream);
         }
         if (absAppException != null) {
             throw absAppException;
