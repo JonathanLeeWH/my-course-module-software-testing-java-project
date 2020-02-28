@@ -411,7 +411,7 @@ class CutApplicationTest {
         );
         String expectedResult = "ot" + System.lineSeparator() + "öü" + System.lineSeparator() + "si" + System.lineSeparator() +
                 "eo" + System.lineSeparator() + "c " + System.lineSeparator() + "kl" + System.lineSeparator() + "u " +
-                System.lineSeparator() + System.lineSeparator() + "us\n" + System.lineSeparator() + "sa";
+                System.lineSeparator() + System.lineSeparator() + "us" + System.lineSeparator() + System.lineSeparator() + "sa";
         assertEquals(expectedResult, actualResult);
     }
 
