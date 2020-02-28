@@ -41,29 +41,23 @@ public class IORedirectionHandler {
         if (argsList == null || argsList.isEmpty()) {
             throw new ShellException(ERR_SYNTAX);
         }
-
         noRedirArgsList = new LinkedList<>();
         prevInputStream = origInputStream;
         prevOutputStream = origOutputStream;
-
         // extract redirection operators (with their corresponding files) from argsList
         ListIterator<String> argsIterator = argsList.listIterator();
         while (argsIterator.hasNext()) {
             String arg = argsIterator.next();
-
             // leave the other args untouched
             if (!isRedirOperator(arg)) {
                 noRedirArgsList.add(arg);
                 continue;
             }
-
             // if current arg is < or >, fast-forward to the next arg to extract the specified file
             String file = argsIterator.next();
-
             if (isRedirOperator(file)) {
                 throw new ShellException(ERR_SYNTAX);
             }
-
             // handle quoting + globing + command substitution in file arg
             List<String> fileSegment = argumentResolver.resolveOneArgument(file);
             if (fileSegment.size() > 1) {
@@ -71,7 +65,6 @@ public class IORedirectionHandler {
                 throw new ShellException(ERR_SYNTAX);
             }
             file = fileSegment.get(0);
-
             // replace existing inputStream / outputStream
             if (arg.equals(String.valueOf(CHAR_REDIR_INPUT))) {
                 IOUtils.closeInputStream(inputStream);
