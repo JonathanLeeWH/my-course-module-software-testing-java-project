@@ -38,8 +38,7 @@ public class IORedirectionHandlerTest {
     private static final String INPUT_FILE_NAME2 = "test2.txt";
     private static final String OUTPUT_FILE_NAME = "output.txt";
 
-    private static final String EXCEPTION_HDR = "shell: ";
-    private static final String INVALID_SYNTAX = EXCEPTION_HDR + ERR_SYNTAX;
+    private static final String INVALID_SYNTAX = "shell: " + ERR_SYNTAX;
 
 
     @BeforeAll
