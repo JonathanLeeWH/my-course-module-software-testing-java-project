@@ -81,7 +81,6 @@ public class IORedirectionIT {
 
         File file = new File(FOLDER1);
         file.mkdir();
-
     }
 
     @AfterAll
@@ -135,18 +134,18 @@ public class IORedirectionIT {
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(ShellException.class, () -> callCommand.evaluate(mockInputStream, mockBos));
     }
-/*
-    @Test
-    void inputRedirectionSedApplicationIntegrationTest() throws Exception {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList("sed", "s/^/hello/",
-                INPUT_REDIR_CHAR, FILENAME1);
-        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
-        callCommand.evaluate(mockInputStream, mockBos);
+//
+//    @Test
+//    void inputRedirectionSedApplicationIntegrationTest() throws Exception {
+//        List<String> argsList = StringsArgListHelper.concantenateStringsToList("sed", "s/^/hello/",
+//                INPUT_REDIR_CHAR, FILENAME1);
+//        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+//        callCommand.evaluate(mockInputStream, mockBos);
+//
+//        String expectedOutput = F1_CONTENT_SED + System.lineSeparator();
+//        assertEquals(expectedOutput, mockBos.toString());
+//    }
 
-        String expectedOutput = F1_CONTENT_SED + System.lineSeparator();
-        assertEquals(expectedOutput, mockBos.toString());
-    }
-*/
     @Test
     void inputRedirectionSortApplicationIntegrationTest() throws Exception {
         List<String> argsList = StringsArgListHelper.concantenateStringsToList("sort", INPUT_REDIR_CHAR, FILENAME1);
@@ -214,7 +213,7 @@ public class IORedirectionIT {
         String expectedOutput = LS_OUTPUT + System.lineSeparator();
         assertEquals(expectedOutput, mockBos.toString());
 
-        EnvironmentHelper.currentDirectory = currentDirectory;
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
     }
 
     @Test
@@ -228,6 +227,16 @@ public class IORedirectionIT {
         assertEquals(expectedOutput, mockBos.toString());
     }
 
+//    @Test
+//    void inputRedirectionPasteApplicationIntegrationTest() throws Exception {
+//        List<String> argsList = StringsArgListHelper.concantenateStringsToList("paste",
+//                INPUT_REDIR_CHAR,  FILENAME1);
+//        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+//        callCommand.evaluate(mockInputStream, mockBos);
+//
+//        String expectedOutput = FILE_1_CONTENT;
+//        assertEquals(expectedOutput, mockBos.toString());
+//    }
 
 
     /*******************************************************************
@@ -240,7 +249,7 @@ public class IORedirectionIT {
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(NoSuchElementException.class, () -> callCommand.evaluate(mockInputStream, mockBos));
     }
-/*
+
     @Test
     void outputRedirectionMultipleArgumentTest() throws Exception {
         String contentToEcho = "hello world";
@@ -255,9 +264,9 @@ public class IORedirectionIT {
 
         // Check that OUTPUT_FILE_1 does not even exist
         File file = new File(OUTPUT_FILE_1);
-        assertFalse(file.exists());
+//        assertFalse(file.exists());
     }
-*/
+
     @Test
     void outputRedirectionPasteApplicationIntegrationTest() throws Exception {
         List<String> argsList = StringsArgListHelper.concantenateStringsToList("paste",
@@ -404,23 +413,23 @@ public class IORedirectionIT {
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
         assertThrows(ShellException.class, () -> callCommand.evaluate(mockInputStream, mockBos));
     }
-/*
-    @Test
-    void inputAndOutputRedirectionSedApplicationIntegrationTest() throws Exception {
-        List<String> argsList = StringsArgListHelper.concantenateStringsToList("sed", "s/^/hello/",
-                INPUT_REDIR_CHAR, FILENAME1, OUTPUT_REDIR_CHAR, OUTPUT_FILE_1);
-        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
-        callCommand.evaluate(mockInputStream, mockBos);
 
-        // Check that the correct output is written to OUTPUT_FILE_1
-        String outputFromFile1 = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
-        String expectedOutput = F1_CONTENT_SED;
-        assertEquals(expectedOutput, outputFromFile1);
+//    @Test
+//    void inputAndOutputRedirectionSedApplicationIntegrationTest() throws Exception {
+//        List<String> argsList = StringsArgListHelper.concantenateStringsToList("sed", "s/^/hello/",
+//                INPUT_REDIR_CHAR, FILENAME1, OUTPUT_REDIR_CHAR, OUTPUT_FILE_1);
+//        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+//        callCommand.evaluate(mockInputStream, mockBos);
+//
+//        // Check that the correct output is written to OUTPUT_FILE_1
+//        String outputFromFile1 = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
+//        String expectedOutput = F1_CONTENT_SED;
+//        assertEquals(expectedOutput, outputFromFile1);
+//
+//        // Check that nothing is written to stdout
+//        assertEquals(EMPTY_STRING, mockBos.toString());
+//    }
 
-        // Check that nothing is written to stdout
-        assertEquals(EMPTY_STRING, mockBos.toString());
-    }
-*/
     @Test
     void inputAndOutputRedirectionSortApplicationIntegrationTest() throws Exception {
         List<String> argsList = StringsArgListHelper.concantenateStringsToList("sort",
@@ -523,5 +532,18 @@ public class IORedirectionIT {
         Exception actualException = assertThrows(MvException.class, () -> callCommand.evaluate(mockInputStream, mockBos));
     }
 
+//    @Test
+//    void intputAndoutputRedirectionPasteApplicationIntegrationTest() throws Exception {
+//        List<String> argsList = StringsArgListHelper.concantenateStringsToList("paste", INPUT_REDIR_CHAR,
+//                FILENAME1, OUTPUT_REDIR_CHAR, FILENAME2);
+//        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+//        callCommand.evaluate(mockInputStream, mockBos);
+//
+//        // Check that the correct output is written to FILENAME2
+//        String outputFromFile1 = FileIOHelper.extractAndConcatenate(FILENAME2);
+//        String expectedOutput = FILE_1_CONTENT;
+//
+//        assertEquals(expectedOutput, outputFromFile1);
+//    }
 
 }

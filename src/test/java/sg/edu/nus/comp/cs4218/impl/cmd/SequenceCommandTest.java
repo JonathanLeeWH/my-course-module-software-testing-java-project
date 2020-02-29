@@ -37,7 +37,7 @@ class SequenceCommandTest {
      * Expected: Throws ExitException.
      */
     @Test
-    void evaluateWhenCommandThrowsExitExceptionThrowsExitException() throws AbstractApplicationException, ShellException {
+    void testEvaluateWhenCommandThrowsExitExceptionThrowsExitException() throws AbstractApplicationException, ShellException {
         Command mockCommand = mock(Command.class);
         spyCommandsList.add(mockCommand);
         verify(spyCommandsList).add(mockCommand);
@@ -55,7 +55,7 @@ class SequenceCommandTest {
      * Expected: stdout OutputStream at the end of evaluate method execution contains the ShellException in the format of the exception message with STRING_NEWLINE at the end.
      */
     @Test
-    void evaluateWhenCommandThrowsShellExceptionShouldAddToOutputLines() throws AbstractApplicationException, ShellException {
+    void testEvaluateWhenCommandThrowsShellExceptionShouldAddToOutputLines() throws AbstractApplicationException, ShellException {
         Command mockCommand = mock(Command.class);
         spyCommandsList.add(mockCommand);
         verify(spyCommandsList).add(mockCommand);
@@ -74,7 +74,7 @@ class SequenceCommandTest {
      * Expected: stdout OutputStream at the end of evaluate method execution contains a RmException which is a subtype of AbstractApplicationException in the format of the exception message with STRING_NEWLINE at the end.
      */
     @Test
-    void evaluateWhenCommandThrowsAbstractionApplicationExceptionShouldAddToOutputLines() throws AbstractApplicationException, ShellException {
+    void testEvaluateWhenCommandThrowsAbstractionApplicationExceptionShouldAddToOutputLines() throws AbstractApplicationException, ShellException {
         Command mockCommand = mock(Command.class);
         spyCommandsList.add(mockCommand);
         verify(spyCommandsList).add(mockCommand);
@@ -94,7 +94,7 @@ class SequenceCommandTest {
      * Expected: Returns commands list with that element.
      */
     @Test
-    void getCommandsWhenListOfCommandsPassedToSequenceCommandConstructorIsNonEmptyOnlyOneElement() {
+    void testGetCommandsWhenListOfCommandsPassedToSequenceCommandConstructorIsNonEmptyOnlyOneElement() {
         Command mockCommand = mock(Command.class);
         spyCommandsList.add(mockCommand);
         verify(spyCommandsList).add(mockCommand);
@@ -113,7 +113,7 @@ class SequenceCommandTest {
      * Expected: Returns commands list with those elements.
      */
     @Test
-    void getCommandsWhenListOfCommandsPassedToSequenceCommandConstructorIsNonEmptyMoreThanOneElements() {
+    void testGetCommandsWhenListOfCommandsPassedToSequenceCommandConstructorIsNonEmptyMoreThanOneElements() {
         Command mockCommand1 = mock(Command.class);
         Command mockCommand2 = mock(Command.class);
         spyCommandsList.add(mockCommand1);

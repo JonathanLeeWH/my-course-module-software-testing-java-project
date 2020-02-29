@@ -22,7 +22,7 @@ public class RmApplication implements RmInterface {
      * @param isRecursive   Boolean option to recursively delete the folder contents (traversing
      *                      through all folders inside the specified folder)
      * @param fileName    Array of String of file names
-     * @throws Exception  
+     * @throws RmException
      */
     @Override
     public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws RmException {
@@ -59,7 +59,7 @@ public class RmApplication implements RmInterface {
      * Removes input file.
      * Precondition: Input file is not a directory.
      * @param fileName input file to be deleted.
-     * @throws Exception
+     * @throws RmException
      */
     public void removeFileOnly(File fileName) throws RmException {
         try {
@@ -74,7 +74,7 @@ public class RmApplication implements RmInterface {
     /**
      * Removes input file or input empty folder.
      * @param fileName  input file to be deleted.
-     * @throws Exception
+     * @throws RmException
      */
     public void removeFileAndEmptyFolderOnly(File fileName) throws RmException {
         try {
@@ -89,7 +89,7 @@ public class RmApplication implements RmInterface {
     /**
      * Removes input file or input folder and its contents by traversing recursively to delete the input folder contents.
      * @param fileName input file to be deleted.
-     * @throws Exception
+     * @throws RmException
      */
     public void removeFilesAndFolderContent(File fileName) throws RmException {
         if (fileName.isDirectory()) {
@@ -111,15 +111,10 @@ public class RmApplication implements RmInterface {
     /**
      * Runs RmApplication with specified input data and specified output stream.
      * Assumption:
-     * 1) The Arrays of arguments for RmApplication only allows file names and not relative or absolute path.
-     * For example: rm hello/1.txt where hello/1.txt is a path is not allowed as arguments.
-     * This matches the comment in skeleton RmInterface where the arguments passed to remove method which
-     * will be called by run method allows file names only.
-     * This differs from unix behaviour.
-     * 2) The rm command will allow throw one exception (the latest exception) when there are potentially one or more
+     * 1) The rm command will allow throw one exception (the latest exception) when there are potentially one or more
      * exceptions due to the files and/or folders passed into the rm command arguments.
      * This behaviour differs from unix.
-     * 3) The rm command -rd or -r -d or -r flags (including the permutation of the flags) would attempt to delete all files and/or folders input as arguments for the rm command
+     * 2) The rm command -rd or -r -d or -r flags (including the permutation of the flags) would attempt to delete all files and/or folders input as arguments for the rm command
      * together with the contents of non empty folders. In other words, their behaviour is the same.
      * @param args Array of arguments for the RmApplication
      * @param stdin An InputStream, not used.

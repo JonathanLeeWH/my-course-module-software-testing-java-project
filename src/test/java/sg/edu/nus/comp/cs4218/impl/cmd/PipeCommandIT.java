@@ -55,7 +55,7 @@ class PipeCommandIT {
      * Expected: Outputs hello world terminated with a new line character.
      */
     @Test
-    void evaluatePipeCommandWithValidCallCommandAndCallCommandFormatShouldOutputCorrectly() throws AbstractApplicationException, ShellException {
+    void testEvaluatePipeCommandWithValidCallCommandAndCallCommandFormatShouldOutputCorrectly() throws AbstractApplicationException, ShellException {
         callCommands.add(new CallCommand(Arrays.asList("echo", "hello", "world"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("grep", "world"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -70,7 +70,7 @@ class PipeCommandIT {
      * Expected: Outputs CS4218A terminated with a new line character.
      */
     @Test
-    void evaluatePipeCommandWithValidPipeCommandAndCallCommandsFormatShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+    void testEvaluatePipeCommandWithValidPipeCommandAndCallCommandsFormatShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
         EnvironmentHelper.currentDirectory = tempDir.toString();
         Files.createFile(tempDir.resolve(FILE_NAME_1));
         Files.createFile(tempDir.resolve(FILE_NAME_2));
@@ -89,7 +89,7 @@ class PipeCommandIT {
      * Expected: Throws ShellException as lsa is an invalid application. The echo command is not executed as stated in teh assumption and project specification.
      */
     @Test
-    void evaluatePipeCommandWithACommandThrowingAShellExceptionShouldThrowException() throws Exception {
+    void testEvaluatePipeCommandWithACommandThrowingAShellExceptionShouldThrowException() throws Exception {
         callCommands.add(new CallCommand(Collections.singletonList("lsa"), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList("echo", "How", "are", "you"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -106,7 +106,7 @@ class PipeCommandIT {
      * Expected: Throws CdException, a subclass of AbstractApplicationException, ERR_FILE_NOT_FOUND
      */
     @Test
-    void evaluatePipeCommandWithACommandThrowingASubClassOfApplicationCdExceptionShouldThrowCdException(@TempDir Path tempDir) {
+    void testEvaluatePipeCommandWithACommandThrowingASubClassOfApplicationCdExceptionShouldThrowCdException(@TempDir Path tempDir) {
         Path folder = tempDir.resolve(FOLDER_NAME_1);
         EnvironmentHelper.currentDirectory = tempDir.toString();
         assertFalse(Files.isDirectory(folder)); // check that the folder does not exist.
