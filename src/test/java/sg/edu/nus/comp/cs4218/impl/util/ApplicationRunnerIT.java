@@ -39,7 +39,7 @@ public class ApplicationRunnerIT {
      * Expected: 1.txt is removed.
      */
     @Test
-    void runAppWhenInputRmAppShouldExecuteRmApplication(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+    void testRunAppWhenInputRmAppShouldExecuteRmApplication(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
         Path file1 = tempDir.resolve("1.txt");
         String[] argsList = {file1.toString()};
         Files.createFile(file1);
@@ -54,7 +54,7 @@ public class ApplicationRunnerIT {
      * Expected: Throws ExitException with exit code 0.
      */
     @Test
-    void runAppWhenInputExitAppShouldExecuteExitApplication() {
+    void testRunAppWhenInputExitAppShouldExecuteExitApplication() {
         ExitException exception = assertThrows(ExitException.class, () -> {
             appRunner.runApp("exit", null, mock(InputStream.class), mock(OutputStream.class));
         });
@@ -67,7 +67,7 @@ public class ApplicationRunnerIT {
      * Expected: Outputstream should contain hello world.
      */
     @Test
-    void runAppWhenInputEchoAppShouldExecuteEchoApplication() throws AbstractApplicationException, ShellException {
+    void testRunAppWhenInputEchoAppShouldExecuteEchoApplication() throws AbstractApplicationException, ShellException {
         String[] argsList = {"hello", "world"};
         OutputStream outputStream = new ByteArrayOutputStream();
         appRunner.runApp("echo", argsList, mock(InputStream.class), outputStream);
@@ -81,7 +81,7 @@ public class ApplicationRunnerIT {
      * In this case, the current directory is changed to the parent folder path of the present working directory.
      */
     @Test
-    void runAppWhenInputCdAppShouldExecuteCdApplication() throws AbstractApplicationException, ShellException {
+    void testRunAppWhenInputCdAppShouldExecuteCdApplication() throws AbstractApplicationException, ShellException {
         EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
         String[] argsList = {".."};
         String parentAbsPath = Paths.get(EnvironmentHelper.currentDirectory).getParent().toString();
