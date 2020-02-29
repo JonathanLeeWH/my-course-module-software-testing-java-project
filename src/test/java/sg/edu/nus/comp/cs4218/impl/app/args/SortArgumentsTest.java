@@ -2,7 +2,6 @@ package sg.edu.nus.comp.cs4218.impl.app.args;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sg.edu.nus.comp.cs4218.impl.parser.ArgsParser;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
 import java.nio.file.Path;
@@ -10,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static sg.edu.nus.comp.cs4218.impl.app.args.SortArguments.ILLEGAL_FLAG_MSG;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_ARGS;
 
 public class SortArgumentsTest {
@@ -32,7 +32,7 @@ public class SortArgumentsTest {
     @Test
     public void testParseWithInvalidArgsShouldThrowSortException() {
         Throwable thrown = assertThrows(Exception.class, () -> sortArguments.parse("-x"));
-        assertEquals(thrown.getMessage(), ArgsParser.ILLEGAL_FLAG_MSG + "x");
+        assertEquals(thrown.getMessage(), ILLEGAL_FLAG_MSG + "x");
     }
 
     // Positive test cases
