@@ -30,7 +30,7 @@ class PipeCommandTest {
      * Expected: Throws AbstractApplication.
      */
     @Test
-    void evaluateWhenCallCommandThrowsAbsAppExceptionShouldThrowAbstractApplicationException() throws AbstractApplicationException, ShellException {
+    void testEvaluateWhenCallCommandThrowsAbsAppExceptionShouldThrowAbstractApplicationException() throws AbstractApplicationException, ShellException {
         CallCommand mockCallCommand = mock(CallCommand.class);
         spyCallCommands.add(mockCallCommand);
         verify(spyCallCommands).add(mockCallCommand);
@@ -48,7 +48,7 @@ class PipeCommandTest {
      * Expected: Throws ShellException.
      */
     @Test
-    void evaluateWhenCallCommandThrowsShellExceptionShouldThrowShellException() throws AbstractApplicationException, ShellException {
+    void testEvaluateWhenCallCommandThrowsShellExceptionShouldThrowShellException() throws AbstractApplicationException, ShellException {
         CallCommand mockCallCommand = mock(CallCommand.class);
         spyCallCommands.add(mockCallCommand);
         verify(spyCallCommands).add(mockCallCommand);
@@ -68,7 +68,7 @@ class PipeCommandTest {
      * Expected: Returns callCommands list with that element.
      */
     @Test
-    void getCallCommandsWhenListOfCallCommandsPassedToPipeCommandConstructorIsNonEmptyOnlyOneElement() {
+    void testGetCallCommandsWhenListOfCallCommandsPassedToPipeCommandConstructorIsNonEmptyOnlyOneElement() {
         CallCommand mockCallCommand = mock(CallCommand.class);
         spyCallCommands.add(mockCallCommand);
         verify(spyCallCommands).add(mockCallCommand);
@@ -87,7 +87,7 @@ class PipeCommandTest {
      * Expected: Returns callCommands list with those elements.
      */
     @Test
-    void getCallCommandsWhenListOfCallCommandsPassedToPipeCommandConstructorIsNonEmptyMoreThanOneElements() {
+    void testGetCallCommandsWhenListOfCallCommandsPassedToPipeCommandConstructorIsNonEmptyMoreThanOneElements() {
         CallCommand mockCallCommand1 = mock(CallCommand.class);
         CallCommand mockCallCommand2 = mock(CallCommand.class);
         spyCallCommands.add(mockCallCommand1);
