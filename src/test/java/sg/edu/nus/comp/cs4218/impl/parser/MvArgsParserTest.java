@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MvArgsParserTest {
 
@@ -41,5 +42,23 @@ public class MvArgsParserTest {
         expected.add("folder1");
         mvArgsParser.parse("folder","folder1");
         assertEquals(expected.toString(), mvArgsParser.getNonFlagArgs().toString());
+    }
+
+    @Test
+    void isNFlagReturnTrue() throws InvalidArgsException {
+        mvArgsParser.parse("-n");
+        assertTrue(mvArgsParser.isNotOverWrite());
+    }
+
+    @Test
+    void isNFlagMultipleArgsReturnTrue() throws InvalidArgsException {
+        mvArgsParser.parse("-n" , "file1","file2");
+        assertTrue(mvArgsParser.isNotOverWrite());
+        List<String> expected = new ArrayList<String>();
+        expected.add("file1");
+        expected.add("file2");
+        assertEquals(expected.toString(), mvArgsParser.getNonFlagArgs().toString());
+
+
     }
 }
