@@ -5,10 +5,9 @@ import sg.edu.nus.comp.cs4218.exception.SedException;
 import sg.edu.nus.comp.cs4218.impl.app.args.SedArguments;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
@@ -40,6 +39,7 @@ public class SedApplication implements SedInterface {
         SedArguments sedArgs = new SedArguments();
         try {
             sedArgs.parse(args);
+            SedArguments.validate(sedArgs.getRegex(), sedArgs.getReplacement(), sedArgs.getReplacementIndex());
         } catch (Exception e) {
             throw new SedException(e.getMessage());//NOPMD
         }
@@ -91,14 +91,8 @@ public class SedApplication implements SedInterface {
             throw new Exception(ERR_NO_PERM);
         }
 
-        try (InputStream input = IOUtils.openInputStream(fileName)) {
-            /**
-             * TODO: Need to check if this will affect return results.
-             */
-            String result = replaceSubstringInStdin(regexp, replacement, replacementIndex, input);
-            IOUtils.closeInputStream(input);
-            return result;
-        }
+        String[] fileContents = getFileContents(node);
+        return replacementHandler(fileContents, regexp, replacement, replacementIndex);
     }
 
     /**
@@ -119,27 +113,32 @@ public class SedApplication implements SedInterface {
         if (stdin == null) {
             throw new Exception(ERR_NULL_STREAMS);
         }
-        SedArguments.validate(regexp, replacement, replacementIndex);
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(stdin));
+        String fileName, output = "";
+        while ((fileName = reader.readLine()) != null) {
+            output = output.concat(replaceSubstringInFile(regexp, replacement, replacementIndex, fileName));
+        }
+        return output;
+    }
 
-        List<String> input = IOUtils.getLinesFromInputStream(stdin);
-        IOUtils.closeInputStream(stdin);
+    private String replacementHandler(String[] input, String regexp, String replacement, int replacementIndex) {
         StringBuilder output = new StringBuilder();
         for (String line : input) {
             StringBuilder builder = new StringBuilder();
             if (replacementIndex == 1) {
                 builder.append(line.replaceFirst(regexp, replacement));
                 output.append(builder.toString()).append(STRING_NEWLINE);
-            } else if (replacementIndex <= input.size()){
+            } else if (replacementIndex <= input.length){
                 builder.append(replaceString(line, regexp, replacement, replacementIndex));
                 output.append(builder.toString()).append(STRING_NEWLINE);
             } else {
-                String returnString = input.toString();
+                String returnString = Arrays.toString(input);
                 return returnString.substring(1,returnString.length()-1) + System.lineSeparator();
             }
         }
         return output.toString();
     }
-
     private String replaceString(String line, String regexp, String replacement, int replacementIndex) {
         int index = 0;
         String space = " ";
@@ -158,5 +157,22 @@ public class SedApplication implements SedInterface {
             }
         }
         return stringBuilder.toString();
+    }
+
+    private String[] getFileContents(File file) throws SedException {
+        try(FileReader fileReader = new FileReader(file); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            List<String> fileContentList = new ArrayList<>();
+            String currentLine;
+            while ((currentLine = bufferedReader.readLine()) != null) {
+                fileContentList.add(currentLine);
+            }
+            String[] result = new String[fileContentList.size()];
+            for (int j = 0; j < fileContentList.size(); j++) {
+                result[j] = fileContentList.get(j);
+            }
+            return result;
+        } catch (IOException e) {
+            throw (SedException) new SedException(ERR_READING_FILE).initCause(e);
+        }
     }
 }
