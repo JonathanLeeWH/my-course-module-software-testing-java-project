@@ -183,6 +183,7 @@ public class ApplicationRunnerIT {
         String expectedOutput = LS_OUTPUT;
         String actualOutput = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
         assertEquals(expectedOutput, actualOutput);
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
     }
 
     /**
