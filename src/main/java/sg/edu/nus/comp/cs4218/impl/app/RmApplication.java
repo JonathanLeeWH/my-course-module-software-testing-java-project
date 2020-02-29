@@ -22,7 +22,8 @@ public class RmApplication implements RmInterface {
      * @param isRecursive   Boolean option to recursively delete the folder contents (traversing
      *                      through all folders inside the specified folder)
      * @param fileName    Array of String of file names
-     * @throws RmException
+     * @throws RmException If RmException is thrown by methods called in its body or the input file or directory does not exist or
+     * if there are no -d flag and the input file is a directory.
      */
     @Override
     public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws RmException {
@@ -59,7 +60,7 @@ public class RmApplication implements RmInterface {
      * Removes input file.
      * Precondition: Input file is not a directory.
      * @param fileName input file to be deleted.
-     * @throws RmException
+     * @throws RmException If an IOException occurred.
      */
     public void removeFileOnly(File fileName) throws RmException {
         try {
@@ -74,7 +75,7 @@ public class RmApplication implements RmInterface {
     /**
      * Removes input file or input empty folder.
      * @param fileName  input file to be deleted.
-     * @throws RmException
+     * @throws RmException If the input is a non empty directory or an IOException occurred.
      */
     public void removeFileAndEmptyFolderOnly(File fileName) throws RmException {
         try {
@@ -89,7 +90,7 @@ public class RmApplication implements RmInterface {
     /**
      * Removes input file or input folder and its contents by traversing recursively to delete the input folder contents.
      * @param fileName input file to be deleted.
-     * @throws RmException
+     * @throws RmException if there is an IOException.
      */
     public void removeFilesAndFolderContent(File fileName) throws RmException {
         if (fileName.isDirectory()) {

@@ -159,30 +159,36 @@ class SequenceCommandIT {
         assertEquals(new CdException(ERR_FILE_NOT_FOUND).getMessage() + System.lineSeparator() + "Good morning" + System.lineSeparator(), outputStream.toString());
     }
 
-//    /**
-//     * Tests evaluate method when involving streams such as output redirection.
-//     * This is to ensure streams are open and closed properly and can be used properly.
-//     * For example: paste A.txt B.txt > AB.txt; rm AB.txt
-//     * Where A.txt and B.txt exist. AB.txt does not exist initially.
-//     * Expected: Removes AB.txt after AB.txt is created from the execution of paste A.txt B.txt > AB.txt
-//     */
-//    @Test
-//    void testEvaluateSequenceCommandWithOutputRedirectionCommandAndRemoveCommandShouldRemoveTheCreatedFile(@TempDir Path tempDir) throws IOException, AbstractApplicationException, ShellException {
-//        Path file1 = tempDir.resolve(FILE_NAME_4);
-//        Path file2 = tempDir.resolve(FILE_NAME_5);
-//        Path file3 = tempDir.resolve(FILE_NAME_6);
-//        EnvironmentHelper.currentDirectory = tempDir.toString();
-//        Files.createFile(file1);
-//        Files.createFile(file2);
-//        assertTrue(Files.exists(file1)); // Check A.txt exists
-//        assertTrue(Files.exists(file2)); // Check B.txt exists
-//        assertFalse(Files.exists(file3)); // Check AB.txt does not exist initially
-//        commands.add(new CallCommand(Arrays.asList(PASTE_APP, FILE_NAME_4, FILE_NAME_5, Character.toString(CHAR_REDIR_OUTPUT), FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
-//        commands.add(new CallCommand(Arrays.asList(RM_APP, FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
-//        SequenceCommand sequenceCommand = new SequenceCommand(commands);
-//        sequenceCommand.evaluate(System.in, outputStream);
-//        assertFalse(Files.exists(file3)); // Check that AB.txt does not exist as it should be removed
-//    }
+    /**
+     * Tests evaluate method when involving streams such as output redirection.
+     * This is to ensure streams are open and closed properly and can be used properly.
+     * For example: paste A.txt B.txt > AB.txt; rm AB.txt
+     * Where A.txt and B.txt exist. AB.txt does not exist initially.
+     * Expected: Removes AB.txt after AB.txt is created from the execution of paste A.txt B.txt > AB.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandWithOutputRedirectionPasteCommandAndRemoveCommandShouldRemoveTheCreatedFile(@TempDir Path tempDir) throws IOException, AbstractApplicationException, ShellException {
+        Path file1 = Paths.get(FILE_NAME_4);
+        Path file2 = Paths.get(FILE_NAME_5);
+        Path file3 = Paths.get(FILE_NAME_6);
+        Files.deleteIfExists(file1); // delete A.txt used for testing if it exists before the test.
+        Files.deleteIfExists(file2); // delete B.txt used for testing if it exists before the test.
+        Files.deleteIfExists(file3); // delete AB.txt used for testing if it exists before the test.
+        Files.createFile(file1);
+        Files.createFile(file2);
+        assertTrue(Files.exists(file1)); // Check A.txt exists
+        assertTrue(Files.exists(file2)); // Check B.txt exists
+        assertFalse(Files.exists(file3)); // Check AB.txt does not exist initially
+        commands.add(new CallCommand(Arrays.asList(PASTE_APP, FILE_NAME_4, FILE_NAME_5, Character.toString(CHAR_REDIR_OUTPUT), FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(file3)); // Check that AB.txt does not exist as it should be removed
+        // clean up
+        Files.deleteIfExists(file1);
+        Files.deleteIfExists(file2);
+        Files.deleteIfExists(file3);
+    }
 
     /**
      * Tests evaluate method when involving streams such as output redirection.

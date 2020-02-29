@@ -21,6 +21,16 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
  */
 public class EchoApplication implements EchoInterface {
 
+    /**
+     * Return the string to be written by echo.
+     * The string consists of the args separated by single blank
+     * (` ') characters and followed by a newline character.
+     * If the input argument is empty, return a string with only a new line similar to in unix.
+     * As in unix, echo without any arguments would print an empty line. Hence, our shell outputs a new line similar to
+     * in unix, if echo has no arguments.
+     * @param args Array of String of args to be written
+     * @throws EchoException If the input argument is null.
+     */
     @Override
     public String constructResult(String[] args) throws EchoException {
         if (args == null) {
@@ -45,7 +55,7 @@ public class EchoApplication implements EchoInterface {
      * @param stdin  An InputStream, not used.
      * @param stdout An OutputStream. Elements of args will be output to stdout, separated by a
      *               space character.
-     * @throws EchoException If an I/O exception occurs.
+     * @throws EchoException If an I/O exception occurs or no outputstream.
      */
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws EchoException {
         if (stdout == null) {
