@@ -183,6 +183,7 @@ public class ApplicationRunnerIT {
         String expectedOutput = LS_OUTPUT;
         String actualOutput = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
         assertEquals(expectedOutput, actualOutput);
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
     }
 
     /**
@@ -214,7 +215,6 @@ public class ApplicationRunnerIT {
         File file1 = new File(FILENAME1);
         File file2 = new File(FILENAME2);
 
-
         fileOutputStream = new FileOutputStream(OUTPUT_FILE_1);
 
         Path file1Path = file1.toPath();
@@ -231,6 +231,4 @@ public class ApplicationRunnerIT {
         String[] args2 = { FILENAME2 , FILENAME1 };
         appRunner.runApp("mv", args2, null, fileOutputStream);
     }
-
-
 }
