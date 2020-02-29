@@ -26,7 +26,7 @@ class RmArgsParserTest {
      * Expected: Returns true.
      */
     @Test
-    void isEmptyFolderWhenFlagsContainDFlagShouldReturnTrue() {
+    void testIsEmptyFolderWhenFlagsContainDFlagShouldReturnTrue() {
         rmArgsParser.flags.add(FLAG_WITH_FOLDER);
         assertTrue(rmArgsParser.isEmptyFolder());
     }
@@ -36,7 +36,7 @@ class RmArgsParserTest {
      * Expected: Returns false.
      */
     @Test
-    void isEmptyFolderWhenFlagsDoesNotContainDFlagShouldReturnFalse() {
+    void testIsEmptyFolderWhenFlagsDoesNotContainDFlagShouldReturnFalse() {
         assertFalse(rmArgsParser.isEmptyFolder());
     }
 
@@ -45,7 +45,7 @@ class RmArgsParserTest {
      * Expected: Returns true.
      */
     @Test
-    void isRecursiveWhenFlagsContainRFlagShouldReturnTrue() {
+    void testIsRecursiveWhenFlagsContainRFlagShouldReturnTrue() {
         rmArgsParser.flags.add(FLAG_IS_RECURSIVE);
         assertTrue(rmArgsParser.isRecursive());
     }
@@ -55,7 +55,7 @@ class RmArgsParserTest {
      * Expected: Returns false.
      */
     @Test
-    void isRecursiveWhenFlagsDoesNotContainRFlagShouldReturnFalse() {
+    void testIsRecursiveWhenFlagsDoesNotContainRFlagShouldReturnFalse() {
         assertFalse(rmArgsParser.isRecursive());
     }
 
@@ -64,7 +64,7 @@ class RmArgsParserTest {
      * Expected: Returns an empty list.
      */
     @Test
-    void getFileNamesWhenNonFlagArgsIsEmptyShouldReturnAnEmptyList() {
+    void testGetFileNamesWhenNonFlagArgsIsEmptyShouldReturnAnEmptyList() {
         assertTrue(rmArgsParser.nonFlagArgs.isEmpty());
         assertTrue(rmArgsParser.getFileNames().isEmpty());
     }
@@ -74,7 +74,7 @@ class RmArgsParserTest {
      * Expected: Returns a non empty list.
      */
     @Test
-    void getFileNamesWhenNonFlagArgsIsNonEmptyShouldReturnANonEmptyList() {
+    void testGetFileNamesWhenNonFlagArgsIsNonEmptyShouldReturnANonEmptyList() {
         rmArgsParser.nonFlagArgs.addAll(Arrays.asList(VALID_NON_FLAG_1, VALID_NON_FLAG_2));
         assertFalse(rmArgsParser.nonFlagArgs.isEmpty());
         assertFalse(rmArgsParser.getFileNames().isEmpty());
