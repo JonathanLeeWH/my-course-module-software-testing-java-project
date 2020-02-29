@@ -42,7 +42,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_FILE_NOT_FOUND
      */
     @Test
-    void cpSrcFileToDestFileWhenSrcFileAbsentShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testCpSrcFileToDestFileWhenSrcFileAbsentShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFile = tempDir.resolve(DEST_FILE);
 
@@ -63,7 +63,7 @@ class CpApplicationTest {
      * created.
      */
     @Test
-    void cpSrcFileToDestFileWhenSrcFilePresentDestFileAbsentShouldCopyContentFromSrcFileToDestFile(@TempDir Path tempDir) throws IOException, Exception {
+    void testCpSrcFileToDestFileWhenSrcFilePresentDestFileAbsentShouldCopyContentFromSrcFileToDestFile(@TempDir Path tempDir) throws IOException, Exception {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFile = tempDir.resolve(DEST_FILE);
         List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
@@ -86,7 +86,7 @@ class CpApplicationTest {
      * the destination file is overwritten by contents of the source file similar to in unix.
      */
     @Test
-    void cpSrcFileToDestFileWhenSrcFilePresentDestFilePresentShouldCopyContentFromSrcFileToOverwriteDestFile(@TempDir Path tempDir) throws IOException, Exception {
+    void testCpSrcFileToDestFileWhenSrcFilePresentDestFilePresentShouldCopyContentFromSrcFileToOverwriteDestFile(@TempDir Path tempDir) throws IOException, Exception {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFile = tempDir.resolve(DEST_FILE);
         List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
@@ -108,7 +108,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_SRC_DEST_SAME
      */
     @Test
-    void cpSrcFileToDestFileWhenSourceFileAndDestinationFileInputSameShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testCpSrcFileToDestFileWhenSourceFileAndDestinationFileInputSameShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path srcFile = tempDir.resolve(SRC_FILE);;
         Files.createFile(srcFile);
 
@@ -125,7 +125,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_FILE_NOT_FOUND
      */
     @Test
-    void cpFilesToFolderWhenDestFolderDoesNoExistShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testCpFilesToFolderWhenDestFolderDoesNoExistShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFolder = tempDir.resolve(DEST_FOLDER);
         Files.createFile(srcFile);
@@ -147,7 +147,7 @@ class CpApplicationTest {
      * This is similar to unix behaviour.
      */
     @Test
-    void cpFilesToFolderWhenInputSourceContainsAtLeastOneNonExistingFileShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testCpFilesToFolderWhenInputSourceContainsAtLeastOneNonExistingFileShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path file1 = tempDir.resolve(SRC_FILE);
         Path file2 = tempDir.resolve(FILE_NAME_1);
         Path destFolder = tempDir.resolve(DEST_FOLDER);
@@ -173,7 +173,7 @@ class CpApplicationTest {
      * Expected: 1.txt is copied into dest directory.
      */
     @Test
-    void cpFilesToFolderWhenInputSourceFilesExistsAndDestFolderExistsShouldCopyContentFromSourceFilesToDestFolder(@TempDir Path tempDir) throws Exception {
+    void testCpFilesToFolderWhenInputSourceFilesExistsAndDestFolderExistsShouldCopyContentFromSourceFilesToDestFolder(@TempDir Path tempDir) throws Exception {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFolder = tempDir.resolve(DEST_FOLDER);
         Files.createFile(srcFile);
@@ -194,7 +194,7 @@ class CpApplicationTest {
      * Expected: Copies the content of the 1.txt to be copied to he dest directory and overwrite the existing 1.txt file in the dest directory.
      */
     @Test
-    void cpFilesToFolderWhenInputSourceFilesExistsAndDestFolderContainsFileWithSameFileNameAsFileToBeCopiedShouldOverwriteTheFileInDestWithInputFileContent(@TempDir Path tempDir) throws Exception {
+    void testCpFilesToFolderWhenInputSourceFilesExistsAndDestFolderContainsFileWithSameFileNameAsFileToBeCopiedShouldOverwriteTheFileInDestWithInputFileContent(@TempDir Path tempDir) throws Exception {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFolderFile = tempDir.resolve(DEST_FOLDER + File.separator + SRC_FILE);
         List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
@@ -215,7 +215,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_NULL_ARGS
      */
     @Test
-    void runWhenInputArgsIsNullShouldThrowCpException() {
+    void testRunWhenInputArgsIsNullShouldThrowCpException() {
         CpException exception = assertThrows(CpException.class, () -> {
             cpApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
         });
@@ -227,7 +227,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_NO_ARGS
      */
     @Test
-    void runWhenInputArgsIsEmptyShouldThrowCpException() {
+    void testRunWhenInputArgsIsEmptyShouldThrowCpException() {
         String[] argsList = {};
         CpException exception = assertThrows(CpException.class, () -> {
             cpApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
@@ -241,7 +241,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_MISSING_ARG
      */
     @Test
-    void runWhenInputArgsOnlyHasOneElementShouldThrowCpException(@TempDir Path tempDir) {
+    void testRunWhenInputArgsOnlyHasOneElementShouldThrowCpException(@TempDir Path tempDir) {
         Path file = tempDir.resolve(SRC_FILE);
         String[] argsList = {file.toString()};
         CpException exception = assertThrows(CpException.class, () -> {
@@ -257,7 +257,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_IS_DIR
      */
     @Test
-    void runWhenInputSourceContainsADirectoryShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testRunWhenInputSourceContainsADirectoryShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path folder = tempDir.resolve(FOLDER_NAME_1);
         Path file = tempDir.resolve(FILE_NAME_1);
         Files.createDirectories(folder);
@@ -278,7 +278,7 @@ class CpApplicationTest {
      * This is similar to unix behaviour.
      */
     @Test
-    void runWhenInputSourceContainsAtLeastOneNonExistingFileShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testRunWhenInputSourceContainsAtLeastOneNonExistingFileShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path file1 = tempDir.resolve(SRC_FILE);
         Path file2 = tempDir.resolve(FILE_NAME_1);
         Path destFolder = tempDir.resolve(DEST_FOLDER);
@@ -304,7 +304,7 @@ class CpApplicationTest {
      * Expected: 1.txt is copied into dest directory.
      */
     @Test
-    void runWhenInputSourceFilesExistsAndDestFolderExistsShouldCopyContentFromSourceFilesToDestFolder(@TempDir Path tempDir) throws Exception {
+    void testRunWhenInputSourceFilesExistsAndDestFolderExistsShouldCopyContentFromSourceFilesToDestFolder(@TempDir Path tempDir) throws Exception {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFolder = tempDir.resolve(DEST_FOLDER);
         Files.createFile(srcFile);
@@ -325,7 +325,7 @@ class CpApplicationTest {
      * Expected: Copies the content of the 1.txt to be copied to he dest directory and overwrite the existing 1.txt file in the dest directory.
      */
     @Test
-    void runWhenInputSourceFilesExistsAndDestFolderContainsFileWithSameFileNameAsFileToBeCopiedShouldOverwriteTheFileInDestWithInputFileContent(@TempDir Path tempDir) throws Exception {
+    void testRunWhenInputSourceFilesExistsAndDestFolderContainsFileWithSameFileNameAsFileToBeCopiedShouldOverwriteTheFileInDestWithInputFileContent(@TempDir Path tempDir) throws Exception {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFolderFile = tempDir.resolve(DEST_FOLDER + File.separator + SRC_FILE);
         List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
@@ -350,7 +350,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_FILE_NOT_FOUND
      */
     @Test
-    void runWhenSrcFileAbsentShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testRunWhenSrcFileAbsentShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFile = tempDir.resolve(DEST_FILE);
 
@@ -372,7 +372,7 @@ class CpApplicationTest {
      * created.
      */
     @Test
-    void runWhenSrcFilePresentDestFileAbsentShouldCopyContentFromSrcFileToDestFile(@TempDir Path tempDir) throws IOException, Exception {
+    void testRunWhenSrcFilePresentDestFileAbsentShouldCopyContentFromSrcFileToDestFile(@TempDir Path tempDir) throws IOException, Exception {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFile = tempDir.resolve(DEST_FILE);
         List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
@@ -396,7 +396,7 @@ class CpApplicationTest {
      * the destination file is overwritten by contents of the source file similar to in unix.
      */
     @Test
-    void runWhenSrcFilePresentDestFilePresentShouldCopyContentFromSrcFileToOverwriteDestFile(@TempDir Path tempDir) throws IOException, Exception {
+    void testRunWhenSrcFilePresentDestFilePresentShouldCopyContentFromSrcFileToOverwriteDestFile(@TempDir Path tempDir) throws IOException, Exception {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path destFile = tempDir.resolve(DEST_FILE);
         List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
@@ -419,7 +419,7 @@ class CpApplicationTest {
      * Expected: Throws CpException with ERR_SRC_DEST_SAME
      */
     @Test
-    void runWhenSourceFileAndDestinationFileInputSameShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testRunWhenSourceFileAndDestinationFileInputSameShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path srcFile = tempDir.resolve(SRC_FILE);;
         Files.createFile(srcFile);
 
