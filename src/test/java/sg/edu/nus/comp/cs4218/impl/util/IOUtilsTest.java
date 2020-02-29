@@ -135,7 +135,7 @@ public class IOUtilsTest {
     void testResolveFilePathNotInCurrentDirectorySuccess() {
         String filePath = EnvironmentHelper.currentDirectory + File.separator + "invalidFolder" + File.separator + "test.txt";
         String expectedPath = filePath;
-        String actualPath = IOUtils.resolveFilePath(File.separator + filePath).toString();
+        String actualPath = IOUtils.resolveFilePath(filePath).toString();
 
         assertEquals(expectedPath, actualPath);
     }
