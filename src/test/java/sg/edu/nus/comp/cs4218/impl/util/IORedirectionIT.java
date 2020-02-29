@@ -213,7 +213,7 @@ public class IORedirectionIT {
         String expectedOutput = LS_OUTPUT + System.lineSeparator();
         assertEquals(expectedOutput, mockBos.toString());
 
-        EnvironmentHelper.currentDirectory = currentDirectory;
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
     }
 
     @Test
@@ -227,6 +227,16 @@ public class IORedirectionIT {
         assertEquals(expectedOutput, mockBos.toString());
     }
 
+//    @Test
+//    void inputRedirectionPasteApplicationIntegrationTest() throws Exception {
+//        List<String> argsList = StringsArgListHelper.concantenateStringsToList("paste",
+//                INPUT_REDIR_CHAR,  FILENAME1);
+//        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+//        callCommand.evaluate(mockInputStream, mockBos);
+//
+//        String expectedOutput = FILE_1_CONTENT;
+//        assertEquals(expectedOutput, mockBos.toString());
+//    }
 
 
     /*******************************************************************
