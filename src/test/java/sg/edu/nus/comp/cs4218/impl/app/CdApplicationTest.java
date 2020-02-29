@@ -159,7 +159,7 @@ class CdApplicationTest {
      * Tests run method when input arg path exists and is a directory and an absolute path
      * Assuming EnvironmentHelper.currentDirectory is initially at C:\Users\Jonathan\Documents\cs4218-project-ay1920-s2-2020-team22
      * For example: cd C:\Users\Jonathan
-     * Expected: sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\Jonathan)
+     * Expected: Sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\Jonathan)
      */
     @Test
     void runWhenInputArgPathExistsIsADirectoryAndAbsolutePathShouldChangeToTheAbsolutePath(@TempDir Path tempDir) throws IOException, CdException {
