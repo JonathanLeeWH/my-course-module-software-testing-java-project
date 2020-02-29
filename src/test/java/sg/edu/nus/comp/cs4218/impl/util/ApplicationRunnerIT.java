@@ -205,8 +205,8 @@ public class ApplicationRunnerIT {
 
     /**
      * Tests runApp method when input app is ls, execute lsApplication.
-     * For example: Find
-     * Expected: Find file that exist in current directory set by the test folders
+     * For example: Mv
+     * Expected: Rename file that exist in current directory set by the test folders from File1 to file 2
      */
     @Test
     void runAppWhenInputMvAppShouldExecuteMvApplication() throws Exception {
