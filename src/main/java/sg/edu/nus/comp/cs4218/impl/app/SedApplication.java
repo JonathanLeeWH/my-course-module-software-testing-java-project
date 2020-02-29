@@ -159,18 +159,20 @@ public class SedApplication implements SedInterface {
         return stringBuilder.toString();
     }
 
-    private String[] getFileContents(File file) throws IOException {
-        FileReader fileReader = new FileReader(file);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        List<String> fileContentList = new ArrayList<>();
-        String currentLine;
-        while ((currentLine = bufferedReader.readLine()) != null) {
-            fileContentList.add(currentLine);
+    private String[] getFileContents(File file) throws SedException {
+        try(FileReader fileReader = new FileReader(file); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            List<String> fileContentList = new ArrayList<>();
+            String currentLine;
+            while ((currentLine = bufferedReader.readLine()) != null) {
+                fileContentList.add(currentLine);
+            }
+            String[] result = new String[fileContentList.size()];
+            for (int j = 0; j < fileContentList.size(); j++) {
+                result[j] = fileContentList.get(j);
+            }
+            return result;
+        } catch (IOException e) {
+            throw (SedException) new SedException(ERR_READING_FILE).initCause(e);
         }
-        String[] result = new String[fileContentList.size()];
-        for (int j = 0; j < fileContentList.size(); j++) {
-            result[j] = fileContentList.get(j);
-        }
-        return result;
     }
 }
