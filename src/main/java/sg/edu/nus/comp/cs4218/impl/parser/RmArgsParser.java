@@ -12,14 +12,26 @@ public class RmArgsParser extends ArgsParser {
         legalFlags.add(FLAG_WITH_FOLDER);
     }
 
+    /**
+     * Returns true if there is d flag. Otherwise, returns false.
+     * @return Returns true if there is d flag. Otherwise, returns false.
+     */
     public Boolean isEmptyFolder() {
         return flags.contains(FLAG_WITH_FOLDER);
     }
 
+    /**
+     * Returns true if there is r flag. Otherwise, returns false.
+     * @return Returns true if there is r flag. Otherwise, returns false.
+     */
     public Boolean isRecursive() {
         return flags.contains(FLAG_IS_RECURSIVE);
     }
 
+    /**
+     * Returns the list of strings of file names from the input.
+     * @return Returns the list of strings of file names from the input.
+     */
     public List<String> getFileNames() {
         return nonFlagArgs;
     }
