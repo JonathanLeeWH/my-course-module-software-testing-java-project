@@ -532,5 +532,18 @@ public class IORedirectionIT {
         Exception actualException = assertThrows(MvException.class, () -> callCommand.evaluate(mockInputStream, mockBos));
     }
 
+//    @Test
+//    void intputAndoutputRedirectionPasteApplicationIntegrationTest() throws Exception {
+//        List<String> argsList = StringsArgListHelper.concantenateStringsToList("paste", INPUT_REDIR_CHAR,
+//                FILENAME1, OUTPUT_REDIR_CHAR, FILENAME2);
+//        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+//        callCommand.evaluate(mockInputStream, mockBos);
+//
+//        // Check that the correct output is written to FILENAME2
+//        String outputFromFile1 = FileIOHelper.extractAndConcatenate(FILENAME2);
+//        String expectedOutput = FILE_1_CONTENT;
+//
+//        assertEquals(expectedOutput, outputFromFile1);
+//    }
 
 }
