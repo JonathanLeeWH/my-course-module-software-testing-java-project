@@ -23,6 +23,7 @@
                         <exclude>**/CpApplicationTest.java</exclude>
                         <exclude>**/DiffApplicationTest.java</exclude>
                         <exclude>**/GrepApplicationTest.java</exclude>
+                        <exclude>**/ArgumentResolverTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
