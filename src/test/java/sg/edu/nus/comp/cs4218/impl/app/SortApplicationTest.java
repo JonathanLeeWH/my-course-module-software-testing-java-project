@@ -3,6 +3,8 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sg.edu.nus.comp.cs4218.app.SortInterface;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.SortException;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
@@ -101,16 +103,15 @@ public class SortApplicationTest {
         assertEquals(thrown.getMessage(), ERR_NULL_ARGS);
     }
 
-    /*@Test
+    @Test
     void testSortFromFilesUsingASingleFileWithFileHasNoReadAccessShouldThrowException() {
-        testFile1.toFile().setReadable(false);
-        Throwable thrown = assertThrows(Exception.class, () -> sortApplication.sortFromFiles(
+        SortApplicationStubWithFileHasNoReadAccess sortApplicationStub = new SortApplicationStubWithFileHasNoReadAccess();
+        Throwable thrown = assertThrows(Exception.class, () -> sortApplicationStub.sortFromFiles(
                 true, false, false,
                 testFile1.toFile().getPath()
         ));
-        testFile1.toFile().setReadable(true);
         assertEquals(thrown.getMessage(), ERR_NO_PERM);
-    }*/
+    }
 
     @Test
     void testSortFromFilesUsingASingleFileWithFilenameIsADirShouldThrowException() {
@@ -611,5 +612,29 @@ public class SortApplicationTest {
         String expectedResult = "11" + System.lineSeparator() + "5" + System.lineSeparator() +
                 "1 test 1 2" + System.lineSeparator() + "+";
         assertEquals(expectedResult, actualResult);
+    }
+
+    private class SortApplicationStub implements SortInterface {
+        @Override
+        public String sortFromFiles(Boolean isFirstWordNumber, Boolean isReverseOrder, Boolean isCaseIndependent, String... fileName) throws Exception {
+            throw new AssertionError("This method should not be called");
+        }
+
+        @Override
+        public String sortFromStdin(Boolean isFirstWordNumber, Boolean isReverseOrder, Boolean isCaseIndependent, InputStream stdin) throws Exception {
+            throw new AssertionError("This method should not be called");
+        }
+
+        @Override
+        public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
+            throw new AssertionError("This method should not be called");
+        }
+    }
+
+    private class SortApplicationStubWithFileHasNoReadAccess extends SortApplicationStub {
+        @Override
+        public String sortFromFiles(Boolean isFirstWordNumber, Boolean isReverseOrder, Boolean isCaseIndependent, String... fileName) throws Exception {
+            throw new Exception(ERR_NO_PERM);
+        }
     }
 }
