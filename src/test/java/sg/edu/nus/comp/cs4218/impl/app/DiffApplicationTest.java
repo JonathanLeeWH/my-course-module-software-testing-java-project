@@ -216,69 +216,147 @@ class DiffApplicationTest {
                 true, true));
     }
 
+    /**
+     * Test run method when two identical files are provided when no flags are given.
+     * Expected: Print nothing.
+     */
     @Test
-    void runTwoSameFilesShouldOutputNoDiffMessage() throws Exception {
+    void runTwoSameFilesWithoutAnyFlagsShouldPrintNothing() throws Exception {
         InputStream inputStream = new FileInputStream("fileOne.txt");
-        String[] args = {"-s", FILE_ONE_NAME, FILE_ONE_NAME};
+        String[] args = {FILE_ONE_NAME + FILE_FORMAT, FILE_ONE_NAME + FILE_FORMAT};
         diffApplication.run(args, inputStream, stdoutOne);
-        assertEquals(SAME_OUTPUT, stdoutOne.toString());
+        assertEquals("", stdoutOne.toString());
     }
 
     // Test diffTwoFiles Method
 
+    /**
+     * Test diffTwoFiles method when both files are null.
+     * Expected: Throw Diff Exception.
+     */
     @Test
-    void runNullFilesNamesShouldThrowException() {
+    void runDiffTwoFilesMethodWithAllNullFileNamesShouldThrowException() {
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles(null, null, true, true, true);
         });
     }
 
+    /**
+     * Test diffTwoFiles method when fileName B null.
+     * Expected: Throw Diff Exception.
+     */
     @Test
-    void runOneNullFileShouldThrowException() {
+    void runDiffTwoFilesMethodWithFileNameBNullShouldThrowException() {
         String fileNameA = "fileA.txt";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles(fileNameA, null, true, true, true);
         });
     }
 
+    /**
+     * Test diffTwoFiles method when fileName A null.
+     * Expected: Throw Diff Exception.
+     */
     @Test
-    void testRunOneEmptyFileShouldThrowException() {
+    void runDiffTwoFilesMethodWithFileNameANullShouldThrowException() {
+        String fileNameB = "fileB.txt";
+        assertThrows(DiffException.class, () -> {
+            diffApplication.diffTwoFiles(null, fileNameB, true, true, true);
+        });
+    }
+
+    /**
+     * Test diffTwoFiles method when fileNameB is empty.
+     * Expected: Throw Diff Exception.
+     */
+    @Test
+    void testRunDiffTwoFilesWithFileNameBEmptyShouldThrowException() {
         String fileNameA = "fileA.txt";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles(fileNameA, "", true, true, true);
         });
     }
 
-    // Test diffTwoDir Method
-
+    /**
+     * Test diffTwoFiles method when fileNameA is empty.
+     * Expected: Throw Diff Exception.
+     */
     @Test
-    void testRunNullDirectoryShouldThrowException() {
+    void testRunDiffTwoFilesWithFileNameAEmptyShouldThrowException() {
+        String fileNameB = "fileB.txt";
+        assertThrows(DiffException.class, () -> {
+            diffApplication.diffTwoFiles("", fileNameB, true, true, true);
+        });
+    }
+
+    /**
+     * Test diffTwoFiles method when fileNameA and fileNameB are empty.
+     * Expected: Throw Diff Exception.
+     */
+    @Test
+    void testRunDiffTwoFilesWithFileNameAAndBAreEmptyShouldThrowException() {
+        assertThrows(DiffException.class, () -> {
+            diffApplication.diffTwoFiles("", "", true, true, true);
+        });
+    }
+
+    // Test diffTwoDir Method
+    /**
+     * Test diffTwoDir method when folderA and folderB are null.
+     * Expected: Throw Diff Exception.
+     */
+    @Test
+    void testRunDiffTwoDirMethodWhenDirectoryAAndDirectoryBAreNullShouldThrowException() {
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(null, null, true, true, true);
         });
     }
 
+    /**
+     * Test diffTwoDir method when folderB are null.
+     * Expected: Throw Diff Exception.
+     */
     @Test
-    void testRunNullDirectoryBShouldThrowException() {
+    void testRunDiffTwoDirMethodWhenDirectoryBIsNullShouldThrowException() {
         String folderA = "folderA";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(folderA, null, true, true, true);
         });
     }
 
+    /**
+     * Test diffTwoDir method when folderA are null.
+     * Expected: Throw Diff Exception.
+     */
     @Test
-    void testRunNullDirectoryAShouldThrowException() {
+    void testRunDiffTwoDirMethodWhenDirectoryAIsNullShouldThrowException() {
         String folderB = "folderB";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(null, folderB, true, true, true);
         });
     }
 
+    /**
+     * Test diffTwoDir method when folderB are empty.
+     * Expected: Throw Diff Exception.
+     */
     @Test
-    void testRunOneEmptyDirectoryShouldThrowException() {
+    void testRunDiffTwoDirMethodWhenFolderBIsEmptyShouldThrowException() {
         String folderA = "folderA";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(folderA, "", true, true, true);
+        });
+    }
+
+    /**
+     * Test diffTwoDir method when folderA are empty.
+     * Expected: Throw Diff Exception.
+     */
+    @Test
+    void testRunDiffTwoDirMethodWhenFolderAIsEmptyShouldThrowException() {
+        String folderB = "folderB";
+        assertThrows(DiffException.class, () -> {
+            diffApplication.diffTwoDir("", folderB, true, true, true);
         });
     }
 
