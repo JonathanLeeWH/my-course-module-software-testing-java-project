@@ -649,7 +649,7 @@ class RmApplicationTest {
 
     /**
      * Tests remove method with -rd  or -r -d flag or -d -r flag for an existing empty directory
-     * For example: rm -r hello
+     * For example: rm -rd hello
      * Where hello is an existing empty directory.
      * Expected: Removes empty hello directory.
      */
