@@ -3,6 +3,8 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sg.edu.nus.comp.cs4218.app.WcInterface;
+import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
 import java.io.*;
@@ -68,16 +70,16 @@ public class WcApplicationTest {
         assertEquals(thrown.getMessage(), ERR_GENERAL);
     }
 
-    /*@Test
+    @Test
     void testCountFromFilesUsingASingleFileWithFileHasNoReadAccessShouldThrowException() {
-        testFile1.toFile().setReadable(false);
-        Throwable thrown = assertThrows(Exception.class, () -> wcApplication.countFromFiles(
+        WcApplicationStubWithFileHasNoReadAccess wcApplicationStub = new WcApplicationStubWithFileHasNoReadAccess();
+        Throwable thrown = assertThrows(Exception.class, () -> wcApplicationStub.countFromFiles(
                 true, false, false,
                 testFile1.toFile().getPath()
         ));
-        testFile1.toFile().setReadable(true);
+
         assertEquals(thrown.getMessage(), ERR_NO_PERM);
-    }*/
+    }
 
     @Test
     void testCountFromFilesUsingASingleFileWithFilenameIsADirShouldThrowException() {
@@ -477,4 +479,29 @@ public class WcApplicationTest {
     }
 
     // Positive test cases
+
+
+    private class WcApplicationStub implements WcInterface {
+        @Override
+        public String countFromFiles(Boolean isBytes, Boolean isLines, Boolean isWords, String... fileName) throws Exception {
+            throw new AssertionError("This method should not be implemented");
+        }
+
+        @Override
+        public String countFromStdin(Boolean isBytes, Boolean isLines, Boolean isWords, InputStream stdin) {
+            throw new AssertionError("This method should not be implemented");
+        }
+
+        @Override
+        public void run(String[] args, InputStream stdin, OutputStream stdout) {
+            throw new AssertionError("This method should not be implemented");
+        }
+    }
+
+    private class WcApplicationStubWithFileHasNoReadAccess extends WcApplicationStub {
+        @Override
+        public String countFromFiles(Boolean isBytes, Boolean isLines, Boolean isWords, String... fileName) throws Exception {
+            throw new Exception(ERR_NO_PERM);
+        }
+    }
 }

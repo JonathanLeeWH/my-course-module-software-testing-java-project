@@ -44,21 +44,21 @@ public class WcApplicationIT {
      */
     // Error test cases
     @Test
-    void testRunWithNullOutputStreamShouldThrowWcException() {
+    void testRunAndParseWithNullOutputStreamShouldThrowWcException() {
         Throwable thrown = assertThrows(WcException.class, () -> wcApplication.run(defaultWcArgs, ourTestStdin, null));
         assertEquals(thrown.getMessage(), WcApplication.COMMAND + ": " + ERR_NULL_STREAMS);
     }
 
     // Positive test cases
     @Test
-    void testRunWithMultipleFilesShouldRunSuccessfully() throws WcException {
+    void testRunAndParseWithMultipleFilesShouldRunSuccessfully() throws WcException {
         wcApplication.run(Arrays.asList("-c", testFile3.toFile().getPath()).toArray(new String[2]), ourTestStdin, ourTestStdout);
         String expectedResult = String.format(" %7d", 53) + " " + testFile3.toFile().getPath() + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
-    void testRunWithNoFilesShouldRunSuccessfully() throws WcException {
+    void testRunAndParseWithNoFilesShouldRunSuccessfully() throws WcException {
         wcApplication.run(defaultWcArgs, ourTestStdin, ourTestStdout);
         String expectedResult = "";
         assertEquals(expectedResult, ourTestStdout.toString());
