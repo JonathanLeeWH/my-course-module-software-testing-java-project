@@ -25,6 +25,7 @@
                         <exclude>**/GrepApplicationTest.java</exclude>
                         <exclude>**/WcApplicationTest.java</exclude>
                         <exclude>**/WcApplicationIT.java</exclude>
+                        <exclude>**/WcArgumentsTest.java</exclude>
                         <exclude>**/ArgumentResolverTest.java</exclude>
                     </excludes>
                 </configuration>
