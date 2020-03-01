@@ -14,6 +14,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class WcApplication implements WcInterface {
 
+    public static final String COMMAND = "wc";
     private static final String NUMBER_FORMAT = " %7d";
     private static final int LINES_INDEX = 0;
     private static final int WORDS_INDEX = 1;
