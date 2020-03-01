@@ -39,7 +39,7 @@ class EchoApplicationTest {
      * Expected: Throws EchoException with ERR_NULL_ARGS
      */
     @Test
-    void constructResultWhenInputArgsIsNullThrowsEchoException() {
+    void testConstructResultWhenInputArgsIsNullThrowsEchoException() {
         Exception exception = assertThrows(EchoException.class, () -> {
             echoApplication.constructResult(null);
         });
@@ -52,7 +52,7 @@ class EchoApplicationTest {
      * Expected: A String containing a new line (STRING_NEWLINE)
      */
     @Test
-    void constructResultWhenInputArgsIsEmptyShouldReturnStringWithNewLineOnly() throws EchoException {
+    void testConstructResultWhenInputArgsIsEmptyShouldReturnStringWithNewLineOnly() throws EchoException {
         String[] inputArgs = {};
 
         assertEquals(STRING_NEWLINE, echoApplication.constructResult(inputArgs));
@@ -63,7 +63,7 @@ class EchoApplicationTest {
      * Expected: Return a String with the element and terminates by a new line.
      */
     @Test
-    void constructResultWhenInputArgsContainsOneElementShouldReturnTheElementTerminatedByANewLine() throws EchoException {
+    void testConstructResultWhenInputArgsContainsOneElementShouldReturnTheElementTerminatedByANewLine() throws EchoException {
         String[] inputArgs = {TEST_STRING_1};
         String expected = TEST_STRING_1 + STRING_NEWLINE;
 
@@ -75,7 +75,7 @@ class EchoApplicationTest {
      * Expected: Return a String with the two elements separated by spaces and terminates by a new line.
      */
     @Test
-    void constructResultWhenInputArgsContainsTwoElementsShouldReturnTheTwoElementSepBySpaceTerminatedByANewLine() throws EchoException {
+    void testConstructResultWhenInputArgsContainsTwoElementsShouldReturnTheTwoElementSepBySpaceTerminatedByANewLine() throws EchoException {
         String[] inputArgs = {TEST_STRING_1, TEST_STRING_2};
         String expected = TEST_STRING_1 + WHITE_SPACE + TEST_STRING_2 + STRING_NEWLINE;
 
@@ -88,7 +88,7 @@ class EchoApplicationTest {
      * Expected: Throws EchoException with ERR_NO_OSTREAM
      */
     @Test
-    void runWhenInputOutputStreamIsNullShouldThrowEchoException() {
+    void testRunWhenInputOutputStreamIsNullShouldThrowEchoException() {
         Exception exception = assertThrows(EchoException.class, () -> {
             echoApplication.run(new String[]{}, mock(InputStream.class), null);
         });
@@ -101,7 +101,7 @@ class EchoApplicationTest {
      * Expected: Throws EchoException ERR_NULL_ARGS
      */
     @Test
-    void runWhenInputArgsIsNullShouldThrowEchoException() {
+    void testRunWhenInputArgsIsNullShouldThrowEchoException() {
         Exception exception = assertThrows(EchoException.class, () -> {
             echoApplication.run(null, mock(InputStream.class), outputStream);
         });
@@ -115,7 +115,7 @@ class EchoApplicationTest {
      * Expected: Outputstream should contain a new line (STRING_NEWLINE)
      */
     @Test
-    void runWhenInputArgsIsEmptyShouldWriteNewLine() throws EchoException {
+    void testRunWhenInputArgsIsEmptyShouldWriteNewLine() throws EchoException {
         String[] inputArgs = {};
 
         echoApplication.run(inputArgs, mock(InputStream.class), outputStream);
@@ -129,7 +129,7 @@ class EchoApplicationTest {
      * Expected: Outputstream should contain the element terminated by a new line.
      */
     @Test
-    void runWhenInputArgsContainsOneElementShouldWriteTheElementWithNewLine() throws EchoException {
+    void testRunWhenInputArgsContainsOneElementShouldWriteTheElementWithNewLine() throws EchoException {
         String[] inputArgs = {TEST_STRING_1};
         String expected = TEST_STRING_1 + STRING_NEWLINE;
 
@@ -144,7 +144,7 @@ class EchoApplicationTest {
      * Expected: Outputstream should contain the two elements separated by space and terminated by a new line.
      */
     @Test
-    void runWhenInputArgsContainsTwoElementsShouldWriteTheTwoElementsSepBySpaceWithNewLine() throws EchoException {
+    void testRunWhenInputArgsContainsTwoElementsShouldWriteTheTwoElementsSepBySpaceWithNewLine() throws EchoException {
         String[] inputArgs = {TEST_STRING_1, TEST_STRING_2};
         String expected = TEST_STRING_1 + WHITE_SPACE + TEST_STRING_2 + STRING_NEWLINE;
 
@@ -159,7 +159,7 @@ class EchoApplicationTest {
      * Expected: Outputstream should write A B C terminated by a new line.
      */
     @Test
-    void runWhenInputArgsContainsOneElementContentSepBySpaceShouldWriteTheElementContentSepBySpaceWithNewLine() throws EchoException {
+    void testRunWhenInputArgsContainsOneElementContentSepBySpaceShouldWriteTheElementContentSepBySpaceWithNewLine() throws EchoException {
         String[] inputArgs = {TEST_STRING_3};
         String expected = TEST_STRING_3 + STRING_NEWLINE;
 
@@ -174,7 +174,7 @@ class EchoApplicationTest {
      * Expected: Outputstream should write A*B*C terminated by a new line.
      */
     @Test
-    void runWhenInputArgsContainsOneElementContentSepByAsteriskShouldWriteTheElementContentSepByAsteriskWithNewLine() throws EchoException {
+    void testRunWhenInputArgsContainsOneElementContentSepByAsteriskShouldWriteTheElementContentSepByAsteriskWithNewLine() throws EchoException {
         String[] inputArgs = {TEST_STRING_4};
         String expected = TEST_STRING_4 + STRING_NEWLINE;
 
@@ -188,7 +188,7 @@ class EchoApplicationTest {
      * Expected: Throws EchoException with ERR_IO_EXCEPTION
      */
     @Test
-    void runWhenIOExceptionOccursShouldThrowEchoException() throws IOException {
+    void testRunWhenIOExceptionOccursShouldThrowEchoException() throws IOException {
         String[] inputArgs = {};
         try (OutputStream mockOutputStream = mock(OutputStream.class)) {
             doThrow(IOException.class).when(mockOutputStream).write(any(byte[].class));

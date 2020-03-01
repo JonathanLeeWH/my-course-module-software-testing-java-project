@@ -1,14 +1,13 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import sg.edu.nus.comp.cs4218.exception.PasteException;
 
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.FILE_NOT_FOUND;
 
 class PasteApplicationTest {
     private static final String FILE_TYPE = ".txt";
@@ -25,9 +24,10 @@ class PasteApplicationTest {
     private static OutputStream osZero, osTwo, osOne, osPrint;
     private static final String FIRST_LINE = "Line One";
     private static final String SECOND_LINE = "Line Two";
+    private static final String PASTE_EXCEPTION = "paste: ";
 
-    @BeforeAll
-    static void setupBeforeTest() {
+    @BeforeEach
+    void setupBeforeTest() {
         pasteApplication = new PasteApplication();
         try {
             emptyFile = File.createTempFile(EMPTY_FILE, FILE_TYPE);
@@ -45,8 +45,8 @@ class PasteApplicationTest {
         }
     }
 
-    @AfterAll
-    static void tearDownAfterTesting() {
+    @AfterEach
+    void tearDownAfterTesting() {
         emptyFile.deleteOnExit();
         twoLinesFile.deleteOnExit();
         oneLineFile.deleteOnExit();
@@ -68,9 +68,11 @@ class PasteApplicationTest {
     void runInvalidFileShouldThrowPasteException() {
         String invalidFile = "invalidTest";
         String[] args = { invalidFile };
-        assertThrows(FileNotFoundException.class, () -> {
+        Exception thrown = assertThrows(PasteException.class, () -> {
             pasteApplication.mergeFile(args);
         });
+        String expected = PASTE_EXCEPTION + FILE_NOT_FOUND;
+        assertEquals(expected, thrown.getMessage());
     }
 
     /**
@@ -96,9 +98,11 @@ class PasteApplicationTest {
     @Test
     void runEmptyFileNameShouldThrowPasteException() {
         String[] args = { oneLineFile.toPath().toString(), " "};
-        assertThrows(FileNotFoundException.class, () -> {
+        Exception thrown = assertThrows(PasteException.class, () -> {
             pasteApplication.mergeFile(args);
         });
+        String expected = PASTE_EXCEPTION + FILE_NOT_FOUND;
+        assertEquals(expected, thrown.getMessage());
     }
 
     /**
@@ -179,7 +183,7 @@ class PasteApplicationTest {
      */
     @Test
     void runStdinSingleLineShouldPrintSingleLine() throws Exception {
-        try(InputStream inputStream = new FileInputStream(oneLineFile)) {
+        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
             assertEquals(ONE_LINE + System.lineSeparator(), pasteApplication.mergeStdin(inputStream));
         } catch (IOException e) {
             e.printStackTrace();
@@ -192,7 +196,7 @@ class PasteApplicationTest {
      */
     @Test
     void runStdinMultipleLinesOnMergeStdinMethodShouldPrintMultipleLines() throws Exception {
-        try(InputStream inputStream = new FileInputStream(twoLinesFile)) {
+        try(InputStream inputStream = new ByteArrayInputStream(twoLinesFile.toPath().toString().getBytes())) {
             assertEquals(TWO_LINES + System.lineSeparator(), pasteApplication.mergeStdin(inputStream));
         } catch (IOException e) {
             e.printStackTrace();

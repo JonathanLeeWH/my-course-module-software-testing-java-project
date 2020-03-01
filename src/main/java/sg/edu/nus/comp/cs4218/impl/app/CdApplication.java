@@ -17,7 +17,12 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 public class CdApplication implements CdInterface {
 
 
-
+    /**
+     * Change the environment context to a different directory.
+     *
+     * @param path String of the path to a directory
+     * @throws CdException
+     */
     @Override
     public void changeToDirectory(String path) throws CdException {
         EnvironmentHelper.currentDirectory = getNormalizedAbsolutePath(path);
@@ -30,7 +35,7 @@ public class CdApplication implements CdInterface {
      * @param args   Array of arguments for the application.
      * @param stdin  An InputStream, not used.
      * @param stdout An OutputStream, not used.
-     * @throws CdException
+     * @throws CdException If the input arguments is null, missing arguments or too many arguments.
      */
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout)
@@ -49,6 +54,13 @@ public class CdApplication implements CdInterface {
 
     }
 
+    /**
+     * Returns an absolute path in String data type with redundant elements removed from the input pathStr, in other words,
+     * returns a normalised absolute path.
+     * @param pathStr The input path in String data type.
+     * @return Returns a normalised absolute path of the input path.
+     * @throws CdException If there are no arguments, file not found in the path, or the input path is not a directory.
+     */
     private String getNormalizedAbsolutePath(String pathStr) throws CdException {
         if (StringUtils.isBlank(pathStr)) {
             throw new CdException(ERR_NO_ARGS);

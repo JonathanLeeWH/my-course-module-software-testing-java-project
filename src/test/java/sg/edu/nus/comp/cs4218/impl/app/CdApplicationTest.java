@@ -46,7 +46,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_NULL_ARGS
      */
     @Test
-    void runWhenInputArgsIsNullShouldThrowCdException() {
+    void testRunWhenInputArgsIsNullShouldThrowCdException() {
         CdException exception = assertThrows(CdException.class, () -> {
             cdApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
         });
@@ -58,7 +58,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_MISSING_ARG
      */
     @Test
-    void runWhenInputArgsIsEmptyShouldThrowCdException() {
+    void testRunWhenInputArgsIsEmptyShouldThrowCdException() {
         String[] argsList = {};
         CdException exception = assertThrows(CdException.class, () -> {
             cdApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
@@ -71,7 +71,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_TOO_MANY_ARGS
      */
     @Test
-    void runWhenInputArgsMoreThanOneShouldThrowCdException() {
+    void testRunWhenInputArgsMoreThanOneShouldThrowCdException() {
         String[] argsList = {FOLDER_NAME, FOLDER_NAME};
         CdException exception = assertThrows(CdException.class, () -> {
             cdApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
@@ -84,7 +84,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_NO_ARGS
      */
     @Test
-    void runWhenInputArgPathIsEmptyPathOneShouldThrowCdException() {
+    void testRunWhenInputArgPathIsEmptyPathOneShouldThrowCdException() {
         String[] argsList = {EMPTY_STRING};
         CdException exception = assertThrows(CdException.class, () -> {
             cdApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
@@ -97,7 +97,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_IS_NOT_DIR.
      */
     @Test
-    void runWhenInputArgPathIsAFileShouldThrowCdException(@TempDir Path tempDir) throws IOException {
+    void testRunWhenInputArgPathIsAFileShouldThrowCdException(@TempDir Path tempDir) throws IOException {
         String[] argsList = {FILE_NAME};
         Path file = tempDir.resolve(FILE_NAME);
 
@@ -119,7 +119,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_FILE_NOT_FOUND.
      */
     @Test
-    void runWhenInputArgPathDoesNotExistShouldThrowCdException(@TempDir Path tempDir) throws IOException {
+    void testRunWhenInputArgPathDoesNotExistShouldThrowCdException(@TempDir Path tempDir) throws IOException {
         String[] argsList = {FOLDER_NAME};
         Path path = tempDir.resolve(FOLDER_NAME);
 
@@ -143,7 +143,7 @@ class CdApplicationTest {
      * In this case, the current directory is changed to the parent folder path of the present working directory.
      */
     @Test
-    void runWhenInputArgPathExistsIsADirectoryAndNonAbsolutePathShouldChangeToTheAbsolutePathVersionOfInput() throws CdException {
+    void testRunWhenInputArgPathExistsIsADirectoryAndNonAbsolutePathShouldChangeToTheAbsolutePathVersionOfInput() throws CdException {
         String[] argsList = {".."};
         String parentAbsPath = Paths.get(EnvironmentHelper.currentDirectory).getParent().toString();
 
@@ -159,10 +159,10 @@ class CdApplicationTest {
      * Tests run method when input arg path exists and is a directory and an absolute path
      * Assuming EnvironmentHelper.currentDirectory is initially at C:\Users\Jonathan\Documents\cs4218-project-ay1920-s2-2020-team22
      * For example: cd C:\Users\Jonathan
-     * Expected: sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\Jonathan)
+     * Expected: Sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\Jonathan)
      */
     @Test
-    void runWhenInputArgPathExistsIsADirectoryAndAbsolutePathShouldChangeToTheAbsolutePath(@TempDir Path tempDir) throws IOException, CdException {
+    void testRunWhenInputArgPathExistsIsADirectoryAndAbsolutePathShouldChangeToTheAbsolutePath(@TempDir Path tempDir) throws IOException, CdException {
         Path folder = tempDir.resolve(FOLDER_NAME);
         String[] argsList = {folder.normalize().toAbsolutePath().toString()};
 
@@ -184,7 +184,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_NO_ARGS
      */
     @Test
-    void changeToDirectoryWhenInputPathIsEmptyShouldThrowCdException() {
+    void testChangeToDirectoryWhenInputPathIsEmptyShouldThrowCdException() {
         Exception exception = assertThrows(CdException.class, () -> {
             cdApplication.changeToDirectory(EMPTY_STRING);
         });
@@ -196,7 +196,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_IS_NOT_DIR.
      */
     @Test
-    void changeToDirectoryWhenInputPathIsAFileShouldThrowCdException(@TempDir Path tempDir) throws IOException {
+    void testChangeToDirectoryWhenInputPathIsAFileShouldThrowCdException(@TempDir Path tempDir) throws IOException {
         Path file = tempDir.resolve(FILE_NAME);
 
         Files.createFile(file);
@@ -213,7 +213,7 @@ class CdApplicationTest {
      * Expected: Throws CdException with ERR_FILE_NOT_FOUND.
      */
     @Test
-    void changeToDirectoryWhenInputPathDoesNotExistShouldThrowCdException(@TempDir Path tempDir) throws IOException {
+    void testChangeToDirectoryWhenInputPathDoesNotExistShouldThrowCdException(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve(FOLDER_NAME);
 
         // Check that the path does not exist.
@@ -232,7 +232,7 @@ class CdApplicationTest {
      * In this case, the current directory is changed to the parent folder path of the present working directory.
      */
     @Test
-    void changeToDirectoryWhenInputPathExistsIsADirectoryAndNonAbsolutePathShouldChangeToTheAbsolutePathVersionOfInput() throws CdException {
+    void testChangeToDirectoryWhenInputPathExistsIsADirectoryAndNonAbsolutePathShouldChangeToTheAbsolutePathVersionOfInput() throws CdException {
         String path = "..";
         String parentAbsPath = Paths.get(EnvironmentHelper.currentDirectory).getParent().toString();
 
@@ -251,7 +251,7 @@ class CdApplicationTest {
      * Expected: sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\Jonathan)
      */
     @Test
-    void changeToDirectoryWhenInputPathExistsIsADirectoryAndAbsolutePathShouldChangeToTheAbsolutePath(@TempDir Path tempDir) throws IOException, CdException {
+    void testChangeToDirectoryWhenInputPathExistsIsADirectoryAndAbsolutePathShouldChangeToTheAbsolutePath(@TempDir Path tempDir) throws IOException, CdException {
         Path folder = tempDir.resolve(FOLDER_NAME);
 
         Files.createDirectories(folder);
