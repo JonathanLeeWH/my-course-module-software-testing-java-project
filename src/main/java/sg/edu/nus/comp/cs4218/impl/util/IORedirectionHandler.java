@@ -23,9 +23,7 @@ public class IORedirectionHandler {
     private final OutputStream origOutputStream;
     private List<String> noRedirArgsList;
     private InputStream inputStream;
-    private InputStream prevInputStream;
     private OutputStream outputStream;
-    private OutputStream prevOutputStream;
 
     public IORedirectionHandler(List<String> argsList, InputStream origInputStream,
                                 OutputStream origOutputStream, ArgumentResolver argumentResolver) {
@@ -42,8 +40,8 @@ public class IORedirectionHandler {
             throw new ShellException(ERR_SYNTAX);
         }
         noRedirArgsList = new LinkedList<>();
-        prevInputStream = origInputStream;
-        prevOutputStream = origOutputStream;
+        InputStream prevInputStream = origInputStream;
+        OutputStream prevOutputStream = origOutputStream;
         // extract redirection operators (with their corresponding files) from argsList
         ListIterator<String> argsIterator = argsList.listIterator();
         while (argsIterator.hasNext()) {

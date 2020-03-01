@@ -127,7 +127,7 @@ public class LsApplication implements LsInterface {
                     List<Path> contents = getContents(path, isFoldersOnly);
                     String formatted = formatContents(contents);
                     buildRelativePath(isRecursive, result, path);
-                    result.append(":" + System.lineSeparator());
+                    result.append(':').append(System.lineSeparator());
                     result.append(formatted);
 
                     if (!formatted.isEmpty()) {
@@ -183,7 +183,7 @@ public class LsApplication implements LsInterface {
                     String formatted = formatContents(contents);
                     if(!path.toString().equals(EnvironmentHelper.currentDirectory)){
                         buildRelativePathForBaseDir(isRecursive, result, path);
-                        result.append(":"+ System.lineSeparator());
+                        result.append(':').append(System.lineSeparator());
                     }
                     result.append(formatted);
 
