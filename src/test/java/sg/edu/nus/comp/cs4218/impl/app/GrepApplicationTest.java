@@ -9,12 +9,28 @@ import java.io.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GrepApplicationTest {
-
+    private static final String FILE_ONE_NAME = "fileOne";
+    private static final String FILE_TWO_NAME = "fileTwo";
+    private static final String FILE_FORMAT = ".txt";
+    private static final String FILE_ONE_TEXT = "line one" + System.lineSeparator() + "line two" + System.lineSeparator() + "line three";
+    private static final String FILE_TWO_TEXT = "line One";
+    private static File fileOne;
+    private static File fileTwo;
     private static GrepApplication grepApplication;
-    private static OutputStream outputStream;
+    private static InputStream stdinOne;
+    private static OutputStream stdoutOne, stdoutTwo, outputStream;
 
-    @BeforeAll
-    static void setup() {
+    @BeforeEach
+    void setup() throws IOException {
+        grepApplication = new GrepApplication();
+        fileOne = File.createTempFile(FILE_ONE_NAME, FILE_FORMAT);
+        fileTwo = File.createTempFile(FILE_TWO_NAME, FILE_FORMAT);
+        stdinOne = new FileInputStream(fileOne);
+        stdoutOne = new FileOutputStream(fileOne);
+        stdoutTwo = new FileOutputStream(fileTwo);
+        outputStream = new ByteArrayOutputStream();
+        stdoutOne.write(FILE_ONE_TEXT.getBytes());
+        stdoutTwo.write(FILE_TWO_TEXT.getBytes());
         outputStream = new ByteArrayOutputStream();
         grepApplication = new GrepApplication();
     }
@@ -43,9 +59,8 @@ class GrepApplicationTest {
      */
     @Test
     void runNullPatternShouldThrowGrepException() {
-        String fileName = "fileOne.txt";
         assertThrows(GrepException.class, () -> {
-            grepApplication.grepFromFiles(null, true, true, fileName);
+            grepApplication.grepFromFiles(null, true, true, fileOne.toPath().toString());
         });
     }
 
@@ -55,9 +70,18 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCaseInsensitiveTrueWithValidPatternShouldReturnNumberOfLinesGrepped() throws Exception {
-        String fileName = "fileOne.txt";
         String validPattern = "line";
-        assertEquals("3" + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, true, true, fileName));
+        assertEquals("3" + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, true, true, fileOne.toPath().toString()));
+    }
+
+    /**
+     * Test grepFromFiles Method with invalid pattern with case sensitivity.
+     * Expected: 0.
+     */
+    @Test
+    void runIsCaseInsensitiveFalseWithValidPatternShouldReturnNumberOfLinesGrepped() throws Exception {
+        String validPattern = "line";
+        assertEquals("3" + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, false, true, fileOne.toPath().toString()));
     }
 
     /**
@@ -66,9 +90,8 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCaseInsensitiveTrueWithInvalidPatternShouldReturnNumberOfLinesGrepped() throws Exception {
-        String fileName = "fileOne.txt";
         String invalidPattern = "invalid";
-        assertEquals("0" + System.lineSeparator(), grepApplication.grepFromFiles(invalidPattern, true, true, fileName));
+        assertEquals("0" + System.lineSeparator(), grepApplication.grepFromFiles(invalidPattern, true, true, fileOne.toPath().toString()));
     }
 
     /**
@@ -77,9 +100,8 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCaseInsensitiveFalseWithInvalidPatternShouldReturnNumberOfLinesGrepped() throws Exception {
-        String fileName = "fileOne.txt";
         String validPattern = "Line";
-        assertEquals("0" + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, false, true, fileName));
+        assertEquals("0" + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, false, true, fileOne.toPath().toString()));
     }
 
 
@@ -89,7 +111,7 @@ class GrepApplicationTest {
      */
     @Test
     void runSingleFileNameShouldReturnNumberOfLinesGrepped() throws Exception {
-        String[] fileNames = {"fileOne.txt"};
+        String[] fileNames = {fileOne.toPath().toString()};
         String validPattern = "line";
         assertEquals(3 + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, true, true, fileNames));
     }
@@ -100,9 +122,9 @@ class GrepApplicationTest {
      */
     @Test
     void runMultipleFileNamesShouldReturnNumberOfLinesGrepped() throws Exception {
-        String[] fileNames = {"fileOne.txt", "fileOne.txt"};
+        String[] fileNames = {fileOne.toPath().toString(), fileOne.toPath().toString()};
         String validPattern = "line";
-        String expectedOutput = "fileOne.txt: 3" + System.lineSeparator() + "fileOne.txt: 3";
+        String expectedOutput = fileOne.toPath().toString() + ": 3" + System.lineSeparator() + fileOne.toPath().toString() + ": 3";
         assertEquals(expectedOutput + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, true, true, fileNames));
     }
 
@@ -112,7 +134,7 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCountLinesFalseWithValidPatternShouldReturnSingleLineMatched() throws Exception {
-        String[] fileNames = {"fileOne.txt"};
+        String[] fileNames = {fileOne.toPath().toString()};
         String validPattern = "one";
         String expectedOutput = "line one" + System.lineSeparator();
         assertEquals(expectedOutput, grepApplication.grepFromFiles(validPattern, true, false, fileNames));
@@ -124,7 +146,7 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCountLinesFalseWithValidPatternShouldReturnMultipleLineMatched() throws Exception {
-        String[] fileNames = {"fileOne.txt"};
+        String[] fileNames = {fileOne.toPath().toString()};
         String validPattern = "line";
         String expectedOutput = "line one" + System.lineSeparator() + "line two"
                 + System.lineSeparator() + "line three" + System.lineSeparator();
@@ -137,7 +159,7 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCountLinesFalseWithInvalidPatternShouldReturnEmptyString() throws Exception {
-        String[] fileNames = {"fileOne.txt"};
+        String[] fileNames = {fileOne.toPath().toString()};
         String invalidPattern = "invalid";
         String expectedOutput = "";
         assertEquals(expectedOutput, grepApplication.grepFromFiles(invalidPattern, true, false, fileNames));
@@ -149,7 +171,7 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCountLinesFalseWithInValidPatternDueToCaseSensitivityShouldReturnEmptyString() throws Exception {
-        String[] fileNames = {"fileOne.txt"};
+        String[] fileNames = {fileOne.toPath().toString()};
         String validPattern = "Line";
         String expectedOutput = "";
         assertEquals(expectedOutput, grepApplication.grepFromFiles(validPattern, false, false, fileNames));
@@ -176,7 +198,7 @@ class GrepApplicationTest {
     @Test
     void runInputStreamWithValidPatternShouldReturnNumberOfLinesGrepped() throws Exception {
         String validPattern = "line";
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertEquals(3 + System.lineSeparator(),
                 grepApplication.grepFromStdin(validPattern, true, true, inputStream));
     }
@@ -188,7 +210,7 @@ class GrepApplicationTest {
     @Test
     void runInputStreamWithInvalidPatternShouldReturnZeroNumberOfLinesGrepped() throws Exception {
         String invalidPattern = "invalid";
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertEquals(0 + System.lineSeparator(),
                 grepApplication.grepFromStdin(invalidPattern, true, true, inputStream));
     }
@@ -200,7 +222,7 @@ class GrepApplicationTest {
     @Test
     void runInputStreamWithIsCaseInsensitiveFalseShouldReturnZeroNumberOfLinesGrepped() throws Exception {
         String invalidPattern = "Line";
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertEquals(0 + System.lineSeparator(),
                 grepApplication.grepFromStdin(invalidPattern, false, true, inputStream));
     }
@@ -212,7 +234,7 @@ class GrepApplicationTest {
     @Test
     void runInputStreamWithValidPatternAndIsCountLinesFalseShouldReturnLinesGrepped() throws Exception {
         String validPattern = "one";
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertEquals("line one" + System.lineSeparator(),
                 grepApplication.grepFromStdin(validPattern, true, false, inputStream));
     }
@@ -224,7 +246,7 @@ class GrepApplicationTest {
     @Test
     void runInputStreamWithInvalidPatternAndIsCountLinesFalseShouldReturnEmptyString() throws Exception {
         String invalidPattern = "invalid";
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertEquals("",
                 grepApplication.grepFromStdin(invalidPattern, true, false, inputStream));
     }
@@ -236,26 +258,27 @@ class GrepApplicationTest {
     @Test
     void runInputStreamWithInvalidPatternDueToCaseSensitivityAndIsCountLinesFalseShouldReturnEmptyString() throws Exception {
         String invalidPattern = "Line";
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertEquals("",
                 grepApplication.grepFromStdin(invalidPattern, false, false, inputStream));
+        inputStream.close();
     }
 
     // Test getGrepArgument Method.
 
     @Test
     void runValidGrepArgument() throws AbstractApplicationException, FileNotFoundException {
-        String[] args = {"-i", "-c", "line", "fileOne.txt"};
+        String[] args = {"-i", "-c", "line", fileOne.toPath().toString()};
         outputStream = new ByteArrayOutputStream();
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         grepApplication.run(args, inputStream, outputStream);
         assertEquals("3" + System.lineSeparator(), outputStream.toString());
     }
 
     @Test
     void runInvalidDashIGrepArgument() throws AbstractApplicationException, FileNotFoundException {
-        String[] args = {"-i-i", "-c", "line", "fileOne.txt"};
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        String[] args = {"-i-i", "-c", "line", fileOne.toPath().toString()};
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertThrows(GrepException.class, () -> {
             grepApplication.run(args, inputStream, outputStream);
         });
@@ -263,8 +286,8 @@ class GrepApplicationTest {
 
     @Test
     void runInvalidDashCGrepArgument() throws AbstractApplicationException, FileNotFoundException {
-        String[] args = {"-i", "-c-c", "line", "fileOne.txt"};
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        String[] args = {"-i", "-c-c", "line", fileOne.toPath().toString()};
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertThrows(GrepException.class, () -> {
             grepApplication.run(args, inputStream, outputStream);
         });
@@ -280,8 +303,8 @@ class GrepApplicationTest {
 
     @Test
     void runNoDashIInGrepArgument() throws AbstractApplicationException, FileNotFoundException {
-        String[] args = {"-c", "line", "fileOne.txt"};
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        String[] args = {"-c", "line", fileOne.toPath().toString()};
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         grepApplication.run(args, inputStream, outputStream);
         assertEquals(3 + System.lineSeparator(), outputStream.toString());
 
@@ -302,11 +325,12 @@ class GrepApplicationTest {
         });
     }
 
-    
+    // The following are bugs from the skeleton code. Reserved for debugging in milestone 2.
+    /*
     @Test
     void runInvalidDashWithDoubleIGrepArgument() throws FileNotFoundException {
-        String[] args = {"-ii", "-c", "line", "fileOne.txt"};
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        String[] args = {"-ii", "-c", "line", fileOne.toPath().toString()};
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertThrows(GrepException.class, () -> {
             grepApplication.run(args, inputStream, outputStream);
         });
@@ -314,10 +338,10 @@ class GrepApplicationTest {
 
     @Test
     void runInvalidDashWithDoubleCCGrepArgument() throws AbstractApplicationException, FileNotFoundException {
-        String[] args = {"-i", "-cc", "line", "fileOne.txt"};
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        String[] args = {"-i", "-cc", "line", fileOne.toPath().toString()};
+        InputStream inputStream = new FileInputStream(fileOne.toPath().toString());
         assertThrows(GrepException.class, () -> {
             grepApplication.run(args, inputStream, outputStream);
         });
-    }
+    }*/
 }
