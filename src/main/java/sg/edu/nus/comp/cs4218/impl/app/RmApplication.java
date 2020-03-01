@@ -60,12 +60,14 @@ public class RmApplication implements RmInterface {
      * Removes input file.
      * Precondition: Input file is not a directory.
      * @param fileName input file to be deleted.
-     * @throws RmException If an IOException occurred.
+     * @throws RmException If an IOException occurred or if the input file is a directory.
      */
     public void removeFileOnly(File fileName) throws RmException {
         try {
             if (!fileName.isDirectory()) {
                 Files.delete(fileName.toPath());
+            } else {
+                throw new RmException(ERR_IS_DIR);
             }
         } catch (IOException e) {
             throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
