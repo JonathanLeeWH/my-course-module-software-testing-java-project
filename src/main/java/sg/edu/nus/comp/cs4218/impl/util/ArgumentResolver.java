@@ -80,16 +80,10 @@ public class ArgumentResolver {
 
                     // check if back quotes are nested
                     if (unmatchedQuotes.isEmpty()) {
-                        List<RegexArgument> subOutputSegment = new ArrayList<>();
-                        String[] tokens = StringUtils.tokenize(subCommandOutput);
-                        for (int idx = 0; idx < tokens.length; idx++) {
-                            if (idx < tokens.length - 1) {
-                                subOutputSegment.add(makeRegexArgument(tokens[idx].concat(" ")));
-                            }
-                            else {
-                                subOutputSegment.add(makeRegexArgument(tokens[idx]));
-                            }
-                        }
+                        List<RegexArgument> subOutputSegment = Stream
+                                .of(StringUtils.tokenize(subCommandOutput))
+                                .map(str -> makeRegexArgument(str))
+                                .collect(Collectors.toList());
 
                         // append the first token to the previous parsedArg
                         // e.g. arg: abc`1 2 3`xyz`4 5 6` (contents in `` is after command sub)
@@ -99,10 +93,7 @@ public class ArgumentResolver {
                             appendParsedArgIntoSegment(parsedArgsSegment, firstOutputArg);
                         }
                         else {
-                            // Note that this is a naive impln
-                            for (RegexArgument segment: subOutputSegment) {
-                                appendParsedArgIntoSegment(parsedArgsSegment, segment);
-                            }
+                            parsedArgsSegment.addAll(subOutputSegment);
                         }
 
                     } else {
