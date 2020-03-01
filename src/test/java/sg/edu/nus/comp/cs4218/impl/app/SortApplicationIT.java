@@ -44,14 +44,14 @@ public class SortApplicationIT {
      */
     // Error test cases
     @Test
-    void testRunAndParseWithNullOutputStreamShouldThrowSortException() {
+    void testSortApplicationAndSortArgumentWithNullOutputStreamShouldThrowSortException() {
         Throwable thrown = assertThrows(SortException.class, () -> sortApplication.run(defaultSortArgs, ourTestStdin, null));
         assertEquals(thrown.getMessage(), SortApplication.COMMAND + ": " + ERR_NULL_STREAMS);
     }
 
     // Positive test cases
     @Test
-    void testRunAndParseWithMultipleFilesShouldRunSuccessfully() throws SortException {
+    void testSortApplicationAndSortArgumentWithMultipleFilesShouldRunSuccessfully() throws SortException {
         sortApplication.run(Arrays.asList("-n", testFile3.toFile().getPath()).toArray(new String[2]), ourTestStdin, ourTestStdout);
         String expectedResult = "001, 010" + System.lineSeparator() + "1.0, 5.0" + System.lineSeparator() +
                 "2, 3" + System.lineSeparator() + "21, 4" + System.lineSeparator() + "22, 41" + System.lineSeparator() +
@@ -60,7 +60,7 @@ public class SortApplicationIT {
     }
 
     @Test
-    void testRunAndParseWithNoFilesShouldRunSuccessfully() throws SortException {
+    void testSortApplicationAndSortArgumentWithNoFilesShouldRunSuccessfully() throws SortException {
         sortApplication.run(defaultSortArgs, ourTestStdin, ourTestStdout);
         String expectedResult = "11" + System.lineSeparator() + "5" + System.lineSeparator() + "1 test 1 2" +
                 System.lineSeparator() + "+" + System.lineSeparator();
