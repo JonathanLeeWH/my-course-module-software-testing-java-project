@@ -44,9 +44,9 @@ public class ApplicationRunnerIT {
     private static final String F1_CONTENT_SED = "helloThis is the content for file 1."
             + System.lineSeparator() + "helloThere are some content here."
             + System.lineSeparator() + "helloSome numbers: 50 1 2."
-            + System.lineSeparator() + "helloSome whitespace      ?><*&^%.";
+            + System.lineSeparator() + "helloSome whitespace    ><*&^%.?";
     private static final String F1_CONTENT_SORT = "Some numbers: 50 1 2." + System.lineSeparator() +
-            "Some whitespace      ?><*&^%." + System.lineSeparator() +
+            "Some whitespace    ><*&^%.?" + System.lineSeparator() +
             "There are some content here." + System.lineSeparator() +
             "This is the content for file 1.";
 
