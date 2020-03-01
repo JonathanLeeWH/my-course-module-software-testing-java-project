@@ -23,6 +23,8 @@
                         <exclude>**/CpApplicationTest.java</exclude>
                         <exclude>**/DiffApplicationTest.java</exclude>
                         <exclude>**/GrepApplicationTest.java</exclude>
+                        <exclude>**/WcApplicationTest.java</exclude>
+                        <exclude>**/WcApplicationIT.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
