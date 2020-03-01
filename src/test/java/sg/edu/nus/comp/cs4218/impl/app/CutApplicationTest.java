@@ -2,7 +2,6 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import org.junit.jupiter.api.*;
 import sg.edu.nus.comp.cs4218.app.CutInterface;
-import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
@@ -39,88 +38,6 @@ class CutApplicationTest {
     public void tearDown() throws IOException {
         ourTestStdin.close();
         ourTestStdout.close();
-    }
-
-    /**
-     * Test cut application with run().
-     */
-
-    // Error Test cases
-    @Test
-    void testRunWithNullArgsShouldThrowCutException() {
-       Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(null, ourTestStdin, ourTestStdout));
-       assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_NULL_ARGS);
-    }
-
-    @Test
-    void testRunWithNullOutputStreamShouldThrowCutException() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(defaultCutArgs, ourTestStdin, null));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_NO_OSTREAM);
-    }
-
-    @Test
-    void testRunWithInvalidFlagArgumentShouldThrowCutException() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(
-                Arrays.asList("-x", "6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": "  + ILLEGAL_FLAG_MSG + "x");
-    }
-
-    @Test
-    void testRunUsingWithoutByteAndCharPosShouldThrowCutException() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(
-                Arrays.asList("6", testFile1.toFile().getPath()).toArray(new String[2]), ourTestStdin, ourTestStdout
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_MISSING_ARG);
-    }
-
-    @Test
-    void testRunWithByteAndCharPosShouldThrowCutException() {
-        Throwable thrown = assertThrows(CutException.class, () -> cutApplication.run(
-                Arrays.asList("-b","-c", "6", testFile1.toFile().getPath()).toArray(new String[3]), ourTestStdin, ourTestStdout
-        ));
-        assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ERR_TOO_MANY_ARGS);
-    }
-
-    // Positive test cases
-    @Test
-    void testRunUsingStdinShouldRunSuccessfully() throws CutException {
-        List<String> args = Arrays.asList("-b", "1");
-        cutApplication.run(args.toArray(new String[0]), ourTestStdin, ourTestStdout);
-        String expectedResult = "d" + System.lineSeparator();
-        assertEquals(expectedResult, ourTestStdout.toString());
-    }
-
-    @Test
-    void testRunUsingFilesShouldRunSuccessfully() throws CutException {
-        List<String> args = Arrays.asList("-c", "6", testFile1.toFile().getPath());
-        cutApplication.run(args.toArray(new String[0]), ourTestStdin, ourTestStdout);
-        String expectedResult = "8" + System.lineSeparator() + "m" + System.lineSeparator() +
-                "e" + System.lineSeparator() + "c" + System.lineSeparator() +
-                "r" + System.lineSeparator() + "a" + System.lineSeparator();
-        assertEquals(expectedResult, ourTestStdout.toString());
-    }
-
-    @Test
-    void testRunUsingBytePosAndSingleNumAndFileIsDashShouldRunSuccessfully() throws Exception {
-        List<String> args = Arrays.asList("-b", "15", "-");
-        cutApplication.run(args.toArray(new String[0]), ourTestStdin, ourTestStdout);
-        String expectedResult = "n" + System.lineSeparator();
-        assertEquals(expectedResult, ourTestStdout.toString());
-    }
-
-    @Test
-    void testRunUsingBytePosAndNumRangeAndHavingDashBetweenMultipleFilesWithStartNumLowerThanEndNumShouldRunSuccessfully() throws Exception {
-        List<String> args = Arrays.asList("-b", "10-19", testFile3.toFile().getPath(),
-                testFile1.toFile().getPath(), testFile3.toFile().getPath(), "-", "-");
-        cutApplication.run(args.toArray(new String[0]), ourTestStdin, ourTestStdout);
-        String expectedResult = System.lineSeparator() + System.lineSeparator() + System.lineSeparator() +
-                System.lineSeparator() + System.lineSeparator() + System.lineSeparator() + System.lineSeparator() +
-                "oftware Te" + System.lineSeparator() + "ödülè cö" + System.lineSeparator() +
-                "ssion test" + System.lineSeparator() + "e of error" + System.lineSeparator() + "ce predict" + System.lineSeparator() +
-                "kills on t" + System.lineSeparator() + System.lineSeparator() + System.lineSeparator() + System.lineSeparator() +
-                System.lineSeparator() + System.lineSeparator() + System.lineSeparator() + System.lineSeparator() + "ringen" + System.lineSeparator();
-        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     /**
