@@ -20,10 +20,10 @@ public class CpApplication implements CpInterface {
      *
      * @param srcFile  of path to source file
      * @param destFile of path to destination file
-     * @throws Exception
+     * @throws CpException
      */
     @Override
-    public String cpSrcFileToDestFile(String srcFile, String destFile) throws Exception {
+    public String cpSrcFileToDestFile(String srcFile, String destFile) throws CpException {
         return null;
     }
 
@@ -32,10 +32,10 @@ public class CpApplication implements CpInterface {
      *
      * @param destFolder of path to destination folder
      * @param fileName   Array of String of file names
-     * @throws Exception
+     * @throws CpException
      */
     @Override
-    public String cpFilesToFolder(String destFolder, String... fileName) throws Exception {
+    public String cpFilesToFolder(String destFolder, String... fileName) throws CpException {
         return null;
     }
 

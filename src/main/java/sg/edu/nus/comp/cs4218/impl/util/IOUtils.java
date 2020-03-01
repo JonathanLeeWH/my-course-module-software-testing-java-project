@@ -24,6 +24,9 @@ public final class IOUtils {
      * @throws ShellException If file destination is inaccessible.
      */
     public static InputStream openInputStream(String fileName) throws ShellException {
+        if (fileName == null) {
+            throw new ShellException(ERR_NULL_ARGS);
+        }
         String resolvedFileName = resolveFilePath(fileName).toString();
 
         FileInputStream fileInputStream;
@@ -44,6 +47,9 @@ public final class IOUtils {
      * @throws ShellException If file destination is inaccessible.
      */
     public static OutputStream openOutputStream(String fileName) throws ShellException {
+        if (fileName == null) {
+            throw new ShellException(ERR_NULL_ARGS);
+        }
         String resolvedFileName = resolveFilePath(fileName).toString();
 
         FileOutputStream fileOutputStream;

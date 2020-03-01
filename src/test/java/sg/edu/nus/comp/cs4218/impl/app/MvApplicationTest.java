@@ -278,7 +278,7 @@ public class MvApplicationTest {
     }
 
     @Test
-    public void mvFileToFoldeThrowDestinationNotExistException(@TempDir Path tempDir) throws Exception {
+    public void mvFileToFolderThrowDestinationNotExistException(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(TEST_FILE);
         String fileSrcString = file1.toString();
 

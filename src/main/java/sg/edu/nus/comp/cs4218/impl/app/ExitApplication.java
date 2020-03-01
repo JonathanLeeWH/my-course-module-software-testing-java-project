@@ -14,7 +14,7 @@ public class ExitApplication implements ExitInterface {
      * @param args   Array of arguments for the application, not used.
      * @param stdin  An InputStream, not used.
      * @param stdout An OutputStream, not used.
-     * @throws ExitException
+     * @throws ExitException with the exit code.
      */
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws ExitException {

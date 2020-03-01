@@ -21,6 +21,7 @@ public class ErrorConstants {
     public static final String ERR_TOO_MANY_ARGS = "Too many arguments";
     public static final String ERR_INVALID_FLAG = "Invalid flag option supplied";
     public static final String ERR_BAD_REGEX = "Invalid pattern";
+    public static final String ERR_INVALID_ARGS = "Invalid arguments";
 
     // Files and folders related
     public static final String ERR_FILE_NOT_FOUND = "No such file or directory";
@@ -81,4 +82,6 @@ public class ErrorConstants {
     public static final String ERR_GENERAL = "Exception Caught";
     public static final String ERR_IO_EXCEPTION = "IOException";
 
+    //Integer constants
+    public static final String ERR_LESS_THAN_ZERO = "Index less than 0";
 }
