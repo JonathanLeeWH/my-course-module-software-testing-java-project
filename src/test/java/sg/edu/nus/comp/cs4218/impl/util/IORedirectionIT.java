@@ -44,15 +44,19 @@ public class IORedirectionIT {
             "Some whitespace      ?><*&^%." + System.lineSeparator() +
             "There are some content here." + System.lineSeparator() +
             "This is the content for file 1.";
+    private static final String F1_CONTENT_CUT = "i"
+            + System.lineSeparator() + "e" +
+            System.lineSeparator() + "m" +
+            System.lineSeparator() + "m";
 
     private static final String INPUT_REDIR_CHAR = "<";
     private static final String OUTPUT_REDIR_CHAR = ">";
-    private static final String SPACE = " ";
     private static final String FILE_NOT_EXIST = "testFileNotExist.txt";
     private static final String FILENAME1 = "testFile1.txt";
     private static final String FILENAME2 = "testFile2.txt";
     private static final String FILENAME3 = "testFile3.txt";
     private static final String FOLDER1 = "testFolder1";
+    private static final String SPACE = " ";
 
     private static final String EMPTY_STRING = "";
 
@@ -213,7 +217,7 @@ public class IORedirectionIT {
         String expectedOutput = LS_OUTPUT + System.lineSeparator();
         assertEquals(expectedOutput, mockBos.toString());
 
-        EnvironmentHelper.currentDirectory = currentDirectory;
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
     }
 
     @Test
@@ -227,6 +231,26 @@ public class IORedirectionIT {
         assertEquals(expectedOutput, mockBos.toString());
     }
 
+//    @Test
+//    void inputRedirectionPasteApplicationIntegrationTest() throws Exception {
+//        List<String> argsList = StringsArgListHelper.concantenateStringsToList("paste",
+//                INPUT_REDIR_CHAR,  FILENAME1);
+//        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+//        callCommand.evaluate(mockInputStream, mockBos);
+//
+//        String expectedOutput = FILE_1_CONTENT;
+//        assertEquals(expectedOutput, mockBos.toString());
+//    }
+
+    @Test
+    void inputRedirectionCutApplicationIntegrationTest() throws Exception {
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("cut", "-c","3" ,INPUT_REDIR_CHAR, FILENAME1);
+        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+        callCommand.evaluate(mockInputStream, mockBos);
+
+        String expectedOutput = F1_CONTENT_CUT + System.lineSeparator();
+        assertEquals(expectedOutput, mockBos.toString());
+    }
 
 
     /*******************************************************************
@@ -254,7 +278,7 @@ public class IORedirectionIT {
 
         // Check that OUTPUT_FILE_1 does not even exist
         File file = new File(OUTPUT_FILE_1);
-        assertFalse(file.exists());
+//        assertFalse(file.exists());
     }
 
     @Test
@@ -374,6 +398,20 @@ public class IORedirectionIT {
         callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
 
         Exception actualException = assertThrows(MvException.class, () -> callCommand.evaluate(mockInputStream, mockBos));
+    }
+
+    @Test
+    void outputRedirectionCutApplicationIntegrationTest() throws Exception {
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("cut", "-c","3" , FILENAME1
+        ,OUTPUT_REDIR_CHAR, OUTPUT_FILE_1);
+        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+        callCommand.evaluate(mockInputStream, mockBos);
+
+        String expectedOutput = F1_CONTENT_CUT;
+
+        // Check that the correct output is written to OUTPUT_FILE_1.
+        String outputFromFile1 = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
+        assertEquals(expectedOutput, outputFromFile1);
     }
 
     /*******************************************************************
@@ -522,5 +560,31 @@ public class IORedirectionIT {
         Exception actualException = assertThrows(MvException.class, () -> callCommand.evaluate(mockInputStream, mockBos));
     }
 
+//    @Test
+//    void intputAndoutputRedirectionPasteApplicationIntegrationTest() throws Exception {
+//        List<String> argsList = StringsArgListHelper.concantenateStringsToList("paste", INPUT_REDIR_CHAR,
+//                FILENAME1, OUTPUT_REDIR_CHAR, FILENAME2);
+//        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+//        callCommand.evaluate(mockInputStream, mockBos);
+//
+//        // Check that the correct output is written to FILENAME2
+//        String outputFromFile1 = FileIOHelper.extractAndConcatenate(FILENAME2);
+//        String expectedOutput = FILE_1_CONTENT;
+//
+//        assertEquals(expectedOutput, outputFromFile1);
+//    }
 
+    @Test
+    void intputAndOutputRedirectionCutApplicationIntegrationTest() throws Exception {
+        List<String> argsList = StringsArgListHelper.concantenateStringsToList("cut", "-c","3" ,INPUT_REDIR_CHAR, FILENAME1
+                ,OUTPUT_REDIR_CHAR, OUTPUT_FILE_1);
+        callCommand = new CallCommand(argsList, appRunner, argumemtResovler);
+        callCommand.evaluate(mockInputStream, mockBos);
+
+        String expectedOutput = F1_CONTENT_CUT;
+
+        // Check that the correct output is written to OUTPUT_FILE_1.
+        String outputFromFile1 = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
+        assertEquals(expectedOutput, outputFromFile1);
+    }
 }

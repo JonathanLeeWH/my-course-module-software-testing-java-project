@@ -7,7 +7,6 @@ import sg.edu.nus.comp.cs4218.exception.PasteException;
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_READING_FILE;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.FILE_NOT_FOUND;
 
 class PasteApplicationTest {

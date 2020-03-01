@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -65,7 +66,7 @@ class SequenceCommandIT {
      * How are you
      */
     @Test
-    void evaluateSequenceCommandWithValidCallCommandAndCallCommandFormatShouldOutputCorrectly() throws AbstractApplicationException, ShellException {
+    void testEvaluateSequenceCommandWithValidCallCommandAndCallCommandFormatShouldOutputCorrectly() throws AbstractApplicationException, ShellException {
         commands.add(new CallCommand(Arrays.asList(ECHO_APP, "hello", "world"), new ApplicationRunner(), new ArgumentResolver()));
         commands.add(new CallCommand(Arrays.asList(ECHO_APP, "How", "are", "you"), new ApplicationRunner(), new ArgumentResolver()));
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
@@ -83,7 +84,7 @@ class SequenceCommandIT {
      * CS4218A
      */
     @Test
-    void evaluateSequenceCommandWithValidCallCommandAndPipeCommandFormatShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+    void testEvaluateSequenceCommandWithValidCallCommandAndPipeCommandFormatShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
         EnvironmentHelper.currentDirectory = tempDir.toString();
         Files.createFile(tempDir.resolve(FILE_NAME_1));
         Files.createFile(tempDir.resolve(FILE_NAME_2));
@@ -110,7 +111,7 @@ class SequenceCommandIT {
      * Sweet dreams
      */
     @Test
-    void evaluateSequenceCommandWithValidCallCommandAndSequenceCommandFormatShouldOutputCorrect() throws AbstractApplicationException, ShellException {
+    void testEvaluateSequenceCommandWithValidCallCommandAndSequenceCommandFormatShouldOutputCorrect() throws AbstractApplicationException, ShellException {
         commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Good", "Afternoon"), new ApplicationRunner(), new ArgumentResolver()));
         commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Hi"), new ApplicationRunner(), new ArgumentResolver()));
         commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Sweet", "dreams"), new ApplicationRunner(), new ArgumentResolver()));
@@ -129,7 +130,7 @@ class SequenceCommandIT {
      * Greetings
      */
     @Test
-    void evaluateSequenceCommandWithCommandWhichThrowShellExceptionFollowedByValidCommandFormatShouldOutputShellExceptionAndContinueExecution() throws AbstractApplicationException, ShellException {
+    void testEvaluateSequenceCommandWithCommandWhichThrowShellExceptionFollowedByValidCommandFormatShouldOutputShellExceptionAndContinueExecution() throws AbstractApplicationException, ShellException {
         commands.add(new CallCommand(Collections.singletonList(INVALID_APP), new ApplicationRunner(), new ArgumentResolver()));
         commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Greetings"), new ApplicationRunner(), new ArgumentResolver()));
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
@@ -147,7 +148,7 @@ class SequenceCommandIT {
      * Good morning
      */
     @Test
-    void evaluateSequenceCommandWithCommandWhichThrowAbstractApplicationExceptionFollowedByValidCommandFormatShouldOutputAbstractionApplicationExceptionAndContinueExecution(@TempDir Path tempDir) throws AbstractApplicationException, ShellException {
+    void testEvaluateSequenceCommandWithCommandWhichThrowAbstractApplicationExceptionFollowedByValidCommandFormatShouldOutputAbstractionApplicationExceptionAndContinueExecution(@TempDir Path tempDir) throws AbstractApplicationException, ShellException {
         Path folder = tempDir.resolve(FOLDER_NAME_1);
         EnvironmentHelper.currentDirectory = tempDir.toString();
         assertFalse(Files.isDirectory(folder)); // check that the folder does not exist.
@@ -166,11 +167,13 @@ class SequenceCommandIT {
      * Expected: Removes AB.txt after AB.txt is created from the execution of paste A.txt B.txt > AB.txt
      */
     @Test
-    void evaluateSequenceCommandWithOutputRedirectionCommandAndRemoveCommandShouldRemoveTheCreatedFile(@TempDir Path tempDir) throws IOException, AbstractApplicationException, ShellException {
-        Path file1 = tempDir.resolve(FILE_NAME_4);
-        Path file2 = tempDir.resolve(FILE_NAME_5);
-        Path file3 = tempDir.resolve(FILE_NAME_6);
-        EnvironmentHelper.currentDirectory = tempDir.toString();
+    void testEvaluateSequenceCommandWithOutputRedirectionPasteCommandAndRemoveCommandShouldRemoveTheCreatedFile(@TempDir Path tempDir) throws IOException, AbstractApplicationException, ShellException {
+        Path file1 = Paths.get(FILE_NAME_4);
+        Path file2 = Paths.get(FILE_NAME_5);
+        Path file3 = Paths.get(FILE_NAME_6);
+        Files.deleteIfExists(file1); // delete A.txt used for testing if it exists before the test.
+        Files.deleteIfExists(file2); // delete B.txt used for testing if it exists before the test.
+        Files.deleteIfExists(file3); // delete AB.txt used for testing if it exists before the test.
         Files.createFile(file1);
         Files.createFile(file2);
         assertTrue(Files.exists(file1)); // Check A.txt exists
@@ -181,5 +184,27 @@ class SequenceCommandIT {
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
         assertFalse(Files.exists(file3)); // Check that AB.txt does not exist as it should be removed
+        // clean up
+        Files.deleteIfExists(file1);
+        Files.deleteIfExists(file2);
+        Files.deleteIfExists(file3);
+    }
+
+    /**
+     * Tests evaluate method when involving streams such as output redirection.
+     * This is to ensure streams are open and closed properly and can be used properly.
+     * For example: echo streaming > A.txt; rm A.txt
+     * Where A.txt does not exist initially.
+     * Expected: Removes A.txt after A.txt is created from the execution of ls > A.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandWithOutputRedirectionCommandAndRemoveCommandShouldRemoveTheCreatedFile(@TempDir Path tempDir) throws IOException, AbstractApplicationException, ShellException {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        assertFalse(Files.exists(file1)); // Check A.txt does not exist initially
+        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "streaming", Character.toString(CHAR_REDIR_OUTPUT), FILE_NAME_4), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, FILE_NAME_4), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(file1)); // Check that AB.txt does not exist as it should be removed
     }
 }
