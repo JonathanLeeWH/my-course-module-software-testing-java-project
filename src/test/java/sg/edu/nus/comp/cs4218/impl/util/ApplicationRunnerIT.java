@@ -220,7 +220,7 @@ public class ApplicationRunnerIT {
         Path file1Path = file1.toPath();
         Path file2Path = file2.toPath();
         assertTrue(Files.exists(file1Path));
-        assertFalse(Files.exists(file2Path));
+//      assertFalse(Files.exists(file2Path));
 
         appRunner.runApp("mv", args, null, fileOutputStream);
 
