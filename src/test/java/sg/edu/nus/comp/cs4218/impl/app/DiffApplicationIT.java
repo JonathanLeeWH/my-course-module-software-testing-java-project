@@ -39,8 +39,8 @@ public class DiffApplicationIT {
         fileTwo = File.createTempFile(FILE_TWO_NAME, FILE_FORMAT);
         fileThree = File.createTempFile(FILE_THREE_NAME, FILE_FORMAT);
         stdinOne = new FileInputStream(fileOne);
-        stdoutOne = new FileOutputStream(fileTwo);
-        stdoutTwo = new FileOutputStream(fileOne);
+        stdoutOne = new FileOutputStream(fileOne);
+        stdoutTwo = new FileOutputStream(fileTwo);
         stdoutThree = new FileOutputStream(fileThree);
         osPrint = new ByteArrayOutputStream();
         stdoutOne.write(FILE_ONE_TEXT.getBytes());

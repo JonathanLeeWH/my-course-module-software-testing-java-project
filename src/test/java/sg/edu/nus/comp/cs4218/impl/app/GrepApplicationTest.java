@@ -50,7 +50,7 @@ class GrepApplicationTest {
      */
     @Test
     void runNullFileNamesShouldThrowNullPointerException() {
-        String validPattern = "line";
+        String validPattern = LOWER_LINE;
         assertThrows(NullPointerException.class, () -> {
             grepApplication.grepFromFiles(validPattern, true, true, (String) null);
         });
@@ -73,7 +73,7 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCaseInsensitiveTrueWithValidPatternShouldReturnNumberOfLinesGrepped() throws Exception {
-        String validPattern = "line";
+        String validPattern = LOWER_LINE;
         assertEquals("3" + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, true, true, fileOne.toPath().toString()));
     }
 
@@ -83,7 +83,7 @@ class GrepApplicationTest {
      */
     @Test
     void runIsCaseInsensitiveFalseWithValidPatternShouldReturnNumberOfLinesGrepped() throws Exception {
-        String validPattern = "line";
+        String validPattern = LOWER_LINE;
         assertEquals("3" + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, false, true, fileOne.toPath().toString()));
     }
 
@@ -115,7 +115,7 @@ class GrepApplicationTest {
     @Test
     void runSingleFileNameShouldReturnNumberOfLinesGrepped() throws Exception {
         String[] fileNames = {fileOne.toPath().toString()};
-        String validPattern = "line";
+        String validPattern = LOWER_LINE;
         assertEquals(3 + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, true, true, fileNames));
     }
 
@@ -126,7 +126,7 @@ class GrepApplicationTest {
     @Test
     void runMultipleFileNamesShouldReturnNumberOfLinesGrepped() throws Exception {
         String[] fileNames = {fileOne.toPath().toString(), fileOne.toPath().toString()};
-        String validPattern = "line";
+        String validPattern = LOWER_LINE;
         String expectedOutput = fileOne.toPath().toString() + ": 3" + System.lineSeparator() + fileOne.toPath().toString() + ": 3";
         assertEquals(expectedOutput + System.lineSeparator(), grepApplication.grepFromFiles(validPattern, true, true, fileNames));
     }
@@ -150,7 +150,7 @@ class GrepApplicationTest {
     @Test
     void runIsCountLinesFalseWithValidPatternShouldReturnMultipleLineMatched() throws Exception {
         String[] fileNames = {fileOne.toPath().toString()};
-        String validPattern = "line";
+        String validPattern = LOWER_LINE;
         String expectedOutput = LINE_ONE + System.lineSeparator() + "line two"
                 + System.lineSeparator() + "line three" + System.lineSeparator();
         assertEquals(expectedOutput, grepApplication.grepFromFiles(validPattern, true, false, fileNames));
@@ -188,7 +188,7 @@ class GrepApplicationTest {
      */
     @Test
     void runNullInputStream() {
-        String validPattern = "line";
+        String validPattern = LOWER_LINE;
         assertThrows(GrepException.class, () -> {
             grepApplication.grepFromStdin(validPattern, true, true, null);
         });
@@ -200,7 +200,7 @@ class GrepApplicationTest {
      */
     @Test
     void runInputStreamWithValidPatternShouldReturnNumberOfLinesGrepped() throws Exception {
-        String validPattern = "line";
+        String validPattern = LOWER_LINE;
         try(InputStream inputStream = new FileInputStream(fileOne.toPath().toString())) {
             assertEquals(3 + System.lineSeparator(),
                     grepApplication.grepFromStdin(validPattern, true, true, inputStream));
