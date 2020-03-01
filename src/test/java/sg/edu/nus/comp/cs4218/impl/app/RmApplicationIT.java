@@ -507,7 +507,7 @@ class RmApplicationIT {
      * Tests run method with -r or -rd  or -r -d flag
      * We will only test as long as -r exists by MC/DC to reduce number of test cases as both cases exhibit same behaviour.
      * For example: rm -r hello or rm -r -d hello or rm -rd hello
-     * Where hello is a non empty directory that exist.
+     * Where hello is a non empty directory that exists.
      * Expected: Removes hello directory and its contents
      */
     @Test
@@ -525,6 +525,38 @@ class RmApplicationIT {
 
         // rm with -r flag
         rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+
+        // Check that the non empty folder is deleted.
+        assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests run method with -r flag
+     * For example: rm -r 1.txt hello
+     * Where hello is a non empty directory that exists and 1.txt is a non existing text file.
+     * Expected: Throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove a non existing 1.txt file. At the same time, it removes hello directory.
+     */
+    @Test
+    void testRunWhenRFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        String[] argsList = {R_FLAG, FILE_NAME_1, FOLDER_NAME_1};
+
+        Files.createDirectories(fileInFolder);
+
+        assertFalse(Files.exists(file));
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -r flag
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+
+        assertEquals(new RmException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
 
         // Check that the non empty folder is deleted.
         assertFalse(Files.isDirectory(nonEmptyFolder));
