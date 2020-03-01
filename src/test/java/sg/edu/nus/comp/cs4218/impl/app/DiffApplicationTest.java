@@ -19,13 +19,14 @@ class DiffApplicationTest {
     private static final String FILE_FORMAT = ".txt";
     private static final String SAME_OUTPUT = "Files are identical";
     private static final String DIFF_OUTPUT = "The two files are different";
+    private static final String DIFF_LINES = "<line2" + System.lineSeparator() + ">line2";
     private static final String DIFF_EXCEPTION = "diff: ";
     private static DiffApplication diffApplication;
     private static File fileOne;
     private static File fileTwo;
     private static File fileThree;
     private static InputStream stdinOne;
-    private static OutputStream stdoutOne, stdoutTwo, stdoutThree;
+    private static OutputStream stdoutOne, stdoutTwo, stdoutThree, osPrint;
     private static boolean isShowSame, isNoBlank, isSimple;
 
     @BeforeEach
@@ -35,9 +36,13 @@ class DiffApplicationTest {
         fileTwo = File.createTempFile(FILE_TWO_NAME, FILE_FORMAT);
         fileThree = File.createTempFile(FILE_THREE_NAME, FILE_FORMAT);
         stdinOne = new FileInputStream(fileOne);
-        stdoutOne = new ByteArrayOutputStream();
-        stdoutTwo = new ByteArrayOutputStream();
-        stdoutThree = new ByteArrayOutputStream();
+        stdoutOne = new FileOutputStream(fileTwo);
+        stdoutTwo = new FileOutputStream(fileOne);
+        stdoutThree = new FileOutputStream(fileThree);
+        osPrint = new ByteArrayOutputStream();
+        stdoutOne.write(FILE_ONE_TEXT.getBytes());
+        stdoutTwo.write(FILE_TWO_TEXT.getBytes());
+        stdoutThree.write(FILE_THREE_TEXT.getBytes());
     }
 
     @AfterEach
@@ -45,187 +50,6 @@ class DiffApplicationTest {
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
         fileThree.deleteOnExit();
-    }
-
-    /**
-     * Run Null Stdout and null Stdin in run method with valid filenames in args.
-     * Exception: Throw DiffException
-     */
-    @Test
-    void testRunWhenBothStdinAndStdoutAreNullShouldThrowDiffException() {
-        String[] args = {FILE_ONE_NAME + FILE_FORMAT, FILE_TWO_NAME + FILE_FORMAT};
-        Exception thrown = assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, null, null);
-        });
-        String expected = DIFF_EXCEPTION + ERR_NULL_STREAMS;
-        assertEquals(expected, thrown.getMessage());
-    }
-
-    /**
-     * Run Null Stdin in run method with valid filenames in args.
-     * Exception: Throw DiffException
-     */
-    @Test
-    void testRunWhenOnlyStdinIsNullShouldThrowDiffException() {
-        String[] args = {FILE_ONE_NAME + FILE_FORMAT, FILE_TWO_NAME + FILE_FORMAT};
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, null, stdoutOne);
-        });
-    }
-
-    /**
-     * Run Null Stdout in run method with valid filenames in args.
-     * Exception: Throw DiffException
-     */
-    @Test
-    void testRunWhenOnlyStdoutIsNullShouldThrowDiffException() {
-        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
-        String[] args = {FILE_ONE_NAME + FILE_FORMAT, FILE_TWO_NAME + FILE_FORMAT};
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, null);
-        });
-    }
-
-    @Test
-    void runNullArgsShouldThrowDiffException() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(null, inputStream, stdoutOne);
-        });
-    }
-
-    /**
-     * Test run method with args that has dash that comes after filename.
-     * The underlying assumption is that stdin should come before any filenames.
-     * Exception: Throw DiffException
-     */
-    @Test
-    void testRunStdinInSecondArgumentShouldThrowDiffException() {
-        String[] args = {FILE_ONE_NAME + FILE_FORMAT, "-"};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
-    }
-
-    /**
-     * Test run method with only one filename supplied in arg.
-     * Expected: Throw DiffException
-     */
-    @Test
-    void testRunOnlyOneArgShouldThrowDiffException() {
-        String[] args = {FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.getPath().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
-    }
-
-    /**
-     * Test run method with only one filename supplied in arg. -s is also supplied in arg.
-     * Expected: Throw DiffException
-     */
-    @Test
-    void testRunOnlyOneArgInStdinWithDashSShouldThrowDiffException() {
-        String[] args = {"-s", FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.getPath().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
-    }
-
-    /**
-     * Test run method with only one filename supplied in arg. -B is also supplied in arg.
-     * Expected: Throw DiffException
-     */
-    @Test
-    void testRunOnlyOneArgWithDashBShouldThrowDiffException() {
-        String[] args = {"-B", FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.getPath().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
-    }
-
-
-    /**
-     * Test run method with only one filename supplied in arg. -q is also supplied in arg.
-     * Expected: Throw DiffException
-     */
-    @Test
-    void testRunOnlyOneArgWithDashQShouldThrowDiffException() {
-        String[] args = {"-q", FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.getPath().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
-    }
-
-    /**
-     * Test run method when two identical files are provided when -s is given.
-     * Expected: Print message that says both files are identical.
-     */
-    @Test
-    void testRunTwoSameFilesShouldReturnSameOutputMessageWhenDashSIsProvided() throws Exception {
-        String[] args = {"-s", FILE_ONE_NAME + FILE_FORMAT, FILE_ONE_NAME + FILE_FORMAT};
-        diffApplication.run(args, stdinOne, stdoutOne);
-        assertEquals(SAME_OUTPUT, stdoutOne.toString());
-    }
-
-    /**
-     * Test run method when two different files that have the same content are provided when -s is given.
-     * Expected: Print message that says both files are identical.
-     */
-    @Test
-    void testRunTwoFilesWithIdenticalContentShouldReturnSameOutputMessageWhenDashSIsProvided() throws Exception {
-        String[] args = {"-s", FILE_ONE_NAME + FILE_FORMAT, FILE_TWO_NAME + FILE_FORMAT};
-        diffApplication.run(args, stdinOne, stdoutOne);
-        assertEquals(SAME_OUTPUT, stdoutOne.toString());
-    }
-
-    /**
-     * Test run method when two identical files are provided when -q is given.
-     * Expected: Print nothing
-     */
-    @Test
-    void testRunTwoIdenticalFilesShouldReturnNothingWhenDashQIsGiven() throws Exception {
-        String[] args = {"-q", FILE_ONE_NAME + FILE_FORMAT, FILE_ONE_NAME + FILE_FORMAT};
-        diffApplication.run(args, stdinOne, stdoutOne);
-        assertEquals("", stdinOne.toString());
-    }
-
-    /**
-     * Test run method when two different files that have the same content are provided when -q is given.
-     * Expected: Print nothing
-     */
-    @Test
-    void testRunTwoDifferentFilesWithSameContentShouldReturnNothingWhenDashQIsGiven() throws Exception {
-        String[] args = {"-q", FILE_ONE_NAME, FILE_TWO_NAME};
-        diffApplication.run(args, stdinOne, stdoutOne);
-        assertEquals("", diffApplication.diffTwoFiles(FILE_ONE_NAME, FILE_TWO_NAME, false,
-                true, true));
-    }
-
-    /**
-     * Test run method when two different files that have the different content are provided when -q is given.
-     * Expected: Print message that states that the files are different.
-     */
-    @Test
-    void testRunDiffTwoFilesMethodWithTwoFilesThatHaveDifferentContentsShouldReturnDiffMessage() throws Exception {
-        assertEquals(DIFF_OUTPUT, diffApplication.diffTwoFiles(FILE_ONE_NAME, FILE_THREE_NAME, true,
-                true, true));
-    }
-
-    /**
-     * Test run method when two identical files are provided when no flags are given.
-     * Expected: Print nothing.
-     */
-    @Test
-    void runTwoSameFilesWithoutAnyFlagsShouldPrintNothing() throws Exception {
-        InputStream inputStream = new FileInputStream("fileOne.txt");
-        String[] args = {FILE_ONE_NAME + FILE_FORMAT, FILE_ONE_NAME + FILE_FORMAT};
-        diffApplication.run(args, inputStream, stdoutOne);
-        assertEquals("", stdoutOne.toString());
     }
 
     // Test diffTwoFiles Method
@@ -318,7 +142,7 @@ class DiffApplicationTest {
      */
     @Test
     void testRunDiffTwoDirMethodWhenDirectoryBIsNullShouldThrowException() {
-        String folderA = "folderA";
+        String folderA = "/folderA";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(folderA, null, true, true, true);
         });
@@ -330,7 +154,7 @@ class DiffApplicationTest {
      */
     @Test
     void testRunDiffTwoDirMethodWhenDirectoryAIsNullShouldThrowException() {
-        String folderB = "folderB";
+        String folderB = "/folderB";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(null, folderB, true, true, true);
         });
@@ -342,7 +166,7 @@ class DiffApplicationTest {
      */
     @Test
     void testRunDiffTwoDirMethodWhenFolderBIsEmptyShouldThrowException() {
-        String folderA = "folderA";
+        String folderA = "/folderA";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(folderA, "", true, true, true);
         });
@@ -354,33 +178,101 @@ class DiffApplicationTest {
      */
     @Test
     void testRunDiffTwoDirMethodWhenFolderAIsEmptyShouldThrowException() {
-        String folderB = "folderB";
+        String folderB = "/folderB";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir("", folderB, true, true, true);
         });
     }
 
     // Test diffFileAndStdin
+    /**
+     * Test diffFileAndStdin method when fileName is null.
+     * Expected: Throw Diff Exception.
+     */
     @Test
     void testRunNullFileNameAndValidStdinInDiffFileAndStdinMethodShouldThrowException() throws FileNotFoundException {
-        String fileNameA = "fileA.txt";
-        InputStream inputStream = new FileInputStream("fileOne.txt");
+        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
         assertThrows(DiffException.class, () -> {
             diffApplication.diffFileAndStdin(null, inputStream, true, true, true);
         });
     }
 
+    /**
+     * Test diffFileAndStdin method when stdin is null.
+     * Expected: Throw Diff Exception.
+     */
     @Test
     void testRunNullStdinAndValidFileNameInDiffFileAndStdinShouldThrowException() {
         assertThrows(DiffException.class, () -> {
-            diffApplication.diffFileAndStdin(FILE_ONE_NAME + FILE_FORMAT, null, true, true, true);
+            diffApplication.diffFileAndStdin(fileOne.toPath().toString(), null, true, true, true);
         });
     }
 
+    /**
+     * Test diffFileAndStdin method when stdin is null and filename is null.
+     * Expected: Throw Diff Exception.
+     */
     @Test
-    void testRunNullFileNameAndNullStdinInDiffFileAndStdinMethodShouldThrowException() throws FileNotFoundException {
+    void testRunDiffFileAndStdinMethodWhenNullFileNameAndNullStdinShouldThrowException() {
         assertThrows(DiffException.class, () -> {
             diffApplication.diffFileAndStdin(null, null, true, true, true);
+        });
+    }
+
+    /**
+     * Test diffFileAndStdin method when stdin is null and filename is null.
+     * Expected: Throw Diff Exception.
+     */
+    @Test
+    void testRunDiffFileAndStdinMethodWhenFileNameAndStdinHaveIdenticalFilesWithIsShowSameTrueShouldPrintSameOutputMessage() {
+        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
+        assertThrows(DiffException.class, () -> {
+            diffApplication.diffFileAndStdin(fileOne.toPath().toString(), inputStream, true, true, true);
+        });
+    }
+
+    /**
+     * Test diffFileAndStdin method when stdin is null and filename is null.
+     * Expected: Throw Diff Exception.
+     */
+    @Test
+    void testRunDiffFileAndStdinMethodWhenFileNameAndStdinHaveDifferentFilesWithSameContentAndIsShowSameTrueShouldPrintSameOutputMessage() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(fileTwo.toPath().toString().getBytes());
+        assertEquals(SAME_OUTPUT, diffApplication.diffFileAndStdin(fileOne.toPath().toString(), inputStream, true, true, true));
+    }
+
+    /**
+     * Test diffFileAndStdin method when files provided by fileName and stdin are different in content.
+     * Boolean isSimple is false for this case.
+     * Expected: Print the line numbers of both files that are different.
+     */
+    @Test
+    void testRunDiffFileAndStdinMethodWhenFileNameAndStdinHaveDifferentFilesWithDifferentContentAndIsSimpleFalseShouldPrintDifference() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(fileThree.toPath().toString().getBytes());
+        assertEquals(DIFF_LINES, diffApplication.diffFileAndStdin(fileOne.toPath().toString(), inputStream, true, true, false));
+    }
+
+    /**
+     * Test diffFileAndStdin method when files provided by fileName and stdin are different in content.
+     * Boolean isSimple is true for this case.
+     * Expected: Print the line numbers of both files that are different.
+     */
+    @Test
+    void testRunDiffFileAndStdinMethodWhenFileNameAndStdinHaveDifferentFilesWithDifferentContentAndIsSimpleTrueShouldPrintDifference() throws Exception {
+        InputStream inputStream = new ByteArrayInputStream(fileThree.toPath().toString().getBytes());
+        assertEquals(DIFF_OUTPUT, diffApplication.diffFileAndStdin(fileOne.toPath().toString(), inputStream, true, true, false));
+
+    }
+
+    /**
+     * Test diffFileAndStdin method when stdin is null and filename is null.
+     * Expected: Throw Diff Exception.
+     */
+    @Test
+    void testRunDiffFileAndStdinMethodWhenFileNameAndStdinHaveDifferentFilesWithDifferentContentAndIsShowSameTrueShouldPrintDifference() {
+        InputStream inputStream = new ByteArrayInputStream(fileTwo.toPath().toString().getBytes());
+        assertThrows(DiffException.class, () -> {
+            diffApplication.diffFileAndStdin(fileOne.toPath().toString(), inputStream, true, true, true);
         });
     }
 }
