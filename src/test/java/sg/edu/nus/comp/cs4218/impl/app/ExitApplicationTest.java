@@ -24,7 +24,7 @@ class ExitApplicationTest {
      * Expected: Throws ExitException with exit code 0.
      */
     @Test
-    void run() {
+    void testRun() {
         Exception exception = assertThrows(ExitException.class, () -> {
             exitApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
         });
@@ -37,7 +37,7 @@ class ExitApplicationTest {
      * Expected: Throws ExitException with exit code 0.
      */
     @Test
-    void terminateExecutionShouldThrowExitExceptionWithExitCode0() {
+    void testTerminateExecutionShouldThrowExitExceptionWithExitCode0() {
         Exception exception = assertThrows(ExitException.class, () -> {
             exitApplication.terminateExecution();
         });

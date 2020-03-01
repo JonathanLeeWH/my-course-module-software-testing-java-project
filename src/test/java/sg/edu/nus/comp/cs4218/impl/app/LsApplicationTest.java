@@ -5,11 +5,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
+import sg.edu.nus.comp.cs4218.exception.LsException;
 
 import java.io.*;
 import java.util.ArrayList;
 
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -105,26 +109,37 @@ public class LsApplicationTest {
     }
 
     @Test
-    void testListFolderContentNoArgument() throws Exception {
+    void testListFolderContentNoArgumentSuccess() throws Exception {
         String expectedResult = FILE_NAME_1 + System.lineSeparator() + FILE_NAME_2 + System.lineSeparator() + FILE_NAME_3 + System.lineSeparator() + FOLDER_NAME_1 + System.lineSeparator() + FOLDER_NAME_2;
         String[] foldersName = {};
         assertEquals(expectedResult, lsApplication.listFolderContent(false,false,foldersName));
     }
 
     @Test
-    void testListFolderContentOneFolder() throws Exception {
+    public void runWhenMissingArgSpecifiedThrowsNoFileFolderFoundException() {
+
+        String[] constructArgs = new String [] {"hello"};
+        Exception exception = assertThrows(LsException.class, () -> {
+            lsApplication.run(constructArgs, System.in, System.out);
+        });
+
+        assertEquals(new LsException(NO_FILE_OR_FOLDER).getMessage(), exception.getMessage());
+    }
+
+    @Test
+    void testListFolderContentOneFolderSuccess() throws Exception {
         String expectedResult = FILE_NAME_1 + System.lineSeparator() + SUBFOLDER_NAME_1;
         assertEquals(expectedResult, lsApplication.listFolderContent(false,false, L1_FOLDER_1));
     }
 
     @Test
-    void testListFolderContentSubFolder() throws Exception {
+    void testListFolderContentSubFolderSuccess() throws Exception {
         String expectedResult = FILE_NAME_1;
         assertEquals(expectedResult, lsApplication.listFolderContent(false,false, L2_FOLDER_1));
     }
 
     @Test
-    void testListFolderContentMultipleFolder() throws Exception {
+    void testListFolderContentMultipleFolderSuccess() throws Exception {
         String expectedResult = FOLDER_NAME_1 +":" + System.lineSeparator() +
                 FILE_NAME_1 + System.lineSeparator() + SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator() +
                 FOLDER_NAME_2 +":" + System.lineSeparator() + FILE_NAME_2 + System.lineSeparator() + SUBFOLDER_NAME_2;
@@ -133,14 +148,14 @@ public class LsApplicationTest {
     }
 
     @Test
-    void testListFolderContentSingleFile() throws Exception {
+    void testListFolderContentSingleFileSuccess() throws Exception {
         String expectedResult = FILE_NAME_3;
         assertEquals(expectedResult, lsApplication.listFolderContent(false,false,
                 L1_FILE_3));
     }
 
     @Test
-    void testListFolderContentMultipleFolderAndFiles() throws Exception {
+    void testListFolderContentMultipleFolderAndFilesSuccess() throws Exception {
         String expectedResult = FOLDER_NAME_1 +":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() +
                 SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator() +
                 FOLDER_NAME_2 +":" + System.lineSeparator() + FILE_NAME_2 + System.lineSeparator() + SUBFOLDER_NAME_2 +
@@ -153,49 +168,49 @@ public class LsApplicationTest {
 
 
     @Test
-    void testListFolderContentNoArgFolderOnly() throws Exception {
+    void testListFolderContentNoArgFolderOnlySuccess() throws Exception {
         String expectedResult = ".";
         String[] foldersName = {};
         assertEquals(expectedResult, lsApplication.listFolderContent(true,false,foldersName));
     }
 
     @Test
-    void testListFolderContentFileFolderOnly() throws Exception {
+    void testListFolderContentFileFolderOnlySuccess() throws Exception {
         String expectedResult = L1_FILE_3;
         assertEquals(expectedResult, lsApplication.listFolderContent(true,false,
                 L1_FILE_3));
     }
 
     @Test
-    void testListFolderContentMultiFileFolderOnly() throws Exception {
+    void testListFolderContentMultiFileFolderOnlySuccess() throws Exception {
         String expectedResult = L1_FILE_3 + System.lineSeparator() + L1_FILE_2;
         assertEquals(expectedResult, lsApplication.listFolderContent(true,false,
                 L1_FILE_3, L1_FILE_2));
     }
 
     @Test
-    void testListFolderContentOneFolderOnly() throws Exception {
+    void testListFolderContentOneFolderOnlySuccess() throws Exception {
         String expectedResult = L1_FOLDER_1;
         assertEquals(expectedResult, lsApplication.listFolderContent(true,false,
                 L1_FOLDER_1));
     }
 
     @Test
-    void testListFolderContentMultiFoldersOnly() throws Exception {
+    void testListFolderContentMultiFoldersOnlySuccess() throws Exception {
         String expectedResult = L1_FOLDER_1 + System.lineSeparator() + L1_FOLDER_2;
         assertEquals(expectedResult, lsApplication.listFolderContent(true,false,
                 L1_FOLDER_1, L1_FOLDER_2));
     }
 
     @Test
-    void testListFolderContentFileFolderFolderOnly() throws Exception {
+    void testListFolderContentFileFolderFolderOnlySuccess() throws Exception {
         String expectedResult = L1_FOLDER_1 + System.lineSeparator() + L1_FILE_2;
         assertEquals(expectedResult, lsApplication.listFolderContent(true,false,
                 L1_FOLDER_1, L1_FILE_2));
     }
 
     @Test
-    void testListFolderContentFoldersOnly() throws Exception {
+    void testListFolderContentFoldersOnlySuccess() throws Exception {
         String expectedResult = L1_FOLDER_1 + System.lineSeparator() + L1_FOLDER_2 + System.lineSeparator() + L1_FILE_3;
         assertEquals(expectedResult, lsApplication.listFolderContent(true,false,
                 L1_FOLDER_1, L1_FOLDER_2, L1_FILE_3));
@@ -204,7 +219,7 @@ public class LsApplicationTest {
 
 
     @Test
-    void testListFolderContentFileRecursive() throws Exception {
+    void testListFolderContentFileRecursiveSuccess() throws Exception {
         String expectedResult = FILE_NAME_3;
 
         assertEquals(expectedResult, lsApplication.listFolderContent(false,true,
@@ -212,7 +227,7 @@ public class LsApplicationTest {
     }
 
     @Test
-    void testListFolderContentMultiFileRecursive() throws Exception {
+    void testListFolderContentMultiFileRecursiveSuccess() throws Exception {
         String expectedResult = FILE_NAME_3 + System.lineSeparator() + FILE_NAME_2;
 
         assertEquals(expectedResult, lsApplication.listFolderContent(false,true,
@@ -220,7 +235,7 @@ public class LsApplicationTest {
     }
 
     @Test
-    void testListFolderContentOneRecursive() throws Exception {
+    void testListFolderContentOneRecursiveSuccess() throws Exception {
         String expectedResult = FOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator()
                 + SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator() + FOLDER_NAME_1 + File.separator
                 + SUBFOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1;
@@ -230,7 +245,7 @@ public class LsApplicationTest {
     }
 
     @Test
-    void testListFolderContentMultiRecursive() throws Exception {
+    void testListFolderContentMultiRecursiveSuccess() throws Exception {
         String expectedResult = FOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator()
                 + SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator() + FOLDER_NAME_1 + File.separator
                 + SUBFOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1  + System.lineSeparator() + System.lineSeparator()
@@ -243,7 +258,7 @@ public class LsApplicationTest {
     }
 
     @Test
-    void testListFolderContentFileFolderRecursive() throws Exception {
+    void testListFolderContentFileFolderRecursiveSuccess() throws Exception {
         String expectedResult = FILE_NAME_3  + System.lineSeparator() + System.lineSeparator() + FOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator()
                 + SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator() + FOLDER_NAME_1 + File.separator
                 + SUBFOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + System.lineSeparator() + FOLDER_NAME_2 + ":" + System.lineSeparator() +FILE_NAME_2 + System.lineSeparator()
@@ -255,13 +270,13 @@ public class LsApplicationTest {
     }
 
     @Test
-    void testListFolderContentNoArgRecursive() throws Exception {
+    void testListFolderContentNoArgRecursiveSuccess() throws Exception {
         String expectedResult = FILE_NAME_1 + System.lineSeparator() +FILE_NAME_2 + System.lineSeparator() + FILE_NAME_3 + System.lineSeparator() + FOLDER_NAME_1 + System.lineSeparator()
                 + FOLDER_NAME_2 + System.lineSeparator() + System.lineSeparator()
-                + "./" + FOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator()
-                + "./" + FOLDER_NAME_1 + File.separator + SUBFOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + System.lineSeparator()
-                + "./" + FOLDER_NAME_2 + ":" + System.lineSeparator() + FILE_NAME_2 + System.lineSeparator() + SUBFOLDER_NAME_2 + System.lineSeparator() + System.lineSeparator()
-                + "./" + FOLDER_NAME_2 + File.separator + SUBFOLDER_NAME_2 + ":";
+                + "." + File.separator + FOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + SUBFOLDER_NAME_1 + System.lineSeparator() + System.lineSeparator()
+                + "." + File.separator + FOLDER_NAME_1 + File.separator + SUBFOLDER_NAME_1 + ":" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator() + System.lineSeparator()
+                + "." + File.separator + FOLDER_NAME_2 + ":" + System.lineSeparator() + FILE_NAME_2 + System.lineSeparator() + SUBFOLDER_NAME_2 + System.lineSeparator() + System.lineSeparator()
+                + "." + File.separator + FOLDER_NAME_2 + File.separator + SUBFOLDER_NAME_2 + ":";
 
         String[] folderName = {};
         assertEquals(expectedResult, lsApplication.listFolderContent(false,true,

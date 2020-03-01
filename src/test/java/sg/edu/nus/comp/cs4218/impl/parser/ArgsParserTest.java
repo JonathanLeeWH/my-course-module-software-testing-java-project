@@ -33,7 +33,7 @@ class ArgsParserTest {
      * Expected: Throws InvalidArgsException
      */
     @Test
-    void parseWhenAtLeastOneIllegalFlagShouldThrowInvalidArgsException() throws InvalidArgsException {
+    void testParseWhenAtLeastOneIllegalFlagShouldThrowInvalidArgsException() throws InvalidArgsException {
         String[] argsList = {CHAR_FLAG_PREFIX + ILLEGAL_FLAG};
         InvalidArgsException exception = assertThrows(InvalidArgsException.class, () -> {
             argsParser.parse(argsList);
@@ -47,7 +47,7 @@ class ArgsParserTest {
      * Expected: Flags and nonFlagArgs fields are empty.
      */
     @Test
-    void parseWhenNoIllegalFlagAndEmptyArgList() throws InvalidArgsException {
+    void testParseWhenNoIllegalFlagAndEmptyArgList() throws InvalidArgsException {
         String[] emptyArgsList = {};
         argsParser.parse(emptyArgsList);
         assertTrue(argsParser.flags.isEmpty());
@@ -59,7 +59,7 @@ class ArgsParserTest {
      * Expected: Flags and nonFlags fields are non empty.
      */
     @Test
-    void parseWhenNoIllegalFlagAndNonEmptyArgListWithFlagsAndNonFlags() throws InvalidArgsException {
+    void testParseWhenNoIllegalFlagAndNonEmptyArgListWithFlagsAndNonFlags() throws InvalidArgsException {
         String[] argsList = {CHAR_FLAG_PREFIX + VALID_FLAG_1.toString(), CHAR_FLAG_PREFIX + VALID_FLAG_2.toString(), VALID_NON_FLAG_1};
         argsParser.parse(argsList);
         assertFalse(argsParser.flags.isEmpty());
@@ -71,7 +71,7 @@ class ArgsParserTest {
      * Expected: Flags field is empty and nonFlags field is non empty.
      */
     @Test
-    void parseWhenNoIllegalFlagAndNonEmptyArgListWithNonFlagOnly() throws InvalidArgsException {
+    void testParseWhenNoIllegalFlagAndNonEmptyArgListWithNonFlagOnly() throws InvalidArgsException {
         String[] argsList = {VALID_NON_FLAG_1};
         argsParser.parse(argsList);
         assertTrue(argsParser.flags.isEmpty());
@@ -83,7 +83,7 @@ class ArgsParserTest {
      * Expected: Flags field is empty and nonFlags field is non empty.
      */
     @Test
-    void parseWhenNoIllegalFlagAndNonEmptyArgListWithFlagOnly() throws InvalidArgsException {
+    void testParseWhenNoIllegalFlagAndNonEmptyArgListWithFlagOnly() throws InvalidArgsException {
         String[] argsList = {CHAR_FLAG_PREFIX + VALID_FLAG_1.toString()};
         argsParser.parse(argsList);
         assertFalse(argsParser.flags.isEmpty());
