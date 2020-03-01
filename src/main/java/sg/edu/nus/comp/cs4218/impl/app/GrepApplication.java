@@ -19,10 +19,10 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class GrepApplication implements GrepInterface {
-    public static final String INVALID_PATTERN = "Invalid pattern syntax";
-    public static final String EMPTY_PATTERN = "Pattern should not be empty.";
-    public static final String IS_DIRECTORY = "Is a directory";
-    public static final String NULL_POINTER = "Null Pointer Exception";
+    private static final String INVALID_PATTERN = "Invalid pattern syntax";
+    private static final String EMPTY_PATTERN = "Pattern should not be empty.";
+    private static final String IS_DIRECTORY = "Is a directory";
+    private static final String NULL_POINTER = "Null Pointer Exception";
 
     private static final int NUM_ARGUMENTS = 2;
     private static final char CASE_INSEN_IDENT = 'i';
