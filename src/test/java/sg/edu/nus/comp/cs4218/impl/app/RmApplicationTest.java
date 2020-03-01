@@ -61,6 +61,7 @@ class RmApplicationTest {
     /**
      * Tests remove method without any flags for removing a file.
      * For example: rm 1.txt
+     * Where 1.txt exists.
      * Expected: Removes the file.
      */
     @Test
