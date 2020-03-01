@@ -450,7 +450,39 @@ class RmApplicationTest {
     }
 
     /**
-     * Tests removeFIleOnly method when input file is a directory.
+     * Tests remove method with -r flag
+     * For example: rm -r 1.txt hello
+     * Where hello is a non empty directory that exists and 1.txt is a non existing text file.
+     * Expected: Throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove a non existing 1.txt file. At the same time, it removes hello directory.
+     */
+    @Test
+    void testRemoveWhenRFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        String[] fileNames = {FILE_NAME_1, FOLDER_NAME_1};
+
+        Files.createDirectories(fileInFolder);
+
+        assertFalse(Files.exists(file));
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -r flag
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.remove(false, true, fileNames);
+        });
+
+        assertEquals(new RmException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
+
+        // Check that the non empty folder is deleted.
+        assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests removeFileOnly method when input file is a directory.
      * Expected: Throws RmException with ERR_IS_DIR
      */
     @Test
