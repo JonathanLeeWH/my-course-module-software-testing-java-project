@@ -9,7 +9,6 @@ import sg.edu.nus.comp.cs4218.impl.util.MyPair;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
@@ -59,7 +58,7 @@ public class CutApplication implements CutInterface {
                 output.append(cutFromFiles(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), newFiles.stream().toArray(file -> new String[newFiles.size()])));
             }
         } catch (Exception e) {
-            throw new CutException(e);
+            throw new CutException(e.getMessage());
         }
 
         try {
@@ -67,17 +66,17 @@ public class CutApplication implements CutInterface {
                 stdout.write((output.toString() + STRING_NEWLINE).getBytes());
             }
         } catch (IOException e) {
-            throw new CutException(e, ERR_WRITE_STREAM);
+            throw new CutException(ERR_WRITE_STREAM);
         }
     }
 
     @Override
     public String cutFromFiles(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, String... fileName) throws Exception {
         if (fileName == null) {
-            throw new CutException(ERR_GENERAL);
+            throw new Exception(ERR_GENERAL);
         }
         if ((startIdx <= 0) || (endIdx <= 0)) {
-            throw new CutException(ERR_LESS_THAN_ZERO);
+            throw new Exception(ERR_LESS_THAN_ZERO);
         }
 
         List<String> lines = new ArrayList<>();
@@ -89,13 +88,13 @@ public class CutApplication implements CutInterface {
             else {
                 File node = IOUtils.resolveFilePath(file).toFile();
                 if (!node.exists()) {
-                    throw new CutException(ERR_FILE_NOT_FOUND);
+                    throw new Exception(ERR_FILE_NOT_FOUND);
                 }
                 if (node.isDirectory()) {
-                    throw new CutException(ERR_IS_DIR);
+                    throw new Exception(ERR_IS_DIR);
                 }
                 if (!node.canRead()) {
-                    throw new CutException(ERR_NO_PERM);
+                    throw new Exception(ERR_NO_PERM);
                 }
 
                 try (InputStream input = IOUtils.openInputStream(file)) {
@@ -118,10 +117,10 @@ public class CutApplication implements CutInterface {
     @Override
     public String cutFromStdin(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, InputStream stdin) throws Exception {
         if (stdin == null) {
-            throw new CutException(ERR_NULL_STREAMS);
+            throw new Exception(ERR_NULL_STREAMS);
         }
         if ((startIdx <= 0) || (endIdx <= 0)) {
-            throw new CutException(ERR_LESS_THAN_ZERO);
+            throw new Exception(ERR_LESS_THAN_ZERO);
         }
 
         List<String> lines = IOUtils.getLinesFromInputStream(stdin);
