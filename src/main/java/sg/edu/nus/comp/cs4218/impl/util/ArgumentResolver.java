@@ -6,9 +6,7 @@ import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -82,10 +80,16 @@ public class ArgumentResolver {
 
                     // check if back quotes are nested
                     if (unmatchedQuotes.isEmpty()) {
-                        List<RegexArgument> subOutputSegment = Stream
-                                .of(StringUtils.tokenize(subCommandOutput))
-                                .map(str -> makeRegexArgument(str))
-                                .collect(Collectors.toList());
+                        List<RegexArgument> subOutputSegment = new ArrayList<>();
+                        String[] tokens = StringUtils.tokenize(subCommandOutput);
+                        for (int idx = 0; idx < tokens.length; idx++) {
+                            if (idx < tokens.length - 1) {
+                                subOutputSegment.add(makeRegexArgument(tokens[idx].concat(" ")));
+                            }
+                            else {
+                                subOutputSegment.add(makeRegexArgument(tokens[idx]));
+                            }
+                        }
 
                         // append the first token to the previous parsedArg
                         // e.g. arg: abc`1 2 3`xyz`4 5 6` (contents in `` is after command sub)
@@ -96,8 +100,6 @@ public class ArgumentResolver {
                         }
                         else {
                             // Note that this is a naive impln
-                            // This is basically taking the result from the suboutput
-                            // and placed it inside the parsedArgsSegment
                             for (RegexArgument segment: subOutputSegment) {
                                 appendParsedArgIntoSegment(parsedArgsSegment, segment);
                             }
