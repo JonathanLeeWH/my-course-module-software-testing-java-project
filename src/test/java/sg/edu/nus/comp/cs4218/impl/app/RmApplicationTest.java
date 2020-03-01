@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
-import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
 import sg.edu.nus.comp.cs4218.exception.RmException;
 
 import java.io.File;
@@ -16,17 +15,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
-import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 
 class RmApplicationTest {
 
     private static final String FILE_NAME_1 = "1.txt";
     private static final String FILE_NAME_2 = "2.txt";
     private static final String FOLDER_NAME_1 = "hello";
-    private static final String ILLEGAL_FLAG = "z";
-    public static final String ILLEGAL_FLAG_MSG = "illegal option -- ";
+    private static final String FOLDER_NAME_2 = "hello2";
 
     private RmApplication rmApplication;
 
@@ -68,6 +65,7 @@ class RmApplicationTest {
     /**
      * Tests remove method without any flags for removing a file.
      * For example: rm 1.txt
+     * Where 1.txt exists.
      * Expected: Removes the file.
      */
     @Test
@@ -271,6 +269,62 @@ class RmApplicationTest {
     }
 
     /**
+     * Tests remove method with -d flag (isEmptyFolder is set to true) for removing multiple existing empty directories.
+     * For example: rm -d hello hello2
+     * Where hello and hello2 are empty directories that exist.
+     * Expected: Removes hello and hello2 directory
+     */
+    @Test
+    void testRemoveWhenDFlagMultipleEmptyFoldersExistsShouldDeleteInputEmptyFolders(@TempDir Path tempDir) throws Exception {
+        Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
+        Path emptyFolder2= tempDir.resolve(FOLDER_NAME_2);
+        String[] fileNames = {FOLDER_NAME_1, FOLDER_NAME_2};
+
+        Files.createDirectory(emptyFolder);
+        Files.createDirectory(emptyFolder2);
+
+        assertTrue(Files.isDirectory(emptyFolder));
+        assertTrue(Files.isDirectory(emptyFolder2));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -d flag
+        rmApplication.remove(true, false, fileNames);
+
+        // Check that the input empty folders are deleted.
+        assertFalse(Files.isDirectory(emptyFolder));
+        assertFalse(Files.isDirectory(emptyFolder2));
+    }
+
+    /**
+     * Tests remove method with -d flag (isEmptyFolder is set to true) for removing an existing empty directory and an existing file.
+     * For example: rm -d hello 1.txt
+     * Where hello is an empty directory that exist and 1.txt is a file that exist.
+     * Expected: Removes hello directory and 1.txt.
+     */
+    @Test
+    void testRemoveWhenDFlagEmptyFolderAndFileExistShouldDeleteEmptyFolder(@TempDir Path tempDir) throws Exception {
+        Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
+        Path file = tempDir.resolve(FILE_NAME_1);
+        String[] fileNames = {FOLDER_NAME_1, FILE_NAME_1};
+
+        Files.createDirectory(emptyFolder);
+        Files.createFile(file);
+
+        assertTrue(Files.exists(file));
+        assertTrue(Files.isDirectory(emptyFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -d flag
+        rmApplication.remove(true, false, fileNames);
+
+        // Check that the empty folder and file is deleted.
+        assertFalse(Files.isDirectory(emptyFolder));
+        assertFalse(Files.exists(file));
+    }
+
+    /**
      * Tests remove method with -d flag (isEmptyFolder is set to true) for removing an existing non empty directory.
      * For example: rm -d hello
      * Where hello is a non empty directory that exist.
@@ -301,7 +355,75 @@ class RmApplicationTest {
     }
 
     /**
-     * Tests remove method with -r or -rd  or -r -d flag
+     * Tests remove method with -d flag (isEmptyFolder is set to true) for removing an existing non empty directory followed by an existing file.
+     * For example: rm -d hello 1.txt
+     * Where hello is a non empty directory that exist and 1.txt exists.
+     * Expected: Throws latest RmException with ERR_NON_EMPTY_DIR as it attempts to remove hello directory. At the same time, it removes 1.txt similar to in unix.
+     */
+    @Test
+    void testRemoveWhenDFlagNonEmptyFolderAndFileExistsThrowsRmExceptionAndRemoveFile(@TempDir Path tempDir) throws Exception {
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        Path file = tempDir.resolve(FILE_NAME_1);
+        String[] fileNames = {FOLDER_NAME_1, FILE_NAME_1};
+
+        Files.createFile(file);
+        Files.createDirectories(fileInFolder);
+
+        assertTrue(Files.exists(file));
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -d flag
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.remove(true, false, fileNames);
+        });
+
+        assertEquals(new RmException(ERR_NON_EMPTY_DIR).getMessage(), exception.getMessage());
+
+        // Check that the non empty folder still exist but 1.txt is deleted.
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertFalse(Files.exists(file));
+    }
+
+    /**
+     * Tests remove method with -d flag (isEmptyFolder is set to true) for removing an existing file followed by an existing non empty directory.
+     * For example: rm -d 1.txt hello
+     * Where hello is a non empty directory that exist and 1.txt exists.
+     * Expected: Throws latest RmException with ERR_NON_EMPTY_DIR as it attempts to remove hello directory. At the same time, it removes 1.txt similar to in unix.
+     */
+    @Test
+    void testRemoveWhenDFlagFileAndNonEmptyFolderExistsThrowsRmExceptionAndRemoveFile(@TempDir Path tempDir) throws Exception {
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        Path file = tempDir.resolve(FILE_NAME_1);
+        String[] fileNames = {FILE_NAME_1, FOLDER_NAME_1};
+
+        Files.createFile(file);
+        Files.createDirectories(fileInFolder);
+
+        assertTrue(Files.exists(file));
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -d flag
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.remove(true, false, fileNames);
+        });
+
+        assertEquals(new RmException(ERR_NON_EMPTY_DIR).getMessage(), exception.getMessage());
+
+        // Check that the non empty folder still exist but 1.txt is deleted.
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertFalse(Files.exists(file));
+    }
+
+    /**
+     * Tests remove method with -r or -rd  or -r -d flag for an existing non empty directory.
      * We will only test as long as -r exists by MC/DC to reduce number of test cases as both cases exhibit same behaviour.
      * For example: rm -r hello or rm -r -d hello or rm -rd hello
      * Where hello is a non empty directory that exist.
@@ -325,6 +447,271 @@ class RmApplicationTest {
 
         // Check that the non empty folder is deleted.
         assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests remove method with -r flag fpr a non existing file followed by an existing non empty directory.
+     * For example: rm -r 1.txt hello
+     * Where hello is a non empty directory that exists and 1.txt is a non existing text file.
+     * Expected: Throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove a non existing 1.txt file. At the same time, it removes hello directory.
+     */
+    @Test
+    void testRemoveWhenRFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        String[] fileNames = {FILE_NAME_1, FOLDER_NAME_1};
+
+        Files.createDirectories(fileInFolder);
+
+        assertFalse(Files.exists(file));
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -r flag
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.remove(false, true, fileNames);
+        });
+
+        assertEquals(new RmException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
+
+        // Check that the non empty folder is deleted.
+        assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests remove method with -r flag for an existing file followed by an existing non empty directory.
+     * For example rm -r 1.txt hello
+     * Where hello is a non empty directory that exists and 1.txt is an existing file.
+     * Expected: Removes 1.txt and hello directory
+     */
+    @Test
+    void testRemoveWhenRFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        String[] fileNames = {FILE_NAME_1, FOLDER_NAME_1};
+
+        Files.createFile(file);
+        Files.createDirectories(fileInFolder);
+
+        assertTrue(Files.exists(file));
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -r flag
+        rmApplication.remove(false, true, fileNames);
+
+        // Check that the non empty folder and file are deleted.
+        assertFalse(Files.exists(file));
+        assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests remove method with -r flag for an existing empty directory
+     * For example: rm -r hello
+     * Where hello is an existing empty directory.
+     * Expected: Removes empty hello directory.
+     */
+    @Test
+    void testRemoveWhenRFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+        Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
+        String[] fileNames = {FOLDER_NAME_1};
+
+        Files.createDirectory(emptyFolder);
+        assertTrue(Files.exists(emptyFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -r flag
+        rmApplication.remove(false, true, fileNames);
+
+        // Check that the empty folder is deleted.
+        assertFalse(Files.exists(emptyFolder));
+    }
+
+    /**
+     * Tests remove method with -r flag for an existing file.
+     * For example: rm -r 1.txt
+     * Where 1.txt is an existing file.
+     * Expected: Removes empty hello directory.
+     */
+    @Test
+    void testRemoveWhenRFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        String[] fileNames = {FILE_NAME_1};
+
+        Files.createDirectory(file);
+        assertTrue(Files.exists(file));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -r flag
+        rmApplication.remove(false, true, fileNames);
+
+        // Check that the empty folder is deleted.
+        assertFalse(Files.exists(file));
+    }
+
+    // More comprehensive test cases to cover those reduced by mc/dc
+
+    /**
+     * Tests remove method with -rd  or -r -d flag or -d -r flag for an existing non empty directory.
+     * For example: rm -rd hello
+     * Where hello is a non empty directory that exist.
+     * Expected: Removes hello directory and its contents
+     */
+    @Test
+    void testRemoveWhenRDFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        String[] fileNames = {FOLDER_NAME_1};
+
+        Files.createDirectories(fileInFolder);
+
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -rd flag
+        rmApplication.remove(true, true, fileNames);
+
+        // Check that the non empty folder is deleted.
+        assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests remove method with -rd  or -r -d flag or -d -r flag for a non existing file followed by an existing non empty directory.
+     * For example: rm -rd 1.txt hello
+     * Where hello is a non empty directory that exists and 1.txt is a non existing text file.
+     * Expected: Throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove a non existing 1.txt file. At the same time, it removes hello directory.
+     */
+    @Test
+    void testRemoveWhenRDFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        String[] fileNames = {FILE_NAME_1, FOLDER_NAME_1};
+
+        Files.createDirectories(fileInFolder);
+
+        assertFalse(Files.exists(file));
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -rd flag
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.remove(true, true, fileNames);
+        });
+
+        assertEquals(new RmException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
+
+        // Check that the non empty folder is deleted.
+        assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests remove method with -rd  or -r -d flag or -d -r flag for an existing file followed by an existing directory.
+     * For example rm -rd 1.txt hello
+     * Where hello is a non empty directory that exists and 1.txt is an existing file.
+     * Expected: Removes 1.txt and hello directory
+     */
+    @Test
+    void testRemoveWhenRDFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
+        Path nonEmptyFolder = fileInFolder.getParent();;
+        String[] fileNames = {FILE_NAME_1, FOLDER_NAME_1};
+
+        Files.createFile(file);
+        Files.createDirectories(fileInFolder);
+
+        assertTrue(Files.exists(file));
+        assertTrue(Files.isDirectory(nonEmptyFolder));
+        assertTrue(Files.exists(fileInFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -rd flag
+        rmApplication.remove(true, true, fileNames);
+
+        // Check that the non empty folder and file are deleted.
+        assertFalse(Files.exists(file));
+        assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests remove method with -rd  or -r -d flag or -d -r flag for an existing empty directory
+     * For example: rm -rd hello
+     * Where hello is an existing empty directory.
+     * Expected: Removes empty hello directory.
+     */
+    @Test
+    void testRemoveWhenRDFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+        Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
+        String[] fileNames = {FOLDER_NAME_1};
+
+        Files.createDirectory(emptyFolder);
+        assertTrue(Files.exists(emptyFolder));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -rd flag
+        rmApplication.remove(true, true, fileNames);
+
+        // Check that the empty folder is deleted.
+        assertFalse(Files.exists(emptyFolder));
+    }
+
+    /**
+     * Tests remove method with with -rd  or -r -d flag or -d -r flag for an existing file.
+     * For example: rm -rd 1.txt
+     * Where 1.txt is an existing file.
+     * Expected: Removes empty hello directory.
+     */
+    @Test
+    void testRemoveWhenRDFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
+        Path file = tempDir.resolve(FILE_NAME_1);
+        String[] fileNames = {FILE_NAME_1};
+
+        Files.createDirectory(file);
+        assertTrue(Files.exists(file));
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+
+        // rm with -rd flag
+        rmApplication.remove(true, true, fileNames);
+
+        // Check that the empty folder is deleted.
+        assertFalse(Files.exists(file));
+    }
+
+    /**
+     * Tests removeFileOnly method when input file is a directory.
+     * Expected: Throws RmException with ERR_IS_DIR
+     */
+    @Test
+    void testRemoveFileOnlyWhenInputFileIsADirectoryShouldThrowRmException(@TempDir Path tempDir) throws IOException {
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+
+        Files.createDirectory(folder);
+
+        assertTrue(Files.isDirectory(folder)); // check folder exists.
+
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.removeFileOnly(folder.toFile());
+        });
+
+        assertEquals(new RmException(ERR_IS_DIR).getMessage(), exception.getMessage());
+
+        assertTrue(Files.isDirectory(folder)); // check that the folder exists.
     }
 
     /**
