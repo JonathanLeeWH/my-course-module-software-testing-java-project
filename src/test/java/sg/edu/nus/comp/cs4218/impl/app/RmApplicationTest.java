@@ -5,28 +5,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
-import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
 import sg.edu.nus.comp.cs4218.exception.RmException;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
-import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 
 class RmApplicationTest {
 
     private static final String FILE_NAME_1 = "1.txt";
     private static final String FILE_NAME_2 = "2.txt";
     private static final String FOLDER_NAME_1 = "hello";
-    private static final String ILLEGAL_FLAG = "z";
-    public static final String ILLEGAL_FLAG_MSG = "illegal option -- ";
 
     private RmApplication rmApplication;
 
@@ -325,6 +318,27 @@ class RmApplicationTest {
 
         // Check that the non empty folder is deleted.
         assertFalse(Files.isDirectory(nonEmptyFolder));
+    }
+
+    /**
+     * Tests removeFIleOnly method when input file is a directory.
+     * Expected: Throws RmException with ERR_IS_DIR
+     */
+    @Test
+    void testRemoveFileOnlyWhenInputFileIsADirectoryShouldThrowRmException(@TempDir Path tempDir) throws IOException {
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+
+        Files.createDirectory(folder);
+
+        assertTrue(Files.isDirectory(folder)); // check folder exists.
+
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.removeFileOnly(folder.toFile());
+        });
+
+        assertEquals(new RmException(ERR_IS_DIR).getMessage(), exception.getMessage());
+
+        assertTrue(Files.isDirectory(folder)); // check that the folder exists.
     }
 
     /**
