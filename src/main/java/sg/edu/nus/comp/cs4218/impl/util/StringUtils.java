@@ -83,7 +83,7 @@ public final class StringUtils {
      */
     public static String[] tokenize(String str) {
         if (isBlank(str)) {
-            return new String[]{" "};
+            return new String[0];
         }
         return str.trim().split("\\s+");
     }
