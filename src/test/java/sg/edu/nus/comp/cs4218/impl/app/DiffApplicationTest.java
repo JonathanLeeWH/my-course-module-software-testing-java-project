@@ -6,7 +6,6 @@ import sg.edu.nus.comp.cs4218.exception.DiffException;
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_STREAMS;
 
 class DiffApplicationTest {
 
@@ -71,7 +70,7 @@ class DiffApplicationTest {
      */
     @Test
     void runDiffTwoFilesMethodWithFileNameBNullShouldThrowException() {
-        String fileNameA = "fileA.txt";
+        String fileNameA = fileOne.getPath();
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles(fileNameA, null, true, true, true);
         });
@@ -83,7 +82,7 @@ class DiffApplicationTest {
      */
     @Test
     void runDiffTwoFilesMethodWithFileNameANullShouldThrowException() {
-        String fileNameB = "fileB.txt";
+        String fileNameB = fileTwo.getPath();
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles(null, fileNameB, true, true, true);
         });
@@ -95,7 +94,7 @@ class DiffApplicationTest {
      */
     @Test
     void testRunDiffTwoFilesWithFileNameBEmptyShouldThrowException() {
-        String fileNameA = "fileA.txt";
+        String fileNameA = fileOne.getPath();
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles(fileNameA, "", true, true, true);
         });
@@ -107,7 +106,7 @@ class DiffApplicationTest {
      */
     @Test
     void testRunDiffTwoFilesWithFileNameAEmptyShouldThrowException() {
-        String fileNameB = "fileB.txt";
+        String fileNameB = fileTwo.getPath();
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles("", fileNameB, true, true, true);
         });
@@ -122,6 +121,65 @@ class DiffApplicationTest {
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles("", "", true, true, true);
         });
+    }
+
+    /**
+     * Test diffTwoFiles method when fileNameA and fileNameB are the same file and isShowSame is true.
+     * Expected: Print same output.
+     */
+    @Test
+    void testRunDiffTwoFilesWhenBothFilesAAndBAreTheSameFilesAndIsShowSameIsTrue() throws Exception {
+        assertEquals(SAME_OUTPUT, diffApplication.diffTwoFiles(fileTwo.getPath(), fileTwo.getPath(), true, true, true));
+    }
+
+    /**
+     * Test diffTwoFiles method when fileNameA and fileNameB are the same file and isShowSame is false.
+     * Expected: Print nothing.
+     */
+    @Test
+    void testRunDiffTwoFilesWhenBothFilesAAndBAreTheSameFilesAndIsShowSameIsFalse() throws Exception {
+        assertEquals("", diffApplication.diffTwoFiles(fileTwo.getPath(), fileTwo.getPath(), false, true, true));
+    }
+
+
+    /**
+     * Test diffTwoFiles method when fileNameA and fileNameB are the different files but contents are the same
+     * and isShowSame is true.
+     * Expected: Print same output.
+     */
+    @Test
+    void testRunDiffTwoFilesWhenBothFilesAAndBAreDifferentFilesWithSameContentAndIsShowSameIsTrue() throws Exception {
+        assertEquals(SAME_OUTPUT, diffApplication.diffTwoFiles(fileTwo.getPath(), fileTwo.getPath(), false, true, true));
+    }
+
+    /**
+     * Test diffTwoFiles method when fileNameA and fileNameB are the different files but contents are the same
+     * and isShowSame is false.
+     * Expected: Print same output.
+     */
+    @Test
+    void testRunDiffTwoFilesWhenBothFilesAAndBAreDifferentFilesWithSameContentAndIsShowSameIsFalse() throws Exception {
+        assertEquals("", diffApplication.diffTwoFiles(fileTwo.getPath(), fileTwo.getPath(), false, true, true));
+    }
+
+    /**
+     * Test diffTwoFiles method when fileNameA and fileNameB are the different files with different contents in the second line.
+     * and isSimple is true.
+     * Expected: Print the lines that differ.
+     */
+    @Test
+    void testRunDiffTwoFilesWhenBothFilesAAndBAreDifferentFilesWithSameContentAndIsSimpleTrue() throws Exception {
+        assertEquals(DIFF_OUTPUT, diffApplication.diffTwoFiles(fileTwo.getPath(), fileTwo.getPath(), true, true, true));
+    }
+
+    /**
+     * Test diffTwoFiles method when fileNameA and fileNameB are the different files with different contents in the second line.
+     * and isSimple is false.
+     * Expected: Print the lines that differ.
+     */
+    @Test
+    void testRunDiffTwoFilesWhenBothFilesAAndBAreDifferentFilesWithSameContentAndIsSimpleFalse() throws Exception {
+        assertEquals(DIFF_LINES, diffApplication.diffTwoFiles(fileTwo.getPath(), fileTwo.getPath(), true, true, false));
     }
 
     // Test diffTwoDir Method
