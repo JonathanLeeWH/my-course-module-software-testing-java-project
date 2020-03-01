@@ -135,6 +135,9 @@ public final class RegexArgument {
         return isRegex;
     }
 
+    public String getRegex() {
+        return this.regex.toString();
+    }
     public boolean isEmpty() {
         return plaintext.length() == 0;
     }
