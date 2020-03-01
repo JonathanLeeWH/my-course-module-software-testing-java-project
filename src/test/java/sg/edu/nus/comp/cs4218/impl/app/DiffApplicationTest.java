@@ -48,7 +48,7 @@ class DiffApplicationTest {
     }
 
     /**
-     * Run Null Stdout in run method with valid filenames
+     * Run Null Stdout and null Stdin in run method with valid filenames in args.
      * Exception: Throw DiffException
      */
     @Test
@@ -61,6 +61,10 @@ class DiffApplicationTest {
         assertEquals(expected, thrown.getMessage());
     }
 
+    /**
+     * Run Null Stdin in run method with valid filenames in args.
+     * Exception: Throw DiffException
+     */
     @Test
     void testRunWhenOnlyStdinIsNullShouldThrowDiffException() {
         String[] args = {FILE_ONE_NAME + FILE_FORMAT, FILE_TWO_NAME + FILE_FORMAT};
@@ -69,6 +73,10 @@ class DiffApplicationTest {
         });
     }
 
+    /**
+     * Run Null Stdout in run method with valid filenames in args.
+     * Exception: Throw DiffException
+     */
     @Test
     void testRunWhenOnlyStdoutIsNullShouldThrowDiffException() {
         InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
@@ -234,7 +242,7 @@ class DiffApplicationTest {
     }
 
     @Test
-    void runOneEmptyFileShouldThrowException() {
+    void testRunOneEmptyFileShouldThrowException() {
         String fileNameA = "fileA.txt";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoFiles(fileNameA, "", true, true, true);
@@ -244,14 +252,14 @@ class DiffApplicationTest {
     // Test diffTwoDir Method
 
     @Test
-    void runNullDirectoryShouldThrowException() {
+    void testRunNullDirectoryShouldThrowException() {
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(null, null, true, true, true);
         });
     }
 
     @Test
-    void runOneNullDirectoryShouldThrowException() {
+    void testRunNullDirectoryBShouldThrowException() {
         String folderA = "folderA";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(folderA, null, true, true, true);
@@ -259,7 +267,15 @@ class DiffApplicationTest {
     }
 
     @Test
-    void runOneEmptyDirectoryShouldThrowException() {
+    void testRunNullDirectoryAShouldThrowException() {
+        String folderB = "folderB";
+        assertThrows(DiffException.class, () -> {
+            diffApplication.diffTwoDir(null, folderB, true, true, true);
+        });
+    }
+
+    @Test
+    void testRunOneEmptyDirectoryShouldThrowException() {
         String folderA = "folderA";
         assertThrows(DiffException.class, () -> {
             diffApplication.diffTwoDir(folderA, "", true, true, true);
@@ -268,7 +284,7 @@ class DiffApplicationTest {
 
     // Test diffFileAndStdin
     @Test
-    void runNullFileNameAndValidStdinInDiffFileAndStdinMethodShouldThrowException() throws FileNotFoundException {
+    void testRunNullFileNameAndValidStdinInDiffFileAndStdinMethodShouldThrowException() throws FileNotFoundException {
         String fileNameA = "fileA.txt";
         InputStream inputStream = new FileInputStream("fileOne.txt");
         assertThrows(DiffException.class, () -> {
@@ -277,9 +293,16 @@ class DiffApplicationTest {
     }
 
     @Test
-    void runNullStdinAndValidFileNameInDiffFileAndStdinShouldThrowException() {
+    void testRunNullStdinAndValidFileNameInDiffFileAndStdinShouldThrowException() {
         assertThrows(DiffException.class, () -> {
             diffApplication.diffFileAndStdin(FILE_ONE_NAME + FILE_FORMAT, null, true, true, true);
+        });
+    }
+
+    @Test
+    void testRunNullFileNameAndNullStdinInDiffFileAndStdinMethodShouldThrowException() throws FileNotFoundException {
+        assertThrows(DiffException.class, () -> {
+            diffApplication.diffFileAndStdin(null, null, true, true, true);
         });
     }
 }
