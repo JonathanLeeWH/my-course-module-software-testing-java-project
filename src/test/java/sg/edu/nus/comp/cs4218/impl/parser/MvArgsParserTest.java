@@ -14,6 +14,7 @@ public class MvArgsParserTest {
 
     private  static  MvArgsParser mvArgsParser;
     private final static char FLAG_NOTOVERWRITE = 'n';
+    private static final String FOLDER_NAME = "folder";
 
     @BeforeEach
     public void setUp() {
@@ -29,8 +30,8 @@ public class MvArgsParserTest {
     @Test
     void isOneArgsReturnTrue() throws InvalidArgsException {
         List<String> expected = new ArrayList<String>();
-        expected.add("folder");
-        mvArgsParser.parse("folder");
+        expected.add(FOLDER_NAME);
+        mvArgsParser.parse(FOLDER_NAME);
         assertEquals(expected.toString(), mvArgsParser.getNonFlagArgs().toString());
     }
 
@@ -38,9 +39,9 @@ public class MvArgsParserTest {
     @Test
     void isMultipleArgsReturnTrue() throws InvalidArgsException {
         List<String> expected = new ArrayList<String>();
-        expected.add("folder");
+        expected.add(FOLDER_NAME);
         expected.add("folder1");
-        mvArgsParser.parse("folder","folder1");
+        mvArgsParser.parse(FOLDER_NAME,"folder1");
         assertEquals(expected.toString(), mvArgsParser.getNonFlagArgs().toString());
     }
 

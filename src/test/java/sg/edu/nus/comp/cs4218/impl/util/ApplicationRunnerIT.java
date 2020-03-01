@@ -92,11 +92,6 @@ public class ApplicationRunnerIT {
                 MOCK_ROOT_FOLDER1, MOCK_ROOT_DIR, FOLDER1);
     }
 
-    @BeforeEach
-    void setUpBeforeEach() {
-
-    }
-
     @AfterEach
     void tearDownAfterEach() {
         FileIOHelper.deleteFiles(MOCK_ROOT_DIR + File.separator + OUTPUT_FILE_1, OUTPUT_FILE_1,
