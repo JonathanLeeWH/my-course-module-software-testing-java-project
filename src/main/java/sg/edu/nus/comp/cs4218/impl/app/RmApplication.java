@@ -34,10 +34,6 @@ public class RmApplication implements RmInterface {
                 rmException = new RmException(ERR_FILE_NOT_FOUND);
                 continue;
             }
-            if (node.isDirectory() && !isEmptyFolder && !isRecursive) {
-                rmException = new RmException(ERR_IS_DIR);
-                continue;
-            }
 
             if (!isEmptyFolder && !isRecursive) { // no -r and no -d flag
                 try {
