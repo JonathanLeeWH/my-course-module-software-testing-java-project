@@ -8,10 +8,10 @@ import java.io.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DiffApplicationTest {
-
-    private static final String FILE_ONE_TEXT = "Same line" + System.lineSeparator() + "Different line";
-    private static final String FILE_TWO_TEXT = "Same line" + System.lineSeparator() + "Different line";
-    private static final String FILE_THREE_TEXT = "Same line" + System.lineSeparator() + "Same line";
+    private static final String SAME_LINE = "Same line";
+    private static final String FILE_ONE_TEXT = SAME_LINE + System.lineSeparator() + "Different line";
+    private static final String FILE_TWO_TEXT = SAME_LINE + System.lineSeparator() + "Different line";
+    private static final String FILE_THREE_TEXT = SAME_LINE + System.lineSeparator() + SAME_LINE;
     private static final String FILE_ONE_NAME = "fileOne";
     private static final String FILE_TWO_NAME = "fileTwo";
     private static final String FILE_THREE_NAME = "fileThree";
@@ -45,10 +45,14 @@ class DiffApplicationTest {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws IOException {
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
         fileThree.deleteOnExit();
+        stdinOne.close();
+        stdoutOne.close();
+        stdoutTwo.close();
+        stdoutThree.close();
     }
 
     // Test diffTwoFiles Method

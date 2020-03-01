@@ -12,9 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_STREAMS;
 
 public class DiffApplicationIT {
-    private static final String FILE_ONE_TEXT = "Same line" + System.lineSeparator() + "Different line";
-    private static final String FILE_TWO_TEXT = "Same line" + System.lineSeparator() + "Different line";
-    private static final String FILE_THREE_TEXT = "Same line" + System.lineSeparator() + "Same line";
+    private static final String SAME_LINE = "Same line";
+    private static final String FILE_ONE_TEXT = SAME_LINE + System.lineSeparator() + "Different line";
+    private static final String FILE_TWO_TEXT = SAME_LINE + System.lineSeparator() + "Different line";
+    private static final String FILE_THREE_TEXT = SAME_LINE + System.lineSeparator() + SAME_LINE;
     private static final String FILE_ONE_NAME = "fileOne";
     private static final String FILE_TWO_NAME = "fileTwo";
     private static final String FILE_THREE_NAME = "fileThree";
@@ -48,10 +49,14 @@ public class DiffApplicationIT {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws IOException {
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
         fileThree.deleteOnExit();
+        stdinOne.close();
+        stdoutOne.close();
+        stdoutTwo.close();
+        stdoutThree.close();
     }
 
     /**
@@ -229,10 +234,10 @@ public class DiffApplicationIT {
      */
     @Test
     void runTwoSameFilesWithoutAnyFlagsShouldPrintNothing() throws Exception {
-        InputStream inputStream = new FileInputStream("fileOne.txt");
         String[] args = {fileOne.toPath().toString(), fileOne.toPath().toString()};
-        diffApplication.run(args, inputStream, osPrint);
+        diffApplication.run(args, stdinOne, osPrint);
         assertEquals("", osPrint.toString());
+
     }
 
 }
