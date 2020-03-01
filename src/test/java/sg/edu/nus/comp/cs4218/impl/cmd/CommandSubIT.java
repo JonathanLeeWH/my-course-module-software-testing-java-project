@@ -39,6 +39,13 @@ public class CommandSubIT {
     }
 
     @Test
+    void testLsCommandAndEchoCommandWithBlankOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "`cut -c 200 "+testFile1.toFile().getPath()+"`");
+        List<String> expectedResult = Arrays.asList("echo");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
     void testLsCommandAndEchoCommandWithOneLineOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("ls", "-d", "`echo "+testFile1.toFile().getPath()+"`", "-R");
         List<String> expectedResult = Arrays.asList("ls", "-d", testFile1.toFile().getPath(), "-R");
@@ -48,7 +55,7 @@ public class CommandSubIT {
     @Test
     void testWcCommandAndCutCommandWithMultipleLineOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("wc", "`echo " + testFile1.toFile().getPath()  + " " + testFile2.toFile().getPath() + "`");
-        List<String> expectedResult = Arrays.asList("wc", testFile1.toFile().getPath() + " " + testFile2.toFile().getPath());
+        List<String> expectedResult = Arrays.asList("wc", testFile1.toFile().getPath(), testFile2.toFile().getPath());
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
 }
