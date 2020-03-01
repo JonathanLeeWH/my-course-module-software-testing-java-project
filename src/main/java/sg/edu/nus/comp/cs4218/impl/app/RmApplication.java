@@ -21,9 +21,9 @@ public class RmApplication implements RmInterface {
      * @param isEmptyFolder Boolean option to delete a folder only if it is empty
      * @param isRecursive   Boolean option to recursively delete the folder contents (traversing
      *                      through all folders inside the specified folder)
-     * @param fileName    Array of String of file names
+     * @param fileName      Array of String of file names
      * @throws RmException If RmException is thrown by methods called in its body or the input file or directory does not exist or
-     * if there are no -d flag and the input file is a directory.
+     *                     if there are no -d flag and the input file is a directory.
      */
     @Override
     public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws RmException {
@@ -34,31 +34,19 @@ public class RmApplication implements RmInterface {
                 rmException = new RmException(ERR_FILE_NOT_FOUND);
                 continue;
             }
-
-            if (!isEmptyFolder && !isRecursive) { // no -r and no -d flag
-                try {
+            try {
+                if (!isEmptyFolder && !isRecursive) { // no -r and no -d flag
                     removeFileOnly(node);
-                } catch (RmException e) {
-                    rmException = e;
-                }
-            }
-
-            if (isEmptyFolder && !isRecursive) { // no -r but have -d flag
-                try {
+                } else if (isEmptyFolder && !isRecursive) { // no -r but have -d flag
                     removeFileAndEmptyFolderOnly(node);
-                } catch (RmException e) {
-                    rmException = e;
-                }
-            }
-
-            if (isRecursive) { // if -r flag is present for example -r or -r -d or -rd will call the same method.
-                try {
+                } else { // if -r flag is present for example -r or -r -d or -rd will call the same method.
                     removeFilesAndFolderContent(node);
-                } catch (RmException e) {
-                    rmException = e;
                 }
+            } catch (RmException e) {
+                rmException = e;
             }
         }
+
         if (rmException != null) {
             throw rmException;
         }
@@ -67,15 +55,16 @@ public class RmApplication implements RmInterface {
     /**
      * Removes input file.
      * Precondition: Input file is not a directory.
+     *
      * @param fileName input file to be deleted.
      * @throws RmException If an IOException occurred or if the input file is a directory.
      */
     public void removeFileOnly(File fileName) throws RmException {
         try {
-            if (!fileName.isDirectory()) {
-                Files.delete(fileName.toPath());
-            } else {
+            if (fileName.isDirectory()) {
                 throw new RmException(ERR_IS_DIR);
+            } else {
+                Files.delete(fileName.toPath());
             }
         } catch (IOException e) {
             throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
@@ -84,7 +73,8 @@ public class RmApplication implements RmInterface {
 
     /**
      * Removes input file or input empty folder.
-     * @param fileName  input file to be deleted.
+     *
+     * @param fileName input file to be deleted.
      * @throws RmException If the input is a non empty directory or an IOException occurred.
      */
     public void removeFileAndEmptyFolderOnly(File fileName) throws RmException {
@@ -99,6 +89,7 @@ public class RmApplication implements RmInterface {
 
     /**
      * Removes input file or input folder and its contents by traversing recursively to delete the input folder contents.
+     *
      * @param fileName input file to be deleted.
      * @throws RmException if there is an IOException.
      */
@@ -127,10 +118,11 @@ public class RmApplication implements RmInterface {
      * This behaviour differs from unix.
      * 2) The rm command -rd or -r -d or -r flags (including the permutation of the flags) would attempt to delete all files and/or folders input as arguments for the rm command
      * together with the contents of non empty folders. In other words, their behaviour is the same.
-     * @param args Array of arguments for the RmApplication
-     * @param stdin An InputStream, not used.
+     *
+     * @param args   Array of arguments for the RmApplication
+     * @param stdin  An InputStream, not used.
      * @param stdout An OutputStream, not used.
-     * @throws AbstractApplicationException
+     * @throws RmException
      */
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws RmException {
