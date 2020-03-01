@@ -51,12 +51,12 @@ public class IORedirectionIT {
 
     private static final String INPUT_REDIR_CHAR = "<";
     private static final String OUTPUT_REDIR_CHAR = ">";
-    private static final String SPACE = " ";
     private static final String FILE_NOT_EXIST = "testFileNotExist.txt";
     private static final String FILENAME1 = "testFile1.txt";
     private static final String FILENAME2 = "testFile2.txt";
     private static final String FILENAME3 = "testFile3.txt";
     private static final String FOLDER1 = "testFolder1";
+    private static final String SPACE = " ";
 
     private static final String EMPTY_STRING = "";
 
