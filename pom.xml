@@ -21,6 +21,7 @@
                     <excludes>
 <!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
                         <exclude>**/CpApplicationTest.java</exclude>
+                        <exclude>**/CdApplicationTest.java</exclude>
                         <exclude>**/DiffApplicationTest.java</exclude>
                         <exclude>**/GrepApplicationTest.java</exclude>
                         <exclude>**/WcApplicationTest.java</exclude>
