@@ -89,10 +89,13 @@ class SedApplicationTest {
     @Test
     void runStdinUsingMultiLineFileShouldReplaceWithReplacementTextInTheReplacementIndexForAllLines() throws Exception {
         String expectedOutput = REPLACE_TWO + STRING_NEWLINE + REPLACED_LINE + STRING_NEWLINE;
-        InputStream stdinTwo = new FileInputStream(fileWithTwoLines.toPath().toString());
-        int replacementIndex = 1;
-        assertEquals(expectedOutput, sedApplication.replaceSubstringInStdin
-                (LINE, REPLACE, replacementIndex, stdinTwo));
+        try (InputStream stdinTwo = new FileInputStream(fileWithTwoLines.toPath().toString())) {
+            int replacementIndex = 1;
+            assertEquals(expectedOutput, sedApplication.replaceSubstringInStdin
+                    (LINE, REPLACE, replacementIndex, stdinTwo));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
