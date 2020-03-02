@@ -113,13 +113,12 @@ public class SedApplication implements SedInterface {
         if (stdin == null) {
             throw new Exception(ERR_NULL_STREAMS);
         }
-        BufferedReader reader =
-                new BufferedReader(new InputStreamReader(stdin));
-        String fileName, output = "";
-        while ((fileName = reader.readLine()) != null) {
-            output = output.concat(replaceSubstringInFile(regexp, replacement, replacementIndex, fileName));
+        List<String> stdinContents = IOUtils.getLinesFromInputStream(stdin);
+        String[] contentArray = new String[stdinContents.size()];
+        for (int i = 0; i < stdinContents.size(); i++) {
+            contentArray[i] = stdinContents.get(i);
         }
-        return output;
+        return replacementHandler(contentArray, regexp, replacement, replacementIndex);
     }
 
     private String replacementHandler(String[] input, String regexp, String replacement, int replacementIndex) {
