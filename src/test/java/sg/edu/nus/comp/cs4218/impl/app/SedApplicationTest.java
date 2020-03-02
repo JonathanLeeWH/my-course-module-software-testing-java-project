@@ -74,8 +74,8 @@ class SedApplicationTest {
     void runStdinUsingSingleLineFileShouldReplaceWithReplacementTextInTheReplacementIndex() throws Exception {
         String expectedOutput = REPLACE_TWO + "\t line twoLine aline" + STRING_NEWLINE;
         int replacementIndex = 1;
-        try(InputStream stdin = new ByteArrayInputStream(fileWithOneLine.toPath().toString().getBytes())) {
-        assertEquals(expectedOutput,
+        try(InputStream stdin = new FileInputStream(fileWithOneLine.toPath().toString())) {
+          assertEquals(expectedOutput,
                     sedApplication.replaceSubstringInStdin(LINE, REPLACE, replacementIndex, stdin));
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,7 +89,7 @@ class SedApplicationTest {
     @Test
     void runStdinUsingMultiLineFileShouldReplaceWithReplacementTextInTheReplacementIndexForAllLines() throws Exception {
         String expectedOutput = REPLACE_TWO + STRING_NEWLINE + REPLACED_LINE + STRING_NEWLINE;
-        InputStream stdinTwo = new ByteArrayInputStream(fileWithTwoLines.toPath().toString().getBytes());
+        InputStream stdinTwo = new FileInputStream(fileWithTwoLines.toPath().toString());
         int replacementIndex = 1;
         assertEquals(expectedOutput, sedApplication.replaceSubstringInStdin
                 (LINE, REPLACE, replacementIndex, stdinTwo));

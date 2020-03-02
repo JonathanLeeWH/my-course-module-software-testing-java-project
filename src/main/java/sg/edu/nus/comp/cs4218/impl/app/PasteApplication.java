@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import sg.edu.nus.comp.cs4218.app.PasteInterface;
 import sg.edu.nus.comp.cs4218.exception.PasteException;
+import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -76,7 +77,9 @@ public class PasteApplication implements PasteInterface {
         if (stdin == null) {
             throw new PasteException(ERR_NULL_STREAMS);
         }
-        return paste(stdinToBRArray(stdin));
+        List<String> stdinContent = IOUtils.getLinesFromInputStream(stdin);
+        String delimiter = System.lineSeparator();
+        return String.join(delimiter, stdinContent).concat(System.lineSeparator());
     }
 
     /**
@@ -86,17 +89,20 @@ public class PasteApplication implements PasteInterface {
      * @param fileName Array of file names to be read and merged
      * @throws PasteException FILE_NOT_FOUND
      */
-    public String mergeFile(String... fileName) throws PasteException, IOException {
+    public String mergeFile(String... fileName) throws PasteException {
         try {
             BufferedReader[] bufferedReaders = new BufferedReader[fileName.length];
             FileReader fileReader = null; //NOPMD
             for (int i = 0; i < fileName.length; i++) {
-                fileReader = new FileReader(fileName[i]);
+                fileReader = new FileReader(IOUtils.resolveFilePath(fileName[i]).toString());
                 bufferedReaders[i] = new BufferedReader(fileReader);
             }
             String output = paste(bufferedReaders);
             assert fileReader != null;
             fileReader.close();
+            for (BufferedReader bufferedReader : bufferedReaders) { //NOPMD
+                bufferedReader.close();
+            }
             return output;
         } catch (Exception e) {
             throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
@@ -112,21 +118,16 @@ public class PasteApplication implements PasteInterface {
      */
     public String mergeFileAndStdin(InputStream stdin, String... fileName) throws Exception {
         try {
-            BufferedReader[] stdinBR = stdinToBRArray(stdin);
-            int totalSize = fileName.length + stdinBR.length;
-            BufferedReader[] bufferedReaders = new BufferedReader[totalSize];
-            System.arraycopy(stdinBR, 0, bufferedReaders, 0, stdinBR.length);
+            BufferedReader[] bufferedReaders = new BufferedReader[fileName.length + 1];
+            bufferedReaders[0] = new BufferedReader(new InputStreamReader(stdin));
             FileReader fileReader = null; //NOPMD
-            for (int i = stdinBR.length, k = 0; i < totalSize; i++) {
-                fileReader = new FileReader(fileName[k]);
+            for (int i = 1; i <= fileName.length; i++) {
+                fileReader = new FileReader(IOUtils.resolveFilePath(fileName[i-1]).toString());
                 bufferedReaders[i] = new BufferedReader(fileReader);
             }
             String output = paste(bufferedReaders);
             assert fileReader != null;
             fileReader.close();
-            for (BufferedReader sBR : stdinBR) { //NOPMD
-                sBR.close();
-            }
             for (BufferedReader br : bufferedReaders) { //NOPMD
                 br.close();
             }
@@ -172,33 +173,5 @@ public class PasteApplication implements PasteInterface {
             br.close();
         }
         return stringBuilder.toString().concat(newLine);
-    }
-
-    private BufferedReader[] stdinToBRArray(InputStream stdin) throws PasteException {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stdin));
-            StringTokenizer stringTokenizer = new StringTokenizer(bufferedReader.readLine());
-            List<String> tokens = new ArrayList<>();
-            while (stringTokenizer.hasMoreElements()) {
-                tokens.add(stringTokenizer.nextToken());
-            }
-            String[] fileNames = new String[tokens.size()];
-            // ArrayList to Array Conversion
-            for (int j = 0; j < tokens.size(); j++) {
-                // Assign each value to String array
-                fileNames[j] = tokens.get(j);
-            }
-            BufferedReader[] bufferedReaders = new BufferedReader[fileNames.length];
-            FileReader fileReader = null; //NOPMD
-            for (int j = 0; j < fileNames.length; j++) {
-                fileReader = new FileReader(fileNames[j]);
-                bufferedReaders[j] = new BufferedReader(new FileReader(fileNames[j]));
-            }
-            assert fileReader != null;
-            fileReader.close();
-            return bufferedReaders;
-        } catch (IOException e) {
-            throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
-        }
     }
 }
