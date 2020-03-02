@@ -20,15 +20,15 @@ class GrepApplicationTest {
     private static File fileOne;
     private static File fileTwo;
     private static GrepApplication grepApplication;
-    private static OutputStream outputStream;
+    private static OutputStream outputStream, stdoutOne, stdoutTwo;
 
     @BeforeEach
     void setup() throws IOException {
         grepApplication = new GrepApplication();
         fileOne = File.createTempFile(FILE_ONE_NAME, FILE_FORMAT);
         fileTwo = File.createTempFile(FILE_TWO_NAME, FILE_FORMAT);
-        OutputStream stdoutOne = new FileOutputStream(fileOne);
-        OutputStream stdoutTwo = new FileOutputStream(fileTwo);
+        stdoutOne = new FileOutputStream(fileOne);
+        stdoutTwo = new FileOutputStream(fileTwo);
         outputStream = new ByteArrayOutputStream();
         stdoutOne.write(FILE_ONE_TEXT.getBytes());
         stdoutTwo.write(LINE_ONE.getBytes());
@@ -41,6 +41,8 @@ class GrepApplicationTest {
     @AfterEach
     void teardown() throws IOException {
         outputStream.close();
+        stdoutOne.close();
+        stdoutTwo.close();
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
     }
