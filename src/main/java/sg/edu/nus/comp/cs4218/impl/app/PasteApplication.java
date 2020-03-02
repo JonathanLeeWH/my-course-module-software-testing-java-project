@@ -89,12 +89,12 @@ public class PasteApplication implements PasteInterface {
      * @param fileName Array of file names to be read and merged
      * @throws PasteException FILE_NOT_FOUND
      */
-    public String mergeFile(String... fileName) throws PasteException, IOException {
+    public String mergeFile(String... fileName) throws PasteException {
         try {
             BufferedReader[] bufferedReaders = new BufferedReader[fileName.length];
             FileReader fileReader = null; //NOPMD
             for (int i = 0; i < fileName.length; i++) {
-                fileReader = new FileReader(fileName[i]);
+                fileReader = new FileReader(IOUtils.resolveFilePath(fileName[i]).toString());
                 bufferedReaders[i] = new BufferedReader(fileReader);
             }
             String output = paste(bufferedReaders);
@@ -122,7 +122,7 @@ public class PasteApplication implements PasteInterface {
             bufferedReaders[0] = new BufferedReader(new InputStreamReader(stdin));
             FileReader fileReader = null; //NOPMD
             for (int i = 1; i <= fileName.length; i++) {
-                fileReader = new FileReader(fileName[i-1]);
+                fileReader = new FileReader(IOUtils.resolveFilePath(fileName[i-1]).toString());
                 bufferedReaders[i] = new BufferedReader(fileReader);
             }
             String output = paste(bufferedReaders);
