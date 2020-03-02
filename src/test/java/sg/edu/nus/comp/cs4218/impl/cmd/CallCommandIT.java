@@ -25,8 +25,10 @@ class CallCommandIT {
     private ArgumentResolver argumentResolver;
     private OutputStream outputStream;
     private CallCommand callCommand;
-    private String SHELL_EXCEPTION = "shell: ";
-    private String FILE_CONTENTS = "Line One";
+    private static final String SHELL_EXCEPTION = "shell: ";
+    private static final String FILE_CONTENTS = "Line One";
+    private static final String HELLO = "hello";
+    private static final String ECHO = "echo";
 
     @BeforeEach
     void setUp() {
@@ -54,7 +56,7 @@ class CallCommandIT {
      */
     @Test
     void testRunValidCommandWithSingleQuotationsInFrontCommandSubstitutionSuccessful() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo", "\'hello world\'"));
+        argsList = new ArrayList<>(Arrays.asList(ECHO, "\'hello world\'"));
         outputStream = new ByteArrayOutputStream();
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
@@ -67,10 +69,10 @@ class CallCommandIT {
      */
     @Test
     void testRunValidEchoCommandShouldPrintArgument() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo", "hello"));
+        argsList = new ArrayList<>(Arrays.asList(ECHO, HELLO));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
-        assertEquals("hello" + System.lineSeparator(), outputStream.toString());
+        assertEquals(HELLO + System.lineSeparator(), outputStream.toString());
     }
 
     /**
@@ -79,7 +81,7 @@ class CallCommandIT {
      */
     @Test
     void testRunValidEchoCommandWithTabInArgumentShouldPrintArgumentWithTab() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo", "\thello"));
+        argsList = new ArrayList<>(Arrays.asList(ECHO, "\thello"));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
         assertEquals("\thello" + System.lineSeparator(), outputStream.toString());
@@ -91,7 +93,7 @@ class CallCommandIT {
      */
     @Test
     void testRunValidEchoCommandWithSingleSpaceShouldPrintArgumentWithSingleSpace() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo", " hello"));
+        argsList = new ArrayList<>(Arrays.asList(ECHO, " hello"));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
         assertEquals(" hello" + System.lineSeparator(), outputStream.toString());
@@ -103,7 +105,7 @@ class CallCommandIT {
      */
     @Test
     void testRunValidEchoCommandWithMultipleSpacesShouldPrintArgumentWithMultipleSpaces() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo", "     hello"));
+        argsList = new ArrayList<>(Arrays.asList(ECHO, "     hello"));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
         assertEquals("     hello" + System.lineSeparator(), outputStream.toString());
@@ -115,10 +117,10 @@ class CallCommandIT {
      */
     @Test
     void testRunEchoCommandWithSingleTabInFrontOfEchoShouldPrintArgument() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("\techo", "hello"));
+        argsList = new ArrayList<>(Arrays.asList("\techo", HELLO));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
-        String expected = "hello" + System.lineSeparator();
+        String expected = HELLO + System.lineSeparator();
         assertEquals(expected, outputStream.toString());
     }
 
@@ -128,10 +130,10 @@ class CallCommandIT {
      */
     @Test
     void testRunEchoCommandWithSingleTabAtTheBackOfEchoShouldPrintArgument() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo\t", "hello"));
+        argsList = new ArrayList<>(Arrays.asList("echo\t", HELLO));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
-        String expected = "hello" + System.lineSeparator();
+        String expected = HELLO + System.lineSeparator();
         assertEquals(expected, outputStream.toString());
     }
 
@@ -141,10 +143,10 @@ class CallCommandIT {
      */
     @Test
     void testRunEchoCommandWithMultipleTabsInFrontOfEchoShouldPrintArgument() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("\t\techo", "hello"));
+        argsList = new ArrayList<>(Arrays.asList("\t\techo", HELLO));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
-        String expected = "hello" + System.lineSeparator();
+        String expected = HELLO + System.lineSeparator();
         assertEquals(expected, outputStream.toString());
     }
 
@@ -154,10 +156,10 @@ class CallCommandIT {
      */
     @Test
     void testRunEchoCommandWithMultipleTabsAtTheBackOfEchoShouldPrintArgument() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo\t\t", "hello"));
+        argsList = new ArrayList<>(Arrays.asList("echo\t\t", HELLO));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
-        String expected = "hello" + System.lineSeparator();
+        String expected = HELLO + System.lineSeparator();
         assertEquals(expected, outputStream.toString());
     }
 
@@ -167,7 +169,7 @@ class CallCommandIT {
      */
     @Test
     void testRunEchoCommandWithCapitalEInFrontOfEchoShouldThrowShellException() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("Echo", "hello"));
+        argsList = new ArrayList<>(Arrays.asList("Echo", HELLO));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         Exception thrown = assertThrows(ShellException.class, () -> {
             callCommand.evaluate(System.in, outputStream);
@@ -182,7 +184,7 @@ class CallCommandIT {
      */
     @Test
     void testRunEchoCommandWithCapitalOAtTheEndOfEchOShouldThrowShellException() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echO", "hello"));
+        argsList = new ArrayList<>(Arrays.asList("echO", HELLO));
         CallCommand callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         Exception thrown = assertThrows(ShellException.class, () -> {
             callCommand.evaluate(System.in, outputStream);
@@ -197,7 +199,7 @@ class CallCommandIT {
      */
     @Test
     void testRunDifferentQuotationsShouldReturnStringNormally() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo", "\"hello\'"));
+        argsList = new ArrayList<>(Arrays.asList(ECHO, "\"hello\'"));
         callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         String expected = "hello\'" + System.lineSeparator();
         callCommand.evaluate(System.in, outputStream);
@@ -293,7 +295,7 @@ class CallCommandIT {
         Exception thrown = assertThrows(ShellException.class, () -> {
             callCommand.evaluate(System.in, outputStream);
         });
-        String expected = SHELL_EXCEPTION + "\"echo this\": " + ERR_INVALID_APP;
+        String expected = SHELL_EXCEPTION + "echo this: " + ERR_INVALID_APP;
         assertEquals(expected, thrown.getMessage());
     }
 
@@ -313,13 +315,13 @@ class CallCommandIT {
         argsList = new ArrayList<>(Arrays.asList("paste", "`echo SingleLineFile.txt`"));
         callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
-        String expected = FILE_CONTENTS + System.lineSeparator();
+        String expected = "Line One" + System.lineSeparator();
         assertEquals(expected, outputStream.toString());
     }
 
     @Test
     void testRunCallCommandWithInvalidCommandSubstitution() {
-        argsList = new ArrayList<>(Arrays.asList("paste", "`Echo SingleLineFile.txt`"));
+        argsList = new ArrayList<>(Arrays.asList("echo", "`Echo SingleLineFile.txt`"));
         callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         Exception thrown = assertThrows(ShellException.class, () -> {
             callCommand.evaluate(System.in, outputStream);
@@ -330,7 +332,7 @@ class CallCommandIT {
 
     @Test
     void testRunCallCommandWithQuotedAsteriskAsArgumentShouldPrintAsterisk() throws AbstractApplicationException, ShellException {
-        argsList = new ArrayList<>(Arrays.asList("echo", "\"*\""));
+        argsList = new ArrayList<>(Arrays.asList(ECHO, "\"*\""));
         callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         callCommand.evaluate(System.in, outputStream);
         String expected = "*" + System.lineSeparator();
@@ -344,13 +346,13 @@ class CallCommandIT {
         Exception thrown = assertThrows(ShellException.class, () -> {
             callCommand.evaluate(System.in, outputStream);
         });
-        String expected = SHELL_EXCEPTION + "*: " + ERR_INVALID_APP;
+        String expected = SHELL_EXCEPTION + ".git: " + ERR_INVALID_APP;
         assertEquals(expected, thrown.getMessage());
     }
 
     @Test
     void testRunCallCommandWithCommandSubstitutionThatHasExitAsArgumentShouldThrowExitException() {
-        argsList = new ArrayList<>(Arrays.asList("echo", "`exit`"));
+        argsList = new ArrayList<>(Arrays.asList(ECHO, "`exit`"));
         callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
         Exception thrown = assertThrows(ExitException.class, () -> {
             callCommand.evaluate(System.in, outputStream);

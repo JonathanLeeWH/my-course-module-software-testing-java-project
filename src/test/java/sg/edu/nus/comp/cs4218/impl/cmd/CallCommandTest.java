@@ -27,15 +27,15 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_SYNTAX;
  */
 class CallCommandTest {
     private static ApplicationRunner mockAppRunner;
-    private static ArgumentResolver mockArgumentResolver;
+    private static ArgumentResolver mockArgResolver;
     private static CallCommand callCommand;
     private static OutputStream outputStream;
-    private static String SHELL_EXCEPTION = "shell: ";
+    private static final String SHELL_EXCEPTION = "shell: ";
 
     @BeforeEach
     void setUp() {
         mockAppRunner = mock(ApplicationRunner.class);
-        mockArgumentResolver = mock(ArgumentResolver.class);
+        mockArgResolver = mock(ArgumentResolver.class);
         outputStream = new ByteArrayOutputStream();
     }
 
@@ -50,7 +50,7 @@ class CallCommandTest {
      */
     @Test
     void runEvaluateMethodWithNullArgListShouldThrowShellException() {
-        callCommand = new CallCommand(null, mockAppRunner, mockArgumentResolver);
+        callCommand = new CallCommand(null, mockAppRunner, mockArgResolver);
         Exception thrown = assertThrows(ShellException.class, () -> {
             callCommand.evaluate(System.in, outputStream);
         });
@@ -64,7 +64,7 @@ class CallCommandTest {
      */
     @Test
     void runEvaluateMethodWithEmptyArgListShouldThrowShellException() {
-        callCommand = new CallCommand(new ArrayList<>(), mockAppRunner, mockArgumentResolver);
+        callCommand = new CallCommand(new ArrayList<>(), mockAppRunner, mockArgResolver);
         Exception thrown = assertThrows(ShellException.class, () -> {
             callCommand.evaluate(System.in, outputStream);
         });
@@ -80,7 +80,7 @@ class CallCommandTest {
     @Test
     void testRunTrivialTestForArgListGetter() {
         List<String> argsList = new ArrayList<>(Arrays.asList("echo", "hello"));
-        CallCommand callCommand = new CallCommand(argsList, mockAppRunner, mockArgumentResolver);
+        CallCommand callCommand = new CallCommand(argsList, mockAppRunner, mockArgResolver);
         assertEquals("[echo, hello]", callCommand.getArgsList().toString());
     }
 }
