@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StringUtilsUnitTest {
+public class StringUtilsTest {
 
     private static final String NULL_STRING = null;
     private static final String EMPTY_STRING = "";
