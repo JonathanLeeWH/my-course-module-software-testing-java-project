@@ -295,7 +295,7 @@ class CallCommandIT {
         Exception thrown = assertThrows(ShellException.class, () -> {
             callCommand.evaluate(System.in, outputStream);
         });
-        String expected = SHELL_EXCEPTION + "echo this: " + ERR_INVALID_APP;
+        String expected = SHELL_EXCEPTION + "\"echo this\": " + ERR_INVALID_APP;
         assertEquals(expected, thrown.getMessage());
     }
 

@@ -34,8 +34,11 @@ public class ArgumentResolver {
      */
     public List<String> parseArguments(List<String> argsList) throws AbstractApplicationException, ShellException {
         List<String> parsedArgsList = new LinkedList<>();
-        for (String arg : argsList) {
-            parsedArgsList.addAll(resolveOneArgument(arg));
+        String firstArgument = argsList.get(0);
+        firstArgument = firstArgument.trim();
+        parsedArgsList.add(firstArgument);
+        for (int i = 1; i < argsList.size(); i++) {
+            parsedArgsList.addAll(resolveOneArgument(argsList.get(i)));
         }
         return parsedArgsList;
     }
