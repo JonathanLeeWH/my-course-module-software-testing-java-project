@@ -100,7 +100,7 @@ public class PasteApplication implements PasteInterface {
             String output = paste(bufferedReaders);
             assert fileReader != null;
             fileReader.close();
-            for (BufferedReader bufferedReader : bufferedReaders) {
+            for (BufferedReader bufferedReader : bufferedReaders) { //NOPMD
                 bufferedReader.close();
             }
             return output;
