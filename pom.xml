@@ -23,6 +23,7 @@
                         <exclude>**/CpApplicationTest.java</exclude>
                         <exclude>**/CdApplicationTest.java</exclude>
                         <exclude>**/DiffApplicationTest.java</exclude>
+                        <exclude>**/DiffApplicationIT.java</exclude>
                         <exclude>**/GrepApplicationTest.java</exclude>
                         <exclude>**/WcApplicationTest.java</exclude>
                         <exclude>**/WcArgumentsTest.java</exclude>
