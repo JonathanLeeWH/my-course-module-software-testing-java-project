@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import jdk.internal.util.xml.impl.Input;
 import org.junit.jupiter.api.*;
 
 import sg.edu.nus.comp.cs4218.exception.PasteException;
@@ -17,6 +18,7 @@ class PasteApplicationTest {
     private static final String EMPTY = "";
     private static final String TWO_LINES = "Line One" + System.lineSeparator() + "Line Two";
     private static final String ONE_LINE = "Line One";
+    private static final String NEW_LINE = "\n";
     private static File emptyFile;
     private static File twoLinesFile;
     private static File oneLineFile;
@@ -183,7 +185,7 @@ class PasteApplicationTest {
      */
     @Test
     void runStdinSingleLineShouldPrintSingleLine() throws Exception {
-        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+        try(InputStream inputStream = new FileInputStream(oneLineFile.toPath().toString())) {
             assertEquals(ONE_LINE + System.lineSeparator(), pasteApplication.mergeStdin(inputStream));
         } catch (IOException e) {
             e.printStackTrace();
@@ -196,7 +198,7 @@ class PasteApplicationTest {
      */
     @Test
     void runStdinMultipleLinesOnMergeStdinMethodShouldPrintMultipleLines() throws Exception {
-        try(InputStream inputStream = new ByteArrayInputStream(twoLinesFile.toPath().toString().getBytes())) {
+        try(InputStream inputStream = new FileInputStream(twoLinesFile.toPath().toString())) {
             assertEquals(TWO_LINES + System.lineSeparator(), pasteApplication.mergeStdin(inputStream));
         } catch (IOException e) {
             e.printStackTrace();
@@ -210,8 +212,7 @@ class PasteApplicationTest {
     @Test
     void runMergeStdinAndSingleFileShouldMergeAllFilesAndPrintMergedContents() throws Exception {
         String tab = "\t";
-        String input = twoLinesFile.toPath().toString();
-        try (InputStream inputStream = new ByteArrayInputStream(input.getBytes())) {
+        try (InputStream inputStream = new FileInputStream(twoLinesFile.toPath().toString())) {
             String[] fileNames = { twoLinesFile.toPath().toString() };
             String expectedOutput = FIRST_LINE + tab + FIRST_LINE + System.lineSeparator()
                     + SECOND_LINE + tab + SECOND_LINE + System.lineSeparator();
@@ -270,7 +271,7 @@ class PasteApplicationTest {
      */
     @Test
     void runBothStdinAndFileNamesInRunShouldReturnMergedContents() throws Exception {
-        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
+        try (InputStream inputStream = new FileInputStream(oneLineFile.toPath().toString())) {
             String[] args = {"-", oneLineFile.toPath().toString()};
             pasteApplication.run(args, inputStream, osPrint);
             assertEquals(FIRST_LINE + "\t" + FIRST_LINE + System.lineSeparator(),
