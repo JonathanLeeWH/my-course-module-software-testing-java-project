@@ -23,7 +23,6 @@
                         <exclude>**/CpApplicationTest.java</exclude>
                         <exclude>**/CdApplicationTest.java</exclude>
                         <exclude>**/DiffApplicationTest.java</exclude>
-                        <exclude>**/DiffApplicationIT.java</exclude>
                         <exclude>**/GrepApplicationTest.java</exclude>
                         <exclude>**/WcApplicationTest.java</exclude>
                         <exclude>**/WcArgumentsTest.java</exclude>
@@ -39,6 +38,7 @@
                     <excludes>
 <!--                    The configuration below are excluding extended functionality 1 integration test from maven build-->
                         <exclude>**/WcApplicationIT.java</exclude>
+                        <exclude>**/DiffApplicationIT.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
