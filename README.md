@@ -73,12 +73,13 @@ Step 2: Right click on the `java` folder and click `Run All Tests` to run all te
 
 **Tests file to manually ignore the test cases that do not work if using option 1**
 
-Refer to `pom.xml`'s `<exclude>` tag in `plugins` under `maven-sunfire-plugin` and `maven-failsafe-plugin` configurations for a list of test cases to ignore if not working due to unimplemented ef1 or ef1 bugs in milestone 1.
+Refer to `pom.xml`'s `<exclude>` tag in `build` tag > `plugins` tag under `maven-sunfire-plugin` and `maven-failsafe-plugin` configurations for a list of test cases to ignore if not working due to unimplemented ef1 or ef1 bugs in milestone 1.
 
-An example in `pom.xml` of a list of excluded `**Test.java` and `**IT.java`:
+An example `build` tag content in `pom.xml` of a list of excluded `**Test.java` and `**IT.java`:
 
 ```xml
-<plugins>
+<build>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -87,6 +88,7 @@ An example in `pom.xml` of a list of excluded `**Test.java` and `**IT.java`:
                     <excludes>
 <!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
                         <exclude>**/CpApplicationTest.java</exclude>
+                        <exclude>**/CdApplicationTest.java</exclude>
                         <exclude>**/DiffApplicationTest.java</exclude>
                         <exclude>**/GrepApplicationTest.java</exclude>
                         <exclude>**/WcApplicationTest.java</exclude>
@@ -103,10 +105,12 @@ An example in `pom.xml` of a list of excluded `**Test.java` and `**IT.java`:
                     <excludes>
 <!--                    The configuration below are excluding extended functionality 1 integration test from maven build-->
                         <exclude>**/WcApplicationIT.java</exclude>
+                        <exclude>**/DiffApplicationIT.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
         </plugins>
+    </build>
 ```
 
 **Option 2: Run using mvn test** (Requires maven to be installed in computer)
