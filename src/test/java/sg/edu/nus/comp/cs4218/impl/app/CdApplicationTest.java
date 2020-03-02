@@ -157,9 +157,9 @@ class CdApplicationTest {
 
     /**
      * Tests run method when input arg path exists and is a directory and an absolute path
-     * Assuming EnvironmentHelper.currentDirectory is initially at C:\Users\Jonathan\Documents\cs4218-project-ay1920-s2-2020-team22
-     * For example: cd C:\Users\Jonathan
-     * Expected: Sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\Jonathan)
+     * Assuming EnvironmentHelper.currentDirectory is initially at C:\Users\<COMPUTER_USER_NAME>\Documents\cs4218-project-ay1920-s2-2020-team22
+     * For example: cd C:\Users\<COMPUTER_USER_NAME>
+     * Expected: Sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\<COMPUTER_USER_NAME>)
      */
     @Test
     void testRunWhenInputArgPathExistsIsADirectoryAndAbsolutePathShouldChangeToTheAbsolutePath(@TempDir Path tempDir) throws IOException, CdException {
@@ -246,9 +246,9 @@ class CdApplicationTest {
 
     /**
      * Tests changeToDirectory method when input path exists and is a directory and an absolute path
-     * Assuming EnvironmentHelper.currentDirectory is initially at C:\Users\Jonathan\Documents\cs4218-project-ay1920-s2-2020-team22
-     * For example: cd C:\Users\Jonathan
-     * Expected: sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\Jonathan)
+     * Assuming EnvironmentHelper.currentDirectory is initially at C:\Users\<COMPUTER_USER_NAME>\Documents\cs4218-project-ay1920-s2-2020-team22
+     * For example: cd C:\Users\<COMPUTER_USER_NAME>
+     * Expected: sets EnvironmentHelper.currentDirectory to the full absolute path (C:\Users\<COMPUTER_USER_NAME>)
      */
     @Test
     void testChangeToDirectoryWhenInputPathExistsIsADirectoryAndAbsolutePathShouldChangeToTheAbsolutePath(@TempDir Path tempDir) throws IOException, CdException {
