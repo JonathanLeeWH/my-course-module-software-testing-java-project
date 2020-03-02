@@ -1,2 +1,2 @@
 mvn compile
-mvn exec:java -Dexec.mainClass="com.vineetmanohar.module.Main" -Dexec.args="arg0 arg1 arg2"
+mvn exec:java -Dexec.mainClass="sg.edu.nus.comp.cs4218.impl.ShellImpl"
