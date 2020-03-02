@@ -40,6 +40,16 @@ public class MvApplicationTest {
     }
 
     @Test
+    public void runWhenStdOutisNullThrowException() {
+        String[] constructArgs = new String [] {"-n"};
+        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+            mvApplication.run(constructArgs, System.in, null); // stdin and stdout is not used in MvApplication
+        });
+
+        assertEquals(new MvException(ERR_NO_OSTREAM).getMessage(), exception.getMessage());
+    }
+
+    @Test
     public void runWhenMissingArgSpecifiedThrowsArgException() {
 
         String[] constructArgs = new String [] {"-n"};
@@ -82,6 +92,30 @@ public class MvApplicationTest {
 
         assertEquals(new MvException(MISSING_ARG_EXCEPTION).getMessage(), exception.getMessage());
     }
+    @Test
+    public void runWhenMvFileToDestFileWithOverwriteSuccess() throws Exception {
+
+        String currentDir = EnvironmentHelper.currentDirectory.trim();
+        String filePath1 = currentDir + File.separator + TEST_FILE;
+        File file1 = new File(currentDir + File.separator + TEST_FILE);
+        File file2 = new File(currentDir + File.separator + TEST_DIFFERENT);
+
+        Files.createFile(Paths.get(filePath1));
+        String[] constructArgs = new String [] {TEST_FILE,TEST_DIFFERENT};
+
+        Path file1Path = file1.toPath();
+        Path file2Path = file2.toPath();
+
+        assertTrue(Files.exists(file1Path));
+        assertFalse(Files.exists(file2Path));
+        mvApplication.run(constructArgs, System.in, System.out);
+
+        assertTrue(Files.exists(Paths.get(file2Path.toString())));
+        assertTrue(!Files.exists(Paths.get(file1Path.toString())));
+
+        Files.delete(file2Path);
+
+    }
 
     @Test
     public void mvSrcFileToDestFileFileSuccess(@TempDir Path tempDir) throws Exception {
@@ -120,6 +154,35 @@ public class MvApplicationTest {
         assertTrue(Files.exists(Paths.get(file2Path.toString())));
         assertTrue(!Files.exists(Paths.get(file1Path.toString())));
 
+        Files.delete(file2Path);
+
+    }
+
+    @Test
+    public void runWhenMvFileToFolderWithOverwriteSuccess() throws Exception {
+
+        String currentDir = EnvironmentHelper.currentDirectory.trim();
+        String filePath1 = currentDir + File.separator + TEST_FILE;
+        String filePath2 = currentDir + File.separator + TEST_FOLDER;
+        File file1 = new File(currentDir + File.separator + TEST_FILE);
+        File file2 = new File(currentDir + File.separator + TEST_FOLDER);
+
+        Files.createFile(Paths.get(filePath1));
+        Files.createDirectory(Paths.get(filePath2));
+        String[] constructArgs = new String [] {TEST_FILE,TEST_FOLDER};
+
+        Path file1Path = file1.toPath();
+        Path file2Path = file2.toPath();
+
+        assertTrue(Files.exists(file1Path));
+        assertTrue(Files.exists(file2Path));
+        mvApplication.run(constructArgs, System.in, System.out);
+
+        assertTrue(Files.exists(Paths.get(file2Path.toString())));
+        assertTrue(!Files.exists(Paths.get(file1Path.toString())));
+
+        Path fileMoved =  Paths.get(filePath2 + File.separator + TEST_FILE);
+        Files.delete(fileMoved);
         Files.delete(file2Path);
 
     }
@@ -275,6 +338,19 @@ public class MvApplicationTest {
             mvApplication.mvFilesToFolder("",fileSrcString);
         });
         assertEquals(new MvException(FAILED_TO_MOVE).getMessage(), exception.getMessage());
+    }
+
+    @Test
+    public void mvFileToFolderThrowsFileNullException(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(TEST_FILE);
+        String fileSrcString = file1.toString();
+
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1));
+        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+            mvApplication.mvSrcFileToDestFile(fileSrcString,"");
+        });
+        assertEquals(new MvException(NO_DESTINATION).getMessage(), exception.getMessage());
     }
 
     @Test

@@ -76,19 +76,16 @@ public class MvApplication implements MvInterface {
         File destinationFile = IOUtils.resolveFilePath(destFile).toFile();
 
         if(!file.exists()) {
+            fileMoved = false;
             throw (MvException) new MvException(NO_FILE);
         }
 
         if(destFile.isEmpty()) {
+            fileMoved = false;
             throw (MvException) new MvException(NO_DESTINATION);
         }
+        Files.move(Paths.get(srcFile), Paths.get(destFile), REPLACE_EXISTING);
 
-        try{
-            Files.move(Paths.get(srcFile), Paths.get(destFile), REPLACE_EXISTING);
-        } catch (Exception e) {
-            fileMoved = false;
-            throw (MvException) new MvException(FAILED_TO_MOVE).initCause(e);
-        }
 
         if(file.exists()) {
             // Abstract file path (does not exist)
@@ -97,14 +94,10 @@ public class MvApplication implements MvInterface {
             // rename the source file
             file.renameTo(destination);
         }
-        String returnString;
+        String returnString = "file not renamed";
 
         if(fileMoved){
-
             returnString = "Files replaced";
-        }
-        else{
-            returnString = "Files not replaced :";
         }
 
         return returnString;
@@ -132,20 +125,15 @@ public class MvApplication implements MvInterface {
                 Files.move(Paths.get(sourceFile), Paths.get(dest), REPLACE_EXISTING);
 
             } catch (Exception e) {
-
                 fileMoved = false;
                 throw (MvException) new MvException(FAILED_TO_MOVE).initCause(e);
             }
         }
-        String returnString;
+        String returnString = "File not moved";
 
         if(fileMoved){
             returnString = "Files moved to :" + destFolder;
         }
-        else{
-            returnString = "Files not moved to :"+ destFolder;
-        }
-
         return returnString;
     }
 

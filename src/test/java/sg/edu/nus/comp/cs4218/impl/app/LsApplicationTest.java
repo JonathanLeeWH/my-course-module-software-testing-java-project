@@ -282,6 +282,13 @@ public class LsApplicationTest {
         assertEquals(expectedResult, lsApplication.listFolderContent(false,true,
                 folderName));
     }
+    //ls invalid1 valid1 -R
+    @Test
+    void testListFolderContentRecursiveThrowInvalidDirectory() throws Exception {
+        String[] folderName = {"invalid1",FILE_NAME_1};
+        assertThrows(Exception.class, () -> lsApplication.listFolderContent(false,true,
+                folderName));
+    }
 
     //using mockito to check number of invocations to ensure listFolderContent is ran once
     @Test
