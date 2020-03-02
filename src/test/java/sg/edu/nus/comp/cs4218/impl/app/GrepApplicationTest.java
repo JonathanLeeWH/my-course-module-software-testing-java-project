@@ -22,6 +22,7 @@ class GrepApplicationTest {
     private static GrepApplication grepApplication;
     private static OutputStream outputStream;
 
+    @SuppressWarnings("PMD.CloseResource")
     @BeforeEach
     void setup() throws IOException {
         grepApplication = new GrepApplication();

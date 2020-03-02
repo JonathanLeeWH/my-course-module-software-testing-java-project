@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
+@SuppressWarnings("PMD.CloseResource")
 public class IORedirectionHandlerTest {
-
 
     public static final String WRITTEN__TEXT = "test";
 
@@ -39,7 +39,6 @@ public class IORedirectionHandlerTest {
     private static final String OUTPUT_FILE_NAME = "output.txt";
 
     private static final String INVALID_SYNTAX = "shell: " + ERR_SYNTAX;
-
 
     @BeforeAll
     static void setUp() throws IOException {

@@ -39,6 +39,7 @@ public class ApplicationRunner {
      * @throws ShellException               If an unsupported or invalid application command is
      *                                      detected.
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void runApp(String app, String[] argsArray, InputStream inputStream,
                        OutputStream outputStream)
             throws AbstractApplicationException, ShellException {

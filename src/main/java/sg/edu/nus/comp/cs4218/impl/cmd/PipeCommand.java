@@ -16,6 +16,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_IO_EXCEPTION;
  * <p>
  * Command format: <Call> | <Call> or <Pipe> | <Call>
  */
+@SuppressWarnings({"PMD.CloseResource"})
 public class PipeCommand implements Command {
     private final List<CallCommand> callCommands;
 

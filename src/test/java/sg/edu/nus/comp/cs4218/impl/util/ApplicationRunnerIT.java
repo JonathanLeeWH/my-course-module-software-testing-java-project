@@ -64,6 +64,7 @@ public class ApplicationRunnerIT {
     private static CallCommand callCommand;
     private static ArgumentResolver argumemtResovler = new ArgumentResolver();
 
+    @SuppressWarnings("PMD.CloseResource")
     @BeforeAll
     static void setUp() throws IOException {
         appRunner = new ApplicationRunner();
