@@ -30,13 +30,6 @@ public class CommandBuilderTest {
     }
 
     @Test
-    void testParseCommandWithNewLineInsideCommandStringShouldThrowShellException() {
-        Throwable thrown = assertThrows(ShellException.class,
-                () -> parseCommand("asd\n", appRunner));
-        assertEquals(thrown.getMessage(), "shell: " + ERR_SYNTAX);
-    }
-
-    @Test
     void testParseCommandWithPipeOperatorAtTheStartShouldThrowShellException() {
         Throwable thrown = assertThrows(ShellException.class,
                 () -> parseCommand("| echo \"Hello\"", appRunner));
