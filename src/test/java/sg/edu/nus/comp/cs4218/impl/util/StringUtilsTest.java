@@ -23,32 +23,32 @@ public class StringUtilsTest {
      ******************************************************************/
 
     @Test
-    void isBlankNullStringTest() {
+    void testIsBlankNullStringTest() {
         assertTrue(StringUtils.isBlank(NULL_STRING));
     }
 
     @Test
-    void isBlankEmptyStringTest() {
+    void testIsBlankEmptyStringTest() {
         assertTrue(StringUtils.isBlank(EMPTY_STRING));
     }
 
     @Test
-    void isBlankStringAllWhitespace1Test() {
+    void testIsBlankStringAllWhitespace1Test() {
         assertTrue(StringUtils.isBlank(SPACE_STRING));
     }
 
     @Test
-    void isBlankStringAllWhitespace2Test() {
+    void testIsBlankStringAllWhitespace2Test() {
         assertTrue(StringUtils.isBlank(SPECIAL_CHAR));
     }
 
     @Test
-    void isBlankStringAllWhitespace3Test() {
+    void testIsBlankStringAllWhitespace3Test() {
         assertTrue(StringUtils.isBlank(SPECIAL_CHAR_SP));
     }
 
     @Test
-    void isBlankNormalStringTest() {
+    void testIsBlankNormalStringTest() {
         assertFalse(StringUtils.isBlank(NORMAL_STRING));
     }
 
@@ -58,96 +58,96 @@ public class StringUtilsTest {
      ******************************************************************/
 
     @Test
-    void multiplyCharNumericalCharPositiveNumTest1() {
+    void testMultiplyCharNumericalCharPositiveNumTest1() {
         String actualOutput = StringUtils.multiplyChar('0', 3);
         assertEquals(actualOutput, "000");
     }
 
     @Test
-    void multiplyCharNumericalCharPositiveNumTest2() {
+    void testMultiplyCharNumericalCharPositiveNumTest2() {
         String actualOutput = StringUtils.multiplyChar('5', 2);
         assertEquals(actualOutput, "55");
     }
 
     @Test
-    void multiplyCharNumericalCharPositiveNumTest3() {
+    void testMultiplyCharNumericalCharPositiveNumTest3() {
         String actualOutput = StringUtils.multiplyChar('9', 1);
         assertEquals(actualOutput, "9");
     }
 
     @Test
-    void multiplyCharNumericalCharNegativeNumTest() {
+    void testMultiplyCharNumericalCharNegativeNumTest() {
         String actualOutput = StringUtils.multiplyChar('1', -1);
         assertEquals(actualOutput, EMPTY_STRING);
     }
 
     @Test
-    void multiplyCharNumericalCharZeroNumTest() {
+    void testMultiplyCharNumericalCharZeroNumTest() {
         String actualOutput = StringUtils.multiplyChar('5', 0);
         assertEquals(actualOutput, EMPTY_STRING);
     }
     @Test
-    void multiplyCharSmallAlphabeticalCharPositiveNumTest1() {
+    void testMultiplyCharSmallAlphabeticalCharPositiveNumTest1() {
         String actualOutput = StringUtils.multiplyChar('a', 3);
         assertEquals(actualOutput, "aaa");
     }
 
     @Test
-    void multiplyCharSmallAlphabeticalCharPositiveNumTest2() {
+    void testMultiplyCharSmallAlphabeticalCharPositiveNumTest2() {
         String actualOutput = StringUtils.multiplyChar('b', 2);
         assertEquals(actualOutput, "bb");
     }
 
     @Test
-    void multiplyCharCapitalAlphabeticalCharPositiveNumTest1() {
+    void testMultiplyCharCapitalAlphabeticalCharPositiveNumTest1() {
         String actualOutput = StringUtils.multiplyChar('A', 5);
         assertEquals(actualOutput, "AAAAA");
     }
 
     @Test
-    void multiplyCharCapitalAlphabeticalCharPositiveNumTest2() {
+    void testMultiplyCharCapitalAlphabeticalCharPositiveNumTest2() {
         String actualOutput = StringUtils.multiplyChar('B', 6);
         assertEquals(actualOutput, "BBBBBB");
     }
 
     @Test
-    void multiplyCharCapitalAlphabeticalCharPositiveNumTest3() {
+    void testMultiplyCharCapitalAlphabeticalCharPositiveNumTest3() {
         String actualOutput = StringUtils.multiplyChar('G', 4);
         assertEquals(actualOutput, "GGGG");
     }
 
     @Test
-    void multiplyCharWhitespaceCharPositiveNumTest1() {
+    void testMultiplyCharWhitespaceCharPositiveNumTest1() {
         String actualOutput = StringUtils.multiplyChar(' ', 4);
         assertEquals(actualOutput, "    ");
     }
 
     @Test
-    void multiplyCharWhitespaceCharPositiveNumTest2() {
+    void testMultiplyCharWhitespaceCharPositiveNumTest2() {
         String actualOutput = StringUtils.multiplyChar('\n', 2);
         assertEquals(actualOutput, "\n\n");
     }
 
     @Test
-    void multiplyCharWhitespaceCharPositiveNumTest3() {
+    void testMultiplyCharWhitespaceCharPositiveNumTest3() {
         String actualOutput = StringUtils.multiplyChar('\t', 2);
         assertEquals(actualOutput, "\t\t");
     }
 
     @Test
-    void multiplyCharOtherCharPositiveNumTest1() {
+    void testMultiplyCharOtherCharPositiveNumTest1() {
         String actualOutput = StringUtils.multiplyChar(':', 4);
         assertEquals(actualOutput, "::::");
     }
 
     @Test
-    void multiplyCharOtherCharPositiveNumTest2() {
+    void testMultiplyCharOtherCharPositiveNumTest2() {
         String actualOutput = StringUtils.multiplyChar(',', 3);
         assertEquals(actualOutput, ",,,");
     }
 
     @Test
-    void multiplyCharOtherCharPositiveNumTest3() {
+    void testMultiplyCharOtherCharPositiveNumTest3() {
         String actualOutput = StringUtils.multiplyChar('*', 2);
         assertEquals(actualOutput, "**");
     }
@@ -157,31 +157,31 @@ public class StringUtilsTest {
      ******************************************************************/
 
     @Test
-    void tokenizeEmptyStringTest() {
+    void testTokenizeEmptyStringTest() {
         String[] actualOutput = StringUtils.tokenize(EMPTY_STRING);
         assertArrayEquals(actualOutput, EMPTY_STR_ARR);
     }
 
     @Test
-    void tokenizeSingleSpaceTest() {
+    void testTokenizeSingleSpaceTest() {
         String[] actualOutput = StringUtils.tokenize(" ");
         assertArrayEquals(actualOutput, EMPTY_STR_ARR);
     }
 
     @Test
-    void tokenizeMultipleNewlineCharTest() {
+    void testTokenizeMultipleNewlineCharTest() {
         String[] actualOutput = StringUtils.tokenize("\n\n\n");
         assertArrayEquals(actualOutput, EMPTY_STR_ARR);
     }
 
     @Test
-    void tokenizeMultipleWhitespaceCharTest() {
+    void testTokenizeMultipleWhitespaceCharTest() {
         String[] actualOutput = StringUtils.tokenize("\n\t ");
         assertArrayEquals(actualOutput, EMPTY_STR_ARR);
     }
 
     @Test
-    void tokenizeNoWhitespaceTest() {
+    void testTokenizeNoWhitespaceTest() {
         String[] actualOutput = StringUtils.tokenize("wordNoSpace");
         List<String> result = new ArrayList<String>();
         result.add("wordNoSpace");
@@ -190,7 +190,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    void tokenizeSingleWhitespaceTest() {
+    void testTokenizeSingleWhitespaceTest() {
         String[] actualOutput = StringUtils.tokenize("word oneSpace");
         List<String> result = new ArrayList<String>();
         result.add("word");
@@ -200,7 +200,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    void tokenizeMultipleWhitespaceTest() {
+    void testTokenizeMultipleWhitespaceTest() {
         String[] actualOutput = StringUtils.tokenize("string with many spaces");
         List<String> result = new ArrayList<String>();
         result.add("string");
@@ -212,7 +212,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    void tokenizeLeadingSpaceAndTrailingNewlineTest() {
+    void testTokenizeLeadingSpaceAndTrailingNewlineTest() {
         String[] actualOutput = StringUtils.tokenize("  two leading spaces and a newline\n");
         List<String> result = new ArrayList<String>();
         result.add("two");
@@ -223,5 +223,45 @@ public class StringUtilsTest {
         result.add("newline");
         String[] expectedOutput = result.toArray(new String[0]);
         assertArrayEquals(actualOutput, expectedOutput);
+    }
+
+    /*******************************************************************
+     Tokenize method test within StringUtils
+     ******************************************************************/
+
+    /**
+     * Tests isNumber method when input is empty.
+     * Expected: Returns false.
+     */
+    @Test
+    void testIsNumberWhenInputIsEmptyShouldReturnFalse() {
+        assertFalse(StringUtils.isNumber(EMPTY_STRING));
+    }
+
+    /**
+     * Tests isNumber method when input is has extraneous character like whitespace as specified in BigInteger Javadocs.
+     * Expected: Returns false.
+     */
+    @Test
+    void testIsNumberWhenInputHasExtraneousCharacterLikeWhitespaceShouldReturnFalse() {
+        assertFalse(StringUtils.isNumber("1 2"));
+    }
+
+    /**
+     * Tests isNumber method when input string cannot be represented as a number.
+     * Expected: Returns true.
+     */
+    @Test
+    void testIsNumberWhenInputCannotBeRepresentedAsANumberShouldReturnTrue() {
+        assertFalse(StringUtils.isNumber("hello"));
+    }
+
+    /**
+     * Tests isNumber method when input is has no extraneous character like whitespace as specified in BigInteger Javadocs.
+     * Expected: Returns true.
+     */
+    @Test
+    void testIsNumberWhenInputHasNoExtraneousCharacterShouldReturnTrue() {
+        assertTrue(StringUtils.isNumber("1"));
     }
 }
