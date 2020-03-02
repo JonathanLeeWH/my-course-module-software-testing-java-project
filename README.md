@@ -34,6 +34,8 @@ The goal of the project is to implement and test a shell and a set of applicatio
 - Java 8
 - IntellJ Idea
 - JUnit 5
+- Mockito
+- Maven
 
 ## Instructions to setup project
 Step 1: Execute IntelliJIdea on your local machine.
@@ -117,6 +119,8 @@ You will just need to run `mvn test` (Not recommended for Windows as Windows usu
 - Travis: For Continuous Integration
 - Maven Surefire Plugin: Required by Maven in order to run unit test file (`**Test.java`) within Java Maven Project.
 - Maven Failsafe Plugin: Required by Maven in order to run integration test file (`**IT.java`) within Java Maven Project.
+- JUnit 5 for Java testing purposes
+- Mockito for mocking and stubbing
 
 ## Acknowledges / References
 [TBC]
