@@ -100,6 +100,9 @@ public class PasteApplication implements PasteInterface {
             String output = paste(bufferedReaders);
             assert fileReader != null;
             fileReader.close();
+            for (BufferedReader bufferedReader : bufferedReaders) {
+                bufferedReader.close();
+            }
             return output;
         } catch (Exception e) {
             throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
