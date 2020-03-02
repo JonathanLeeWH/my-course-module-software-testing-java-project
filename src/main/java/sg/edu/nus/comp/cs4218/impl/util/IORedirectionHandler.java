@@ -35,6 +35,7 @@ public class IORedirectionHandler {
         this.argumentResolver = argumentResolver;
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     public void extractRedirOptions() throws AbstractApplicationException, ShellException {
         if (argsList == null || argsList.isEmpty()) {
             throw new ShellException(ERR_SYNTAX);
