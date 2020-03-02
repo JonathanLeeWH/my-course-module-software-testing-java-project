@@ -6,9 +6,7 @@ import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,10 +89,14 @@ public class ArgumentResolver {
                         // e.g. arg: abc`1 2 3`xyz`4 5 6` (contents in `` is after command sub)
                         // expected: [abc1, 2, 3xyz4, 5, 6]
                         if (subOutputSegment.isEmpty()) {
-                            RegexArgument firstOutputArg = subOutputSegment.remove(0);
-                            appendParsedArgIntoSegment(parsedArgsSegment, firstOutputArg);
+                            if (!parsedArgsSegment.isEmpty()) {
+                                RegexArgument firstOutputArg = parsedArgsSegment.remove(0);
+                                appendParsedArgIntoSegment(parsedArgsSegment, firstOutputArg);
+                            }
                         }
-
+                        else {
+                            parsedArgsSegment.addAll(subOutputSegment);
+                        }
                     } else {
                         // don't tokenize subCommand output
                         appendParsedArgIntoSegment(parsedArgsSegment,
