@@ -42,6 +42,9 @@ public class MvApplication implements MvInterface {
         if(sourceDestination.isEmpty() || sourceDestination.size() ==1) {
             throw new MvException(MISSING_ARG_EXCEPTION);
         }
+        if(sourceDestination.size() >= 3) {
+            throw new MvException(ERR_TOO_MANY_ARGS);
+        }
 
         String source = sourceDestination.get(0);
         String destFile = sourceDestination.get(1);

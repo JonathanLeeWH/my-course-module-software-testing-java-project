@@ -19,6 +19,7 @@ public class MvApplicationTest {
     private static final String TEST_FILE = "testFile";
     private static final String TEST_SAME_NAME = "testFile";
     private static final String TEST_DIFFERENT = "testFile2";
+    private static final String TEST_DIFFERENT2 = "testFile3";
     private static final String TEST_FOLDER = "testFolder";
     private static MvApplication mvApplication;
 
@@ -91,6 +92,18 @@ public class MvApplicationTest {
         });
 
         assertEquals(new MvException(MISSING_ARG_EXCEPTION).getMessage(), exception.getMessage());
+    }
+
+
+    @Test
+    public void runWhenTooManyArgsNoOverwriteThrowsArgException() {
+
+        String[] constructArgs = new String [] {TEST_FILE,TEST_DIFFERENT,TEST_DIFFERENT2};
+        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+            mvApplication.run(constructArgs, System.in, System.out);
+        });
+
+        assertEquals(new MvException(ERR_TOO_MANY_ARGS).getMessage(), exception.getMessage());
     }
     @Test
     public void runWhenMvFileToDestFileWithOverwriteSuccess() throws Exception {
