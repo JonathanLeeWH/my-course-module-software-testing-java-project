@@ -1,6 +1,5 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
-import jdk.internal.util.xml.impl.Input;
 import org.junit.jupiter.api.*;
 
 import sg.edu.nus.comp.cs4218.exception.PasteException;
