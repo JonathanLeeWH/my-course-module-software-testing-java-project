@@ -28,7 +28,7 @@ public class CommandBuilderTest {
                 () -> parseCommand("", appRunner));
         assertEquals(thrown.getMessage(), "shell: " + ERR_SYNTAX);
     }
-    
+
     @Test
     void testParseCommandWithPipeOperatorAtTheStartShouldThrowShellException() {
         Throwable thrown = assertThrows(ShellException.class,
