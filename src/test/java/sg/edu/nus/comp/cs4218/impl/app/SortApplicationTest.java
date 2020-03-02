@@ -73,8 +73,8 @@ public class SortApplicationTest {
 
     @Test
     void testSortFromFilesUsingASingleFileWithFileHasNoReadAccessShouldThrowException() {
-        SortApplicationStubWithFileHasNoReadAccess sortApplicationStub = new SortApplicationStubWithFileHasNoReadAccess();
-        Throwable thrown = assertThrows(Exception.class, () -> sortApplicationStub.sortFromFiles(
+        SortApplicationStubWithFileHasNoReadAccess sortAppStub = new SortApplicationStubWithFileHasNoReadAccess();
+        Throwable thrown = assertThrows(Exception.class, () -> sortAppStub.sortFromFiles(
                 true, false, false,
                 testFile1.toFile().getPath()
         ));

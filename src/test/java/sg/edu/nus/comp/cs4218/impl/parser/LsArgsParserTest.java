@@ -10,6 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
 public class LsArgsParserTest {
 
     private LsArgsParser lsArgsParser;
