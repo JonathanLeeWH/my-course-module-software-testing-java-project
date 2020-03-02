@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class LsArgumentsTest {
     
     private LsArguments lsArguments;

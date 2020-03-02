@@ -12,6 +12,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class FindArgumentsTest {
     private FindArguments findArguments;
 

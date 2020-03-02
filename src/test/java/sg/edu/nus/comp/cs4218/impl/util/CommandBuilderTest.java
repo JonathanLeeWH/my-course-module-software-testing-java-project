@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static sg.edu.nus.comp.cs4218.impl.util.CommandBuilder.parseCommand;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_SYNTAX;
 
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class CommandBuilderTest {
     private ApplicationRunner appRunner;
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
