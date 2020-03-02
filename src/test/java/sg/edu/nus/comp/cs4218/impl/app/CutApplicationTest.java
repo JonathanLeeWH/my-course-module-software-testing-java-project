@@ -93,8 +93,8 @@ class CutApplicationTest {
 
     @Test
     void testCutFromFilesUsingCharPosAndSingleNumAndFileNameWhereFileHasNoReadAccessShouldThrowCutException() {
-        CutApplicationStubWithFileHasNoReadAccess cutApplicationStub = new CutApplicationStubWithFileHasNoReadAccess();
-        Throwable thrown = assertThrows(Exception.class, () -> cutApplicationStub.cutFromFiles(
+        CutApplicationStubWithFileHasNoReadAccess cutAppStub = new CutApplicationStubWithFileHasNoReadAccess();
+        Throwable thrown = assertThrows(Exception.class, () -> cutAppStub.cutFromFiles(
                 true, false, false, 1, 1, testFile1.toFile().getPath()
         ));
         assertEquals(thrown.getMessage(), ERR_NO_PERM);

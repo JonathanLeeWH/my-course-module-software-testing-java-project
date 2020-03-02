@@ -34,6 +34,8 @@ The goal of the project is to implement and test a shell and a set of applicatio
 - Java 8
 - IntellJ Idea
 - JUnit 5
+- Mockito
+- Maven
 
 ## Instructions to setup project
 Step 1: Execute IntelliJIdea on your local machine.
@@ -61,7 +63,7 @@ If there is any permission issues running the above files, you will need to prov
 
 ## Instructions to run all our test cases
 
-**Option 1: Run All Tests in Java** (Recommended for Windows users where maven is usually not preinstalled. Note that it also runs excluded tests)
+**Option 1: Run All Tests in Java** (Recommended especially for Windows users where maven is usually not preinstalled as even using build in maven test run in IntelliJ test may cause errors in Windows. Note that it also runs excluded tests)
 
 Step 1: In IntellJIdea, navigate to `src` > `test` > `java` folder
 
@@ -73,7 +75,7 @@ Step 2: Right click on the `java` folder and click `Run All Tests` to run all te
 
 Refer to `pom.xml`'s `<exclude>` tag in `plugins` under `maven-sunfire-plugin` and `maven-failsafe-plugin` configurations for a list of test cases to ignore if not working due to unimplemented ef1 or ef1 bugs in milestone 1.
 
-For example in `pom.xml`:
+An example in `pom.xml` of a list of excluded `**Test.java` and `**IT.java`:
 
 ```xml
 <plugins>
@@ -115,8 +117,10 @@ You will just need to run `mvn test` (Not recommended for Windows as Windows usu
 (The below has been approved by Prof or is as stated in Project Specification) 
 - Maven: For Build Automation
 - Travis: For Continuous Integration
-- Maven Surefire Plugin: Required by Maven in order to run unit test file (**Test.java) within Java Maven Project.
-- Maven Failsafe Plugin: Required by Maven in order to run integration test file (**IT.java) within Java Maven Project.
+- Maven Surefire Plugin: Required by Maven in order to run unit test file (`**Test.java`) within Java Maven Project.
+- Maven Failsafe Plugin: Required by Maven in order to run integration test file (`**IT.java`) within Java Maven Project.
+- JUnit 5 for Java testing purposes
+- Mockito for mocking and stubbing
 
 ## Acknowledges / References
 [TBC]
