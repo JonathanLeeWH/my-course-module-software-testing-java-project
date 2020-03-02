@@ -18,7 +18,6 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
 class CutApplicationTest {
     private CutApplication cutApplication;
-    private String[] defaultCutArgs;
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
     private static final String TEST_STDIN_MSG_1 = "drüberspringen";
@@ -29,7 +28,6 @@ class CutApplicationTest {
     @BeforeEach
     public void setUp() {
         cutApplication = new CutApplication();
-        defaultCutArgs = Arrays.asList("-c","8").toArray(new String[1]);
         ourTestStdin = new ByteArrayInputStream(TEST_STDIN_MSG_1.getBytes());
         ourTestStdout = new ByteArrayOutputStream();
     }
