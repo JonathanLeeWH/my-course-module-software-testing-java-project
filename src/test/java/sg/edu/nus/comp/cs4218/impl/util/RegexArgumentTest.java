@@ -52,7 +52,7 @@ public class RegexArgumentTest {
         String actualPlainText = regexArgument.toString();
         String actualRegex = regexArgument.getRegex();
         assertEquals("*", actualPlainText);
-        assertEquals("[^/]*", actualRegex);
+        assertEquals("[^" + StringUtils.fileSeparator() + "]*", actualRegex);
 
     }
 
@@ -77,7 +77,7 @@ public class RegexArgumentTest {
         String actualRegex = regexArgument.getRegex();
         boolean actualIsRegex = regexArgument.hasRegex();
         assertEquals("*", actualPlainText);
-        assertEquals("[^/]*", actualRegex);
+        assertEquals("[^" + StringUtils.fileSeparator() + "]*", actualRegex);
         assertEquals(true, actualIsRegex);
     }
 

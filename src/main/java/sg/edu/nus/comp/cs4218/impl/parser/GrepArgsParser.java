@@ -19,7 +19,6 @@ public class GrepArgsParser extends ArgsParser {
     }
 
     public String[] getFileNames() {
-        return nonFlagArgs.size() <= 1 ? null : nonFlagArgs.subList(INDEX_FILES, nonFlagArgs.size())
-                .toArray(new String[0]);
+        return nonFlagArgs.size() <= 1 ? null : nonFlagArgs.subList(INDEX_FILES, nonFlagArgs.size()).toArray(new String[0]);
     }
 }
