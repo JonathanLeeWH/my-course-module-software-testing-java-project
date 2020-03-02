@@ -58,7 +58,7 @@ public class CutApplication implements CutInterface {
                 output.append(cutFromFiles(isCharPos, isBytePos, isRange, position.getKey(), position.getValue(), newFiles.stream().toArray(file -> new String[newFiles.size()])));
             }
         } catch (Exception e) {
-            throw new CutException(e.getMessage());
+            throw (CutException) new CutException(e.getMessage()).initCause(e);
         }
 
         try {
@@ -66,7 +66,7 @@ public class CutApplication implements CutInterface {
                 stdout.write((output.toString() + STRING_NEWLINE).getBytes());
             }
         } catch (IOException e) {
-            throw new CutException(ERR_WRITE_STREAM);
+            throw (CutException) new CutException(ERR_WRITE_STREAM).initCause(e);
         }
     }
 
