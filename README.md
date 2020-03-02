@@ -61,7 +61,7 @@ If there is any permission issues running the above files, you will need to prov
 
 ## Instructions to run all our test cases
 
-**Option 1: Run All Tests in Java** (Recommended especially for Windows users where maven is usually not preinstalled. Note that it also runs excluded tests)
+**Option 1: Run All Tests in Java** (Recommended especially for Windows users where maven is usually not preinstalled as even using build in maven test run in IntelliJ test may cause errors in Windows. Note that it also runs excluded tests)
 
 Step 1: In IntellJIdea, navigate to `src` > `test` > `java` folder
 
