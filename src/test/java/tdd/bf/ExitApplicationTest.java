@@ -12,9 +12,6 @@ import org.junit.jupiter.api.*;
 import sg.edu.nus.comp.cs4218.exception.ExitException;
 import sg.edu.nus.comp.cs4218.impl.app.ExitApplication;
 
-/**
- * This tdd test suite is ignored/commented out as it differs in implementation compared to our own ExitApplication.java
- */
 class ExitApplicationTest {
 
     /**
@@ -53,6 +50,9 @@ class ExitApplicationTest {
         assertEquals(new ExitException("0").getMessage(), exception.getMessage());
     }
 
+    /**
+     * This tdd test suite is ignored/commented out as it differs in implementation compared to our own ExitApplication.java
+     */
 //    private ExitApplication exitApp;
 //
 //    protected static class TestExitException extends SecurityException {
