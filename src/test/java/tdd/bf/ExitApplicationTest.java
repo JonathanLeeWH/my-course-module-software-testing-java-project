@@ -1,7 +1,10 @@
 package tdd.bf;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.Permission;
 
 import org.junit.jupiter.api.*;
@@ -13,6 +16,43 @@ import sg.edu.nus.comp.cs4218.impl.app.ExitApplication;
  * This tdd test suite is ignored/commented out as it differs in implementation compared to our own ExitApplication.java
  */
 class ExitApplicationTest {
+
+    /**
+     * Our own ExitApplicationTest.java Tests which match our implementation. This version is same as our own ExitApplicationTest.java.
+     */
+    private ExitApplication exitApplication;
+
+    @BeforeEach
+    void setUp() {
+        exitApplication = new ExitApplication();
+    }
+
+    /**
+     * Tests run method.
+     * Expected: Throws ExitException with exit code 0.
+     */
+    @Test
+    void testRun() {
+        Exception exception = assertThrows(ExitException.class, () -> {
+            exitApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
+        });
+
+        assertEquals(new ExitException("0").getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests terminate method
+     * Expected: Throws ExitException with exit code 0.
+     */
+    @Test
+    void testTerminateExecutionShouldThrowExitExceptionWithExitCode0() {
+        Exception exception = assertThrows(ExitException.class, () -> {
+            exitApplication.terminateExecution();
+        });
+
+        assertEquals(new ExitException("0").getMessage(), exception.getMessage());
+    }
+
 //    private ExitApplication exitApp;
 //
 //    protected static class TestExitException extends SecurityException {
