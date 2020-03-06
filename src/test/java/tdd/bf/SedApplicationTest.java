@@ -4,7 +4,7 @@ package tdd.bf;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.SedException;
 import sg.edu.nus.comp.cs4218.impl.app.SedApplication;
 
@@ -32,7 +32,7 @@ class SedApplicationTest {
 
     @BeforeEach
     public void setUp() throws Exception{
-        String currentDir = Environment.currentDirectory;
+        String currentDir = EnvironmentHelper.currentDirectory;
         dir = new File(currentDir + File.separator + DIR_NAME);
         dir.mkdir();
 

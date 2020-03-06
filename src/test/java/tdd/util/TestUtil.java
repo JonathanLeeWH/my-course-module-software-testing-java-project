@@ -1,7 +1,6 @@
 package tdd.util;
 
-import sg.edu.nus.comp.cs4218.Environment;
-import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,7 +9,7 @@ import java.nio.file.Paths;
 public class TestUtil {
 
     public static Path resolveFilePath(String fileName) {
-        Path currentDirectory = Paths.get(Environment.currentDirectory);
+        Path currentDirectory = Paths.get(EnvironmentHelper.currentDirectory);
         return currentDirectory.resolve(fileName);
     }
 }

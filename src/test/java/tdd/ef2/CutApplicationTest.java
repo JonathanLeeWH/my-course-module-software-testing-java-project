@@ -3,6 +3,7 @@ package tdd.ef2;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.app.CutInterface;
 import sg.edu.nus.comp.cs4218.exception.CutException;
+import sg.edu.nus.comp.cs4218.impl.app.CutApplication;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
 import java.io.*;
@@ -14,6 +15,8 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 class CutApplicationTest {
 
+    private static final String ERR_OUT_RANGE = "out of range error";
+    private static final String ERR_INVALID_RANGE = "invalid range error";
     private static String folderName = "tdd/util/dummyTestFolder/CutTestFolder";
     private static String fileNameTest = "test.txt";
     private static String fileNameNames = "course.txt";

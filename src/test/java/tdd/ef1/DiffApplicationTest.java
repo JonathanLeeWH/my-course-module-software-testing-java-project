@@ -1,8 +1,9 @@
 package tdd.ef1;
 
 import org.junit.jupiter.api.*;
-import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.DiffException;
+import sg.edu.nus.comp.cs4218.impl.app.DiffApplication;
 import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.*;
@@ -36,7 +37,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_IS_DIR;
  */
 public class DiffApplicationTest { // NOPMD
     private static DiffApplication diffApp;
-    private static final String ORIGINAL_DIR = Environment.currentDirectory;
+    private static final String ORIGINAL_DIR = EnvironmentHelper.currentDirectory;
     private static final String DIFF_TEST_DIR = ORIGINAL_DIR
                     + StringUtils.fileSeparator()+ "src"
                             + StringUtils.fileSeparator()+ "test"
@@ -56,7 +57,7 @@ public class DiffApplicationTest { // NOPMD
 
     @BeforeAll
     static void setupAll() {
-        Environment.currentDirectory = DIFF_TEST_DIR;
+        EnvironmentHelper.currentDirectory = DIFF_TEST_DIR;
     }
 
     @BeforeEach
@@ -68,12 +69,12 @@ public class DiffApplicationTest { // NOPMD
     @AfterEach
     void tearDown() throws IOException {
         stdout.flush();
-        Environment.currentDirectory = ORIGINAL_DIR;
+        EnvironmentHelper.currentDirectory = ORIGINAL_DIR;
     }
 
     @AfterAll
     static void reset() {
-        Environment.currentDirectory = ORIGINAL_DIR;
+        EnvironmentHelper.currentDirectory = ORIGINAL_DIR;
     }
 
     @Test

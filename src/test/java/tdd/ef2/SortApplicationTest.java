@@ -1,7 +1,7 @@
 package tdd.ef2;
 
 import org.junit.jupiter.api.*;
-import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.SortException;
 import sg.edu.nus.comp.cs4218.impl.app.SortApplication;
 import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
@@ -37,7 +37,7 @@ public class SortApplicationTest {
     private static SortApplication sortApp;
     private static OutputStream stdout;
 
-    private static final String ORIGINAL_DIR = Environment.currentDirectory;
+    private static final String ORIGINAL_DIR = EnvironmentHelper.currentDirectory;
 
     @BeforeAll
     static void setupAll() {
@@ -48,7 +48,7 @@ public class SortApplicationTest {
                 + StringUtils.fileSeparator() + "dummyTestFolder"
                 + StringUtils.fileSeparator() + "SortTestFolder";
         if (Files.isDirectory(TestUtil.resolveFilePath(path))) {
-            Environment.currentDirectory = TestUtil.resolveFilePath(path).toString();
+            EnvironmentHelper.currentDirectory = TestUtil.resolveFilePath(path).toString();
         }
     }
 
@@ -65,7 +65,7 @@ public class SortApplicationTest {
 
     @AfterAll
     static void reset() {
-        Environment.currentDirectory = ORIGINAL_DIR;
+        EnvironmentHelper.currentDirectory = ORIGINAL_DIR;
     }
 
     @Test

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.RmException;
+import sg.edu.nus.comp.cs4218.impl.app.RmApplication;
 import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 import tdd.util.FilePermissionTestUtil;
 import tdd.util.RmTestUtil;
@@ -16,6 +17,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.LongVariable"})
 public class RmApplicationTest {
+    private static final String ERR_CURR_DIR = "current directory error";
     private RmApplication rmApplication;
     private RmTestUtil rmTestUtil;
     private FilePermissionTestUtil filePermissionTestUtil;
@@ -288,7 +290,7 @@ public class RmApplicationTest {
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + RmTestUtil.RELATIVE_NONEMPTY_DIR_PATH
                 + ": "
-                + ERR_DIR_NOT_EMPTY
+                + ERR_NON_EMPTY_DIR
                 + StringUtils.STRING_NEWLINE;
         expected = new String[] {
                 RmTestUtil.EMPTY_DIR,

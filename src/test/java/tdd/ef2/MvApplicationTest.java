@@ -3,7 +3,7 @@ package tdd.ef2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.MvException;
 import sg.edu.nus.comp.cs4218.impl.app.MvApplication;
 
@@ -14,13 +14,14 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 class MvApplicationTest {
 
-    private static final String BASE_URL = Environment.currentDirectory;
+    private static final String BASE_URL = EnvironmentHelper.currentDirectory;
     private static final String EXT = ".txt";
     private static final String TEMP_FILE_A = "tempFileA";
     private static final String TEMP_FILE_B = "tempFileB";

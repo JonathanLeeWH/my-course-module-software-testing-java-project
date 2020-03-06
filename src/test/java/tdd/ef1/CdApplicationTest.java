@@ -3,7 +3,7 @@ package tdd.ef1;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.CdException;
 import sg.edu.nus.comp.cs4218.impl.app.CdApplication;
 import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
@@ -58,7 +58,7 @@ class CdApplicationTest {
     @Test
     public void testChangeToDirectory_absolutePath_pathExists_shouldCd() throws CdException {
         app.changeToDirectory(ABSOLUTE_PATH_PATH_EXISTS);
-        assertEquals(ABSOLUTE_PATH_PATH_EXISTS, Environment.currentDirectory);
+        assertEquals(ABSOLUTE_PATH_PATH_EXISTS, EnvironmentHelper.currentDirectory);
     }
 
     @Test
@@ -72,7 +72,7 @@ class CdApplicationTest {
     @Test
     public void testChangeToDirectory_relativePath_pathExists_shouldCd() throws CdException {
         app.changeToDirectory(RELATIVE_PATH_PATH_EXISTS);
-        assertEquals(System.getProperty("user.dir") + StringUtils.CHAR_FILE_SEP + RELATIVE_PATH_PATH_EXISTS, Environment.currentDirectory);
+        assertEquals(System.getProperty("user.dir") + StringUtils.CHAR_FILE_SEP + RELATIVE_PATH_PATH_EXISTS, EnvironmentHelper.currentDirectory);
     }
 
     @Test

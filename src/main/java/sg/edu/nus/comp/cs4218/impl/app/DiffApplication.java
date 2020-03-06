@@ -16,7 +16,7 @@ public class DiffApplication {
     }
 
     public String diffTwoFiles(String fileNameA, String fileNameB, Boolean isShowSame,
-                               Boolean isNoBlank, Boolean isSimple) throws Exception {
+                               Boolean isNoBlank, Boolean isSimple) throws DiffException {
         String noDiffOutput = "Files are identical";
         String diffOutput = "The two files are different";
         if (fileNameA.equals(fileNameB) || isFileContentsEqual(fileNameA, fileNameB)) {
@@ -27,11 +27,11 @@ public class DiffApplication {
     }
 
     public String diffTwoDir(String folderA, String folderB, Boolean isShowSame, Boolean isNoBlank,
-                             Boolean isSimple) throws Exception {
+                             Boolean isSimple) throws DiffException {
         return "";
     }
     public String diffFileAndStdin(String fileName, InputStream stdin, Boolean isShowSame,
-                                   Boolean isNoBlank, Boolean isSimple) throws Exception {
+                                   Boolean isNoBlank, Boolean isSimple) throws DiffException {
         return "";
     }
 

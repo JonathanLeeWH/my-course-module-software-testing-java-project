@@ -3,7 +3,8 @@ package tdd.bf;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.PasteException;
-import test.util.StdOutStubIOExceptionOnWrite;
+import sg.edu.nus.comp.cs4218.impl.app.PasteApplication;
+import tdd.util.StdOutStubIOExceptionOnWrite;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

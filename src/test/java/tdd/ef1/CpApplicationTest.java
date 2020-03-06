@@ -3,6 +3,7 @@ package tdd.ef1;
 import org.junit.jupiter.api.*;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CpException;
+import sg.edu.nus.comp.cs4218.impl.app.CpApplication;
 
 import java.io.*;
 import java.nio.file.Files;
