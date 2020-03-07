@@ -31,6 +31,10 @@ public class ErrorConstants {
     public static final String ERR_NO_PERM = "Permission denied";
     public static final String ERR_NON_EMPTY_DIR = "Non empty directory";
 
+    // `rm` related
+    public static final String ERR_IS_CURR_DIR = "This is the current directory";
+    public static final String ERR_IS_SUB_PATH = "This is the sub path of the current path";
+
     // `cp` related
     public static final String ERR_SRC_DEST_SAME = "The source file and the destination file are the same file.";
 

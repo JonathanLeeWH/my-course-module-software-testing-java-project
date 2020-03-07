@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.app.RmInterface;
 import sg.edu.nus.comp.cs4218.exception.*;
 import sg.edu.nus.comp.cs4218.impl.parser.RmArgsParser;
@@ -23,10 +24,16 @@ public class RmApplication implements RmInterface {
      *                      through all folders inside the specified folder)
      * @param fileName      Array of String of file names
      * @throws RmException If RmException is thrown by methods called in its body or the input file or directory does not exist or
-     *                     if there are no -d flag and the input file is a directory.
+     *                     if there are no -d flag and the input file is a directory or if the input is the current directory.
      */
     @Override
     public void remove(Boolean isEmptyFolder, Boolean isRecursive, String... fileName) throws RmException {
+        if (isEmptyFolder == null || isRecursive == null || fileName == null) {
+            throw new RmException(ERR_NULL_ARGS);
+        }
+        if (fileName.length == 0) {
+            throw new RmException(ERR_MISSING_ARG);
+        }
         RmException rmException = null;
         for (String current : fileName) {
             File node = IOUtils.resolveFilePath(current).toFile();
@@ -35,22 +42,30 @@ public class RmApplication implements RmInterface {
                 continue;
             }
             try {
+                // Check if both the current directory and the current input path is the same, if it is the same, throw an RmException with ERR_IS_CURR_DIR
+                if (Files.isSameFile(Paths.get(EnvironmentHelper.currentDirectory), node.toPath())) {
+                    rmException = new RmException(ERR_IS_CURR_DIR);
+                    continue;
+                }
+                if (isSubPath(node.toPath())) {
+                    rmException = new RmException(ERR_IS_SUB_PATH);
+                    continue;
+                }
                 if (!isEmptyFolder && !isRecursive) { // no -r and no -d flag
                     removeFileOnly(node);
                 }
-
                 if (isEmptyFolder && !isRecursive) { // no -r but have -d flag
                     removeFileAndEmptyFolderOnly(node);
                 }
-
                 if (isRecursive) { // if -r flag is present for example -r or -r -d or -d -r or -rd or -dr will call the same method.
                     removeFilesAndFolderContent(node);
                 }
             } catch (RmException e) {
                 rmException = e;
+            } catch (IOException e) {
+                rmException = (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
             }
         }
-
         if (rmException != null) {
             throw rmException;
         }
@@ -150,5 +165,15 @@ public class RmApplication implements RmInterface {
         } else {
             remove(emptyFolder, recursive, fileNames);
         }
+    }
+
+    /**
+     * Returns true if the input path is a sub path of the current directory. Otherwise, returns false.
+     * @param inputPath The input path to be check whether it is the sub path of the current directory.
+     * @return Returns true if the input path is sub path of the current directory. Otherwise, returns false.
+     */
+    private boolean isSubPath(Path inputPath) {
+        Path currentDirectory = Paths.get(EnvironmentHelper.currentDirectory).normalize().toAbsolutePath();
+        return currentDirectory.startsWith(inputPath.normalize().toAbsolutePath());
     }
 }
