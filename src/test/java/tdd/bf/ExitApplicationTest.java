@@ -12,100 +12,69 @@ import org.junit.jupiter.api.*;
 import sg.edu.nus.comp.cs4218.exception.ExitException;
 import sg.edu.nus.comp.cs4218.impl.app.ExitApplication;
 
+/**
+ * Note: Added class level wide disable tdd's ExitApplicationTest.java due to difference in implementation. Please use our version of ExitApplicationTest.java instead.
+ * Our version of ExitApplicationTest.java instead of tdd's version should be used to test ExitApplication.java better coverage.
+ */
+@Disabled("The tdd's ExitApplicationTest.java is disabled and instead use our version of ExitApplication.java due to difference in implementation")
 class ExitApplicationTest {
 
     /**
-     * Our own ExitApplicationTest.java Tests which match our implementation. This version is same as our own ExitApplicationTest.java.
+     * This tdd test suite is disabled/commented out as it differs in implementation compared to our version of ExitApplication.java
      */
-    private ExitApplication exitApplication;
+    private ExitApplication exitApp;
+
+    protected static class TestExitException extends SecurityException {
+        public final int status;
+        public TestExitException(int status) {
+            super("Expected Exit");
+            this.status = status;
+        }
+    }
+    private static class NoExitSecurityManager extends SecurityManager {
+        @Override
+        public void checkPermission(Permission perm)
+        {
+            // allow anything.
+        }
+        @Override
+        public void checkPermission(Permission perm, Object context)
+        {
+            // allow anything.
+        }
+        @Override
+        public void checkExit(int status) {
+            super.checkExit(status);
+            throw new TestExitException(status);
+
+        }
+    }
+
+    @BeforeAll
+    static void setUp() {
+        System.out.println("Starting Exit App Test");
+        System.setSecurityManager(new NoExitSecurityManager());
+    }
 
     @BeforeEach
-    void setUp() {
-        exitApplication = new ExitApplication();
+    public void initialisation() {
+        exitApp = new ExitApplication();
     }
 
-    /**
-     * Tests run method.
-     * Expected: Throws ExitException with exit code 0.
-     */
+    // This test case is commented out as it differs from our implementation as our implementation throws exit exception instead of directly call System.exit(0).
     @Test
-    void testRun() {
-        Exception exception = assertThrows(ExitException.class, () -> {
-            exitApplication.run(null, mock(InputStream.class), mock(OutputStream.class));
-        });
-
-        assertEquals(new ExitException("0").getMessage(), exception.getMessage());
+    public void testExit(){
+        try {
+            exitApp.terminateExecution();
+        } catch (TestExitException e) {
+            assertEquals(0, e.status);
+        } catch (ExitException e) {
+            fail("Expected Exit");
+        }
     }
 
-    /**
-     * Tests terminate method
-     * Expected: Throws ExitException with exit code 0.
-     */
-    @Test
-    void testTerminateExecutionShouldThrowExitExceptionWithExitCode0() {
-        Exception exception = assertThrows(ExitException.class, () -> {
-            exitApplication.terminateExecution();
-        });
-
-        assertEquals(new ExitException("0").getMessage(), exception.getMessage());
+    @AfterEach
+    public void tearDown() {
+        System.setSecurityManager(null);
     }
-
-    /**
-     * This tdd test suite is ignored/commented out as it differs in implementation compared to our own ExitApplication.java
-     */
-//    private ExitApplication exitApp;
-//
-//    protected static class TestExitException extends SecurityException {
-//        public final int status;
-//        public TestExitException(int status) {
-//            super("Expected Exit");
-//            this.status = status;
-//        }
-//    }
-//    private static class NoExitSecurityManager extends SecurityManager {
-//        @Override
-//        public void checkPermission(Permission perm)
-//        {
-//            // allow anything.
-//        }
-//        @Override
-//        public void checkPermission(Permission perm, Object context)
-//        {
-//            // allow anything.
-//        }
-//        @Override
-//        public void checkExit(int status) {
-//            super.checkExit(status);
-//            throw new TestExitException(status);
-//
-//        }
-//    }
-//
-//    @BeforeAll
-//    static void setUp() {
-//        System.out.println("Starting Exit App Test");
-//        System.setSecurityManager(new NoExitSecurityManager());
-//    }
-//
-//    @BeforeEach
-//    public void initialisation() {
-//        exitApp = new ExitApplication();
-//    }
-//
-//    // This test case is commented out as it differs from our implementation as our implementation throws exit exception instead of directly call System.exit(0).
-//    @Test
-//    public void testExit(){
-//        try {
-//            exitApp.terminateExecution();
-//        } catch (TestExitException e) {
-//            assertEquals(0, e.status);
-//        } catch (ExitException e) {
-//            fail("Expected Exit");
-//        }
-//    }
-//
-//    @AfterEach
-//    public void tearDown() {
-//        System.setSecurityManager(null);
-//    }
 }
