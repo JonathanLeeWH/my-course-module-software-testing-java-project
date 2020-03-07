@@ -16,7 +16,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 /**
- * The tdd's RmApplicationTest.java should be run with our RmApplicationTest.java for better coverage.
+ * The tdd's EchoApplicationTest.java should be run with our EchoApplicationTest.java for better coverage.
  */
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.AvoidDuplicateLiterals"})
 class EchoApplicationTest {
