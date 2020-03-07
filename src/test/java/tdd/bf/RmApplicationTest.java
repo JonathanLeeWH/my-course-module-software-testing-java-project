@@ -24,7 +24,7 @@ import static tdd.util.RmTestUtil.RM_TEST_DIR;
  * Note: All tdd's test cases involving permissions are commented out or disabled as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
  * You can read more about it on our Assumptions report.
  * Added additional test case for sub path.
- * The tdd's RmApplicationTest.java should be run with our RmApplicationTest.java for better coverage.
+ * The tdd's RmApplicationTest.java should be run with our RmApplicationTest.java and RmApplicationIT.java for both unit testing and integration testing and better coverage.
  */
 public class RmApplicationTest {
     private static final String ERR_CURR_DIR = "current directory error";
