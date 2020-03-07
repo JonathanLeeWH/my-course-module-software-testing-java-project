@@ -23,6 +23,8 @@ import static tdd.util.RmTestUtil.RM_TEST_DIR;
 /**
  * Note: All tdd's test cases involving permissions are commented out or disabled as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
  * You can read more about it on our Assumptions report.
+ * Added additional test case for sub path.
+ * The tdd's RmApplicationTest.java should be run with our RmApplicationTest.java for better coverage.
  */
 public class RmApplicationTest {
     private static final String ERR_CURR_DIR = "current directory error";
@@ -691,5 +693,21 @@ public class RmApplicationTest {
 
         Exception exception = assertThrows(RmException.class, () -> rmApplication.run(args, inputStream, outputStream));
         assertEquals(new RmException(ERR_MISSING_ARG).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Additional test cases added to tdd's RmApplicationTest.java following the way the tdd's test case is being created.
+     */
+
+    /**
+     * Attempt to remove sub path of the current path.
+     * For example: rm ..
+     * Expected: Throws RmException ERR_IS_SUB_PATH
+     */
+    @Test
+    public void testRun_inputSubPathOfCurrentPath_shouldThrowRmException() {
+        String[] args = {".."};
+        Exception exception = assertThrows(RmException.class, () -> rmApplication.run(args, inputStream, outputStream));
+        assertEquals(new RmException(ERR_IS_SUB_PATH).getMessage(), exception.getMessage());
     }
 }
