@@ -5,6 +5,9 @@ import java.io.IOException;
 
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FILE_SEP;
 
+/**
+ * Modify tdd's provided RmTestUtil to remove the additional RM_TEST_DIR prefix in the relative path as it will be handled during setup and teardown of Junit.
+ */
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.LongVariable"})
 public class RmTestUtil {
     public static final String RM_TEST_DIR = "rm_test_env" + CHAR_FILE_SEP;
@@ -19,12 +22,12 @@ public class RmTestUtil {
     public static final String NONEMPTY_DIR_FILE_TWO = "dir_file2.txt";
     public static final String NESTED_DIR_FILE = "nested_file.txt";
 
-    public static final String RELATIVE_EMPTY_DIR_PATH = RM_TEST_DIR + EMPTY_DIR;
-    public static final String RELATIVE_NONEMPTY_DIR_PATH = RM_TEST_DIR + NONEMPTY_DIR;
-    public static final String RELATIVE_INVALID_DIR_PATH = RM_TEST_DIR + INVALID_DIR;
-    public static final String RELATIVE_INVALID_FILE_PATH = RM_TEST_DIR + INVALID_FILE;
-    public static final String RELATIVE_FILE_ONE_PATH = RM_TEST_DIR + FILE_ONE;
-    public static final String RELATIVE_FILE_TWO_PATH = RM_TEST_DIR + FILE_TWO;
+    public static final String RELATIVE_EMPTY_DIR_PATH = EMPTY_DIR;
+    public static final String RELATIVE_NONEMPTY_DIR_PATH = NONEMPTY_DIR;
+    public static final String RELATIVE_INVALID_DIR_PATH = INVALID_DIR;
+    public static final String RELATIVE_INVALID_FILE_PATH = INVALID_FILE;
+    public static final String RELATIVE_FILE_ONE_PATH = FILE_ONE;
+    public static final String RELATIVE_FILE_TWO_PATH = FILE_TWO;
 
     public static final String ABSOLUTE_RM_TEST_PATH = System.getProperty("user.dir") + CHAR_FILE_SEP + RM_TEST_DIR;
     public static final String ABSOLUTE_EMPTY_DIR_PATH = ABSOLUTE_RM_TEST_PATH + EMPTY_DIR + CHAR_FILE_SEP;
