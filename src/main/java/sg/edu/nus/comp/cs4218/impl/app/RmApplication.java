@@ -41,7 +41,7 @@ public class RmApplication implements RmInterface {
                 rmException = new RmException(ERR_FILE_NOT_FOUND);
                 continue;
             }
-            if (!node.canRead() || !node.canExecute() || !node.canWrite()) {
+            if (!node.canWrite()) {
                 rmException = new RmException(ERR_NO_PERM);
                 continue;
             }
