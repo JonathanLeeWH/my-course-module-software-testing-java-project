@@ -44,6 +44,10 @@ public class CdApplication implements CdInterface {
             throw new CdException(ERR_NULL_ARGS);
         }
 
+        if (stdin == null || stdout == null) {
+            throw new CdException(ERR_NULL_STREAMS);
+        }
+
         if (args.length == 0) {
             throw new CdException(ERR_MISSING_ARG);
         } else if (args.length == 1) {
