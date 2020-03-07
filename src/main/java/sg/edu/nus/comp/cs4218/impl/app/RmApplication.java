@@ -41,6 +41,10 @@ public class RmApplication implements RmInterface {
                 rmException = new RmException(ERR_FILE_NOT_FOUND);
                 continue;
             }
+            if (!node.canRead() || !node.canExecute() || !node.canWrite()) {
+                rmException = new RmException(ERR_NO_PERM);
+                continue;
+            }
             try {
                 // Check if both the current directory and the current input path is the same, if it is the same, throw an RmException with ERR_IS_CURR_DIR
                 if (Files.isSameFile(Paths.get(EnvironmentHelper.currentDirectory), node.toPath())) {
