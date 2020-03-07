@@ -15,6 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
+/**
+ * The tdd's RmApplicationTest.java should be run with our RmApplicationTest.java for better coverage.
+ */
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.AvoidDuplicateLiterals"})
 class EchoApplicationTest {
     private static EchoApplication echoApp;
@@ -103,22 +106,34 @@ class EchoApplicationTest {
         assertEquals(expected, thrown);
     }
 
+    /**
+     * Modify original tdd's version due to difference in implementation of EchoApplication.java.
+     * Add additional new line in expected.
+     */
     @Test
     public void testConstructResult_singleBlankArg() throws Exception {
         String expected = "";
-        assertEquals(expected, echoApp.constructResult(new String[]{""}));
+        assertEquals(expected + STRING_NEWLINE, echoApp.constructResult(new String[]{""}));
     }
 
+    /**
+     * Modify original tdd's version due to difference in implementation of EchoApplication.java.
+     * Add additional new line in expected.
+     */
     @Test
     public void testConstructResult_singleArg() throws Exception {
         String expected = "Hello";
-        assertEquals(expected, echoApp.constructResult(new String[]{"Hello"}));
+        assertEquals(expected + STRING_NEWLINE, echoApp.constructResult(new String[]{"Hello"}));
     }
 
+    /**
+     * Modify original tdd's version due to difference in implementation of EchoApplication.java.
+     * Add additional new line in expected.
+     */
     @Test
     public void testConstructResult_manyArgs() throws Exception {
         String expected = "Hello world I am a program look at me doing stuff wow";
-        assertEquals(expected, echoApp.constructResult(new String[]{
+        assertEquals(expected + STRING_NEWLINE, echoApp.constructResult(new String[]{
                 "Hello", "world", "I", "am", "a", "program", "look", "at", "me", "doing", "stuff", "wow"
         }));
     }
