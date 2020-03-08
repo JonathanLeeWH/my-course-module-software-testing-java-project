@@ -29,9 +29,6 @@
 <!--                    Add exclusion for tdd folder in tests so travis will still run properly. This can be removed when tdd is resolved.-->
                         <exclude>**/tdd/**</exclude>
                     </excludes>
-                    <includes>
-                        <include>**/tdd/bf/RmApplicationTest.java</include>
-                    </includes>
                 </configuration>
             </plugin>
             <plugin>
