@@ -18,6 +18,8 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 /**
  * Modify tdd's CdApplicationTest.java expected exception message as the format of the CdException message thrown differs in implementation.
  * The tdd's CdApplicationTest.java should be run with our CdApplicationTest.java for better coverage.
+ * Permissions related test cases are disabled especially since even with workaround Windows ATTRIB only support readOnly and does not support executeOnly etc.
+ * Read more: https://web.csulb.edu/~murdock/attrib.html
  */
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.LongVariable"})
 class CdApplicationTest {
@@ -110,7 +112,7 @@ class CdApplicationTest {
      * Ignore tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
      */
-    @Disabled("This test case is disabled as it does not match our assumption")
+    @Disabled("This test case is disabled as it does not match our assumption and Windows Attribute ATTRIB only support read only permission")
     @Test
     public void testChangeToDirectory_noReadPermission() {
         Exception exception = assertThrows(Exception.class, () -> {
