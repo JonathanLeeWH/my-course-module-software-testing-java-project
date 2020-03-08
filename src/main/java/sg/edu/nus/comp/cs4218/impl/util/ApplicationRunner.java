@@ -22,6 +22,7 @@ public class ApplicationRunner {
     public final static String APP_PASTE = "paste";
     public final static String APP_DIFF = "diff";
     public final static String APP_CD = "cd";
+    private final static String APP_CP = "cp";
     public final static String APP_SED = "sed";
     public final static String APP_RM = "rm";
     public final static String APP_CUT = "cut";
@@ -69,6 +70,9 @@ public class ApplicationRunner {
                 break;
             case APP_CD:
                 application = new CdApplication();
+                break;
+            case APP_CP:
+                application = new CpApplication();
                 break;
             case APP_SED:
                 application = new SedApplication();

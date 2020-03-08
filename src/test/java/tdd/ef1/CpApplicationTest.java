@@ -13,7 +13,12 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
+/**
+ * Modify tdd's test method to include check for assert throw message. (Not initially provided in tdd's version)
+ * The tdd's CpApplicationTest.java should be run with our CpApplicationTest.java for better coverage.
+ */
 class CpApplicationTest {
 
     CpApplication cpApplication;
@@ -59,27 +64,39 @@ class CpApplicationTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Modify tdd's test method to include check for assert throw message. (Not initially provided in tdd's version)
+     */
     @Test
     @DisplayName("should throw error if null args")
     void throwsExceptionNullArgs() {
-        assertThrows(CpException.class, () -> cpApplication.run(null, inputStream, outputStream));
+        CpException exception = assertThrows(CpException.class, () -> cpApplication.run(null, inputStream, outputStream));
+        assertEquals(new CpException(ERR_NULL_ARGS).getMessage(), exception.getMessage());
     }
 
+    /**
+     * Modify tdd's test method to include check for assert throw message. (Not initially provided in tdd's version)
+     */
     @Test
     @DisplayName("should throw error if not enough args")
     void throwsExceptionNotEnoughArgs() {
-        assertThrows(CpException.class, () -> cpApplication.run(new String[]{"src.txt"}, inputStream, outputStream));
+        CpException exception = assertThrows(CpException.class, () -> cpApplication.run(new String[]{"src.txt"}, inputStream, outputStream));
+        assertEquals(new CpException(ERR_MISSING_ARG).getMessage(), exception.getMessage());
     }
 
     @Nested
     @DisplayName("cpSrcFileToDestFileTest")
     class cpSrcFileToDestFileTests {
 
+        /**
+         * Modify tdd's test method to include check for assert throw message. (Not initially provided in tdd's version)
+         */
         @Test
         @DisplayName("should throw exception if invalid src file")
         void throwsExceptionSrcFileNotFound() {
-            assertThrows(CpException.class, () -> cpApplication.run(new String[]{"src.txt", "dest.txt"},
+            CpException exception = assertThrows(CpException.class, () -> cpApplication.run(new String[]{"src.txt", "dest.txt"},
                     inputStream, outputStream));
+            assertEquals(new CpException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
         }
 
         @Test
@@ -131,11 +148,16 @@ class CpApplicationTest {
             destDirectory.delete();
         }
 
+        /**
+         * Modify tdd's test method to include check for assert throw message. (Not initially provided in tdd's version)
+         */
         @Test
         @DisplayName("should throw exception when invalid src file but copy the rest")
         void throwExceptionInvalidSrcFilesAndCopyValidOnes() {
-            assertThrows(CpException.class, () -> cpApplication.run(new String[]{FILENAME1, "invalid file name",
+            CpException exception = assertThrows(CpException.class, () -> cpApplication.run(new String[]{FILENAME1, "invalid file name",
                     DIR_NAME}, inputStream, outputStream));
+
+            assertEquals(new CpException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
 
             assertFileContentsEqual(file1Data, file1.toPath());
             assertFileContentsEqual(file1Data, Paths.get(DIR_NAME, FILENAME1));
