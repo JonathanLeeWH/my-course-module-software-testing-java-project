@@ -2,6 +2,7 @@ package tdd.ef1;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.CdException;
@@ -12,7 +13,14 @@ import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
+/**
+ * Modify tdd's CdApplicationTest.java expected exception message as the format of the CdException message thrown differs in implementation.
+ * The tdd's CdApplicationTest.java should be run with our CdApplicationTest.java for better coverage.
+ * Permissions related test cases are disabled especially since even with workaround Windows ATTRIB only support readOnly and does not support executeOnly etc.
+ * Read more: https://web.csulb.edu/~murdock/attrib.html
+ */
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.LongVariable"})
 class CdApplicationTest {
 
@@ -61,12 +69,15 @@ class CdApplicationTest {
         assertEquals(ABSOLUTE_PATH_PATH_EXISTS, EnvironmentHelper.currentDirectory);
     }
 
+    /**
+     * Modify original tdd's version to throw CdException with ERR_FILE_NOT_FOUND
+     */
     @Test
-    public void testChangeToDirectory_absolutePath_pathDontExists_shouldThrowException() throws CdException {
+    public void testChangeToDirectory_absolutePath_pathDontExists_shouldThrowCdException() throws CdException {
         Exception exception = assertThrows(Exception.class, () -> {
             app.changeToDirectory(ABSOLUTE_PATH_PATH_DONT_EXISTS);
         });
-        assertEquals("cd: " + ABSOLUTE_PATH_PATH_DONT_EXISTS + FILE_NOT_FOUND, exception.getMessage());//NOPMD
+        assertEquals(new CdException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());//NOPMD
     }
 
     @Test
@@ -75,22 +86,33 @@ class CdApplicationTest {
         assertEquals(System.getProperty("user.dir") + StringUtils.CHAR_FILE_SEP + RELATIVE_PATH_PATH_EXISTS, EnvironmentHelper.currentDirectory);
     }
 
+    /**
+     * Modify original tdd's version to throw CdException with ERR_FILE_NOT_FOUND
+     */
     @Test
-    public void testChangeToDirectory_relativePath_pathDontExists_shouldThrowException() {
+    public void testChangeToDirectory_relativePath_pathDontExists_shouldThrowCdException() {
         Exception exception = assertThrows(Exception.class, () -> {
             app.changeToDirectory(RELATIVE_PATH_PATH_DONT_EXISTS);
         });
-        assertEquals("cd: " + RELATIVE_PATH_PATH_DONT_EXISTS + FILE_NOT_FOUND, exception.getMessage());
+        assertEquals(new CdException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
     }
 
+    /**
+     * Modify original tdd's version to throw CdException with ERR_IS_NOT_DIR
+     */
     @Test
     public void testChangeToDirectory_isNotADirectory() {
         Exception exception = assertThrows(Exception.class, () -> {
             app.changeToDirectory(RELATIVE_PATH_NOT_DIR);
         });
-        assertEquals("cd: " + RELATIVE_PATH_NOT_DIR + IS_NOT_DIR, exception.getMessage());
+        assertEquals(new CdException(ERR_IS_NOT_DIR).getMessage(), exception.getMessage());
     }
 
+    /**
+     * Ignore tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
+     * You can read more about it on our Assumptions report.
+     */
+    @Disabled("This test case is disabled as it does not match our assumption and Windows Attribute ATTRIB only support read only permission")
     @Test
     public void testChangeToDirectory_noReadPermission() {
         Exception exception = assertThrows(Exception.class, () -> {
@@ -99,24 +121,33 @@ class CdApplicationTest {
         assertEquals("cd: " + CD_PATH + NO_READ_PERM, exception.getMessage());
     }
 
+    /**
+     * Modify original tdd's version to throw CdException with ERR_NO_ARGS
+     */
     @Test
     public void testChangeToDirectory_emptyPathString() {
         Exception exception = assertThrows(Exception.class, () -> {
             app.changeToDirectory("");
         });
-        assertEquals("cd" + NO_ARGS, exception.getMessage());
+        assertEquals(new CdException(ERR_NO_ARGS).getMessage(), exception.getMessage());
     }
 
+    /**
+     * Modify original tdd's version to throw CdException with ERR_NULL_ARGS
+     */
     @Test
-    public void testRun_nullArgs_shouldThrowException() {
+    public void testRun_nullArgs_shouldThrowCdException() {
         String[] args = null;
         inputStream = new ByteArrayInputStream("abc".getBytes());
         Exception exception = assertThrows(Exception.class, () -> {
             app.run(args, inputStream, outputStream);
         });
-        assertEquals("cd" + NULL_ARGS, exception.getMessage());
+        assertEquals(new CdException(ERR_NULL_ARGS).getMessage(), exception.getMessage());
     }
 
+    /**
+     * Modify original tdd's version to throw CdException with ERR_NULL_STREAMS
+     */
     @Test
     public void testRun_nullInputStream() {
         String[] args = {RELATIVE_PATH_PATH_EXISTS};
@@ -124,9 +155,12 @@ class CdApplicationTest {
         Exception exception = assertThrows(Exception.class, () -> {
             app.run(args, inputStream, outputStream);
         });
-        assertEquals("cd" + NULL_POINTER_EXCEPTION, exception.getMessage());
+        assertEquals(new CdException(ERR_NULL_STREAMS).getMessage(), exception.getMessage());
     }
 
+    /**
+     * Modify original tdd's version to throw CdException with ERR_NULL_STREAMS
+     */
     @Test
     public void testRun_nullOutputStream() {
         String[] args = {RELATIVE_PATH_PATH_EXISTS};
@@ -134,9 +168,12 @@ class CdApplicationTest {
         Exception exception = assertThrows(Exception.class, () -> {
             app.run(args, inputStream, null);
         });
-        assertEquals("cd" + NULL_POINTER_EXCEPTION, exception.getMessage());
+        assertEquals(new CdException(ERR_NULL_STREAMS).getMessage(), exception.getMessage());
     }
 
+    /**
+     * Modify original tdd's version to throw CdException with ERR_TOO_MANY_ARGS
+     */
     @Test
     public void testRun_tooManyArgs() {
         String[] args = {RELATIVE_PATH_PATH_EXISTS, ABSOLUTE_PATH_PATH_EXISTS};
@@ -144,6 +181,6 @@ class CdApplicationTest {
         Exception exception = assertThrows(Exception.class, () -> {
             app.run(args, inputStream, outputStream);
         });
-        assertEquals("cd" + TOO_MANY_ARGS, exception.getMessage());
+        assertEquals(new CdException(ERR_TOO_MANY_ARGS).getMessage(), exception.getMessage());
     }
 }

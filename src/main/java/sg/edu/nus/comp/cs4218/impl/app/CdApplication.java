@@ -44,6 +44,10 @@ public class CdApplication implements CdInterface {
             throw new CdException(ERR_NULL_ARGS);
         }
 
+        if (stdin == null || stdout == null) {
+            throw new CdException(ERR_NULL_STREAMS);
+        }
+
         if (args.length == 0) {
             throw new CdException(ERR_MISSING_ARG);
         } else if (args.length == 1) {
@@ -77,6 +81,10 @@ public class CdApplication implements CdInterface {
 
         if (!Files.isDirectory(path)) {
             throw new CdException(String.format(ERR_IS_NOT_DIR, pathStr));
+        }
+
+        if (!path.toFile().canExecute()) {
+            throw new CdException(ERR_NO_PERM);
         }
 
         return path.normalize().toString();
