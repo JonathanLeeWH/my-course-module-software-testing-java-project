@@ -198,7 +198,7 @@ public class RmApplication implements RmInterface {
     }
 
     private void validateReadOnly(File file) throws RmException {
-        if (isReadOnly(file)) {
+        if (file.exists() && isReadOnly(file)) {
             throw new RmException(ERR_NO_PERM);
         }
     }
