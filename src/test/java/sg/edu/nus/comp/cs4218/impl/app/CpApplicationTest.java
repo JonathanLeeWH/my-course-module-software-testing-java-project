@@ -236,6 +236,36 @@ class CpApplicationTest {
     }
 
     /**
+     * Tests run method when input stream is null although based on skeleton code input stream is not used.
+     * This is for defensive programming.
+     * Expected: Throws CpException with ERR_NULL_STREAMS
+     */
+    @Test
+    void testRunWhenInputStreamIsNullShouldThrowCpException(@TempDir Path tempDir) {
+        Path file = tempDir.resolve(SRC_FILE);
+        String[] argsList = {file.toString()};
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, null, mock(OutputStream.class));
+        });
+        assertEquals(new CpException(ERR_NULL_STREAMS).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests run method when output stream is null although based on skeleton code input stream is not used.
+     * This is for defensive programming.
+     * Expected: Throws CpException with ERR_NULL_STREAMS
+     */
+    @Test
+    void testRunWhenOutputStreamIsNullShouldThrowCpException(@TempDir Path tempDir) {
+        Path file = tempDir.resolve(SRC_FILE);
+        String[] argsList = {file.toString()};
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, mock(InputStream.class), null);
+        });
+        assertEquals(new CpException(ERR_NULL_STREAMS).getMessage(), exception.getMessage());
+    }
+
+    /**
      * Tests run method when input args only has one element.
      * For example: cp 1.txt
      * Expected: Throws CpException with ERR_MISSING_ARG
@@ -341,8 +371,6 @@ class CpApplicationTest {
         assertEquals(fileContents, Files.readAllLines(destFolderFile));
     }
 
-    // TODO
-
     /**
      * Tests run method when source file is absent.
      * For example: cp 1.txt dest.txt
@@ -429,7 +457,7 @@ class CpApplicationTest {
         });
         assertEquals(new CpException(ERR_SRC_DEST_SAME).getMessage(), exception.getMessage());
     }
-    
+
 //    private static boolean isFilesEqual(Path first, Path second) throws IOException {
 //        if (Files.size(first) != Files.size(second)) {
 //            return false;
