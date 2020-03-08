@@ -14,7 +14,7 @@ import sg.edu.nus.comp.cs4218.impl.app.ExitApplication;
 
 /**
  * Note: Added class level wide disable tdd's ExitApplicationTest.java due to difference in implementation. Please use our version of ExitApplicationTest.java instead.
- * Our version of ExitApplicationTest.java instead of tdd's version should be used to test ExitApplication.java better coverage.
+ * Please use our version of ExitApplicationTest.java instead of tdd's version should be used to test ExitApplication.java better coverage.
  */
 @Disabled("The tdd's ExitApplicationTest.java is disabled and instead use our version of ExitApplication.java due to difference in implementation")
 class ExitApplicationTest {
