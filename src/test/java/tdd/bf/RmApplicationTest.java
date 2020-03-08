@@ -12,6 +12,8 @@ import tdd.util.FilePermissionTestUtil;
 import tdd.util.RmTestUtil;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.parser.ArgsParser.ILLEGAL_FLAG_MSG;
@@ -25,6 +27,7 @@ import static tdd.util.RmTestUtil.RM_TEST_DIR;
  * You can read more about it on our Assumptions report.
  * Added additional test case for sub path.
  * The tdd's RmApplicationTest.java should be run with our RmApplicationTest.java and RmApplicationIT.java for both unit testing and integration testing and better coverage.
+ * Try to modify permissions to support but note: Windows: https://web.csulb.edu/~murdock/attrib.html Windows attribute using ATTRIB only has read only and no write only or execute only attribute so this is disabled.
  */
 public class RmApplicationTest {
     private static final String ERR_CURR_DIR = "current directory error";
@@ -450,50 +453,64 @@ public class RmApplicationTest {
     /**
      * Ignore tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
+     * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
      */
-    @Disabled("This test case is disabled as it does not match our assumption")
+//    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
-    public void testRemove_onReadOnlyDir_shouldPrintErrorMsg() {
+    public void testRemove_onReadOnlyDir_shouldThrowRmException() throws IOException {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_DIR_PATH), "dos:readonly", true);
+        }
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + FilePermissionTestUtil.READ_ONLY_DIR_PATH
                 + ": "
                 + ERR_NO_PERM
                 + StringUtils.STRING_NEWLINE;
 
-        assertDoesNotThrow(() -> rmApplication.remove(
+        Exception exception = assertThrows(RmException.class, () -> rmApplication.remove(
                 IS_EMPTY_DIR,
                 IS_RECURSIVE,
                 FilePermissionTestUtil.READ_ONLY_DIR_PATH
         ));
-        assertEquals(expectedMsg, checkingOutputStream.toString());
+        assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_DIR_PATH), "dos:readonly", false);
+        }
     }
 
     /**
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
+     * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
      */
-    @Disabled("This test case is disabled as it does not match our assumption")
+//    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
-    public void testRemove_onExecuteOnlyDir_shouldPrintErrorMsg() {
+    public void testRemove_onExecuteOnlyDir_shouldThrowRmException() throws IOException {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH), "dos:readonly", true);
+        }
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH
                 + ": "
                 + ERR_NO_PERM
                 + StringUtils.STRING_NEWLINE;
-
-        assertDoesNotThrow(() -> rmApplication.remove(
+        Exception exception = assertThrows(RmException.class, () -> rmApplication.remove(
                 IS_EMPTY_DIR,
                 IS_RECURSIVE,
                 FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH
         ));
-        assertEquals(expectedMsg, checkingOutputStream.toString());
+        assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH), "dos:readonly", false);
+        }
     }
 
     /**
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
+     * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
      */
-    @Disabled("This test case is disabled as it does not match our assumption")
+//    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
     public void testRemove_onWriteOnlyDir_shouldRemove() {
         expected = new String[] {
@@ -522,71 +539,91 @@ public class RmApplicationTest {
     /**
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
+     * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
+     * Technically there is no write only attribute using ATTRIB in windows using windows file attribute api
      */
-    @Disabled("This test case is disabled as it does not match our assumption")
+//    @Disabled("This test case is disabled as it does not match our assumption and technically there is no write only attribute using ATTRIB in windows using windows file attribute api")
     @Test
-    public void testRemove_onWriteOnlyDir_noRecursiveOption_shouldPrintErrorMsg() {
+    public void testRemove_onWriteOnlyDir_noRecursiveOption_shouldThrowRmException() throws IOException {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.WRITE_ONLY_DIR_PATH), "dos:readonly", true);
+        }
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + FilePermissionTestUtil.WRITE_ONLY_DIR_PATH
                 + ": "
                 + ERR_NO_PERM
                 + StringUtils.STRING_NEWLINE;
 
-        assertDoesNotThrow(() -> rmApplication.remove(
+        Exception exception = assertThrows(RmException.class, () -> rmApplication.remove(
                 IS_EMPTY_DIR,
                 !IS_RECURSIVE,
                 FilePermissionTestUtil.WRITE_ONLY_DIR_PATH
         ));
-        assertEquals(expectedMsg, checkingOutputStream.toString());
+        assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.WRITE_ONLY_DIR_PATH), "dos:readonly", false);
+        }
     }
 
     /**
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
+     * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
      */
-    @Disabled("This test case is disabled as it does not match our assumption")
+//    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
-    public void testRemove_onReadOnlyFile_shouldPrintErrorMsg() {
-        expectedMsg = EXCEPTION_MESSAGE_HEADER
-                + FilePermissionTestUtil.READ_ONLY_FILE_PATH
-                + ": "
-                + ERR_NO_PERM
-                + StringUtils.STRING_NEWLINE;
+    public void testRemove_onReadOnlyFile_shouldThrowRmException() throws IOException {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_FILE_PATH), "dos:readonly", true);
+        }
 
-        assertDoesNotThrow(() -> rmApplication.remove(
+        Exception exception = assertThrows(RmException.class, () -> rmApplication.remove(
                 IS_EMPTY_DIR,
                 IS_RECURSIVE,
                 FilePermissionTestUtil.READ_ONLY_FILE_PATH
         ));
-        assertEquals(expectedMsg, checkingOutputStream.toString());
+        assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
+
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_FILE_PATH), "dos:readonly", false);
+        }
     }
 
     /**
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
+     * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
+     * Technically there is no execute only attribute using ATTRIB in windows using windows file attribute api
      */
-    @Disabled("This test case is disabled as it does not match our assumption")
+//    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
-    public void testRemove_onExecuteOnlyFile_shouldPrintErrorMsg() {
+    public void testRemove_onExecuteOnlyFile_shouldThrowRmException() throws IOException {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_FILE_PATH), "dos:readonly", true);
+        }
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + FilePermissionTestUtil.EXECUTE_ONLY_FILE_PATH
                 + ": "
                 + ERR_NO_PERM
                 + StringUtils.STRING_NEWLINE;
 
-        assertDoesNotThrow(() -> rmApplication.remove(
+        Exception exception = assertThrows(RmException.class, () -> rmApplication.remove(
                 IS_EMPTY_DIR,
                 IS_RECURSIVE,
                 FilePermissionTestUtil.EXECUTE_ONLY_FILE_PATH
         ));
-        assertEquals(expectedMsg, checkingOutputStream.toString());
+        assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_FILE_PATH), "dos:readonly", false);
+        }
     }
 
     /**
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
+     * Technically there is no execute only attribute using ATTRIB in windows using windows file attribute api
      */
-    @Disabled("This test case is disabled as it does not match our assumption")
+//    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
     public void testRemove_onWriteOnlyFile_shouldRemove() {
         expected = new String[] {
