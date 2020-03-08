@@ -25,10 +25,6 @@ public class CdApplication implements CdInterface {
      */
     @Override
     public void changeToDirectory(String path) throws CdException {
-        File file = new File(path);
-        if (!file.canExecute()) {
-            throw new CdException(ERR_NO_PERM);
-        }
         EnvironmentHelper.currentDirectory = getNormalizedAbsolutePath(path);
     }
 
@@ -85,6 +81,10 @@ public class CdApplication implements CdInterface {
 
         if (!Files.isDirectory(path)) {
             throw new CdException(String.format(ERR_IS_NOT_DIR, pathStr));
+        }
+
+        if (!path.toFile().canExecute()) {
+            throw new CdException(ERR_NO_PERM);
         }
 
         return path.normalize().toString();
