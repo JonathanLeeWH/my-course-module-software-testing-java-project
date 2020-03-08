@@ -191,7 +191,7 @@ class CpApplicationTest {
      * Tests cpFilesToFolder method when destination folder contains a file with the same file name as the file to be copied.
      * For example: cp 1.txt dest
      * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file.
-     * Expected: Copies the content of the 1.txt to be copied to he dest directory and overwrite the existing 1.txt file in the dest directory.
+     * Expected: Copies the content of the 1.txt to be copied to the dest directory and overwrite the existing 1.txt file in the dest directory.
      */
     @Test
     void testCpFilesToFolderWhenInputSourceFilesExistsAndDestFolderContainsFileWithSameFileNameAsFileToBeCopiedShouldOverwriteTheFileInDestWithInputFileContent(@TempDir Path tempDir) throws Exception {
@@ -208,6 +208,38 @@ class CpApplicationTest {
         String[] fileNamesList = {srcFile.toString()};
         cpApplication.cpFilesToFolder(destFolderFile.getParent().toString(), fileNamesList);
         assertEquals(fileContents, Files.readAllLines(destFolderFile));
+    }
+
+    /**
+     * Tests cpFilesToFolder method when there are multiple CpException thrown, only the latest exception will be thrown.
+     * For example: cp hello 1.txt 2.txt dest
+     * Where hello and dest are existing directories while 1.txt is a non existing file and 2.txt is an existing file. The dest directory does not contain 1.txt.
+     * Expected: Throws latest CpException in this case CpException with ERR_FILE_NOT_FOUND is thrown. At the same time, copies 2.txt into dest folder.
+     */
+    @Test
+    void testCpFilesToFolderWhenInputSourceFilesThrowsMultipleCpExceptionAndDestFolderExistsShouldThrowLatestCpExceptionAndCopiesValidSourceFileIntoDestFolder(@TempDir Path tempDir) throws IOException {
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Path file1 = tempDir.resolve(SRC_FILE);
+        Path file2 = tempDir.resolve(FILE_NAME_1);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        Files.createDirectories(folder);
+        Files.createFile(file2);
+        Files.write(file2, fileContents);
+        Files.createDirectories(destFolder);
+        assertTrue(Files.isDirectory(folder)); // hello folder exists
+        assertFalse(Files.exists(file1)); // 1.txt does not exist
+        assertTrue(Files.exists(file2)); // 2.txt exists.
+        assertTrue(Files.isDirectory(destFolder)); // dest folder exists
+
+        String[] fileNameList = {folder.toString(), file1.toString(), file2.toString()};
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.cpFilesToFolder(destFolder.toString(), fileNameList);
+        });
+        assertEquals(new CpException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
+        Path copiedFile = destFolder.resolve(FILE_NAME_1);
+        assertTrue(Files.exists(copiedFile));
+        assertEquals(fileContents, Files.readAllLines(copiedFile));
     }
 
     /**
@@ -233,6 +265,36 @@ class CpApplicationTest {
             cpApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
         });
         assertEquals(new CpException(ERR_NO_ARGS).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests run method when input stream is null although based on skeleton code input stream is not used.
+     * This is for defensive programming.
+     * Expected: Throws CpException with ERR_NULL_STREAMS
+     */
+    @Test
+    void testRunWhenInputStreamIsNullShouldThrowCpException(@TempDir Path tempDir) {
+        Path file = tempDir.resolve(SRC_FILE);
+        String[] argsList = {file.toString()};
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, null, mock(OutputStream.class));
+        });
+        assertEquals(new CpException(ERR_NULL_STREAMS).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests run method when output stream is null although based on skeleton code input stream is not used.
+     * This is for defensive programming.
+     * Expected: Throws CpException with ERR_NULL_STREAMS
+     */
+    @Test
+    void testRunWhenOutputStreamIsNullShouldThrowCpException(@TempDir Path tempDir) {
+        Path file = tempDir.resolve(SRC_FILE);
+        String[] argsList = {file.toString()};
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, mock(InputStream.class), null);
+        });
+        assertEquals(new CpException(ERR_NULL_STREAMS).getMessage(), exception.getMessage());
     }
 
     /**
@@ -341,8 +403,6 @@ class CpApplicationTest {
         assertEquals(fileContents, Files.readAllLines(destFolderFile));
     }
 
-    // TODO
-
     /**
      * Tests run method when source file is absent.
      * For example: cp 1.txt dest.txt
@@ -429,7 +489,39 @@ class CpApplicationTest {
         });
         assertEquals(new CpException(ERR_SRC_DEST_SAME).getMessage(), exception.getMessage());
     }
-    
+
+    /**
+     * Tests run method when there are multiple CpException thrown, only the latest exception will be thrown.
+     * For example: cp hello 1.txt 2.txt dest
+     * Where hello and dest are existing directories while 1.txt is a non existing file and 2.txt is an existing file. The dest directory does not contain 1.txt.
+     * Expected: Throws latest CpException in this case CpException with ERR_FILE_NOT_FOUND is thrown. At the same time, copies 2.txt into dest folder.
+     */
+    @Test
+    void testRunWhenInputSourceFilesThrowsMultipleCpExceptionAndDestFolderExistsShouldThrowLatestCpExceptionAndCopiesValidSourceFileIntoDestFolder(@TempDir Path tempDir) throws IOException {
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Path file1 = tempDir.resolve(SRC_FILE);
+        Path file2 = tempDir.resolve(FILE_NAME_1);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        Files.createDirectories(folder);
+        Files.createFile(file2);
+        Files.write(file2, fileContents);
+        Files.createDirectories(destFolder);
+        assertTrue(Files.isDirectory(folder)); // hello folder exists
+        assertFalse(Files.exists(file1)); // 1.txt does not exist
+        assertTrue(Files.exists(file2)); // 2.txt exists.
+        assertTrue(Files.isDirectory(destFolder)); // dest folder exists
+
+        String[] argsList = {folder.toString(), file1.toString(), file2.toString(), destFolder.toString()};
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+        assertEquals(new CpException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
+        Path copiedFile = destFolder.resolve(FILE_NAME_1);
+        assertTrue(Files.exists(copiedFile));
+        assertEquals(fileContents, Files.readAllLines(copiedFile));
+    }
+
 //    private static boolean isFilesEqual(Path first, Path second) throws IOException {
 //        if (Files.size(first) != Files.size(second)) {
 //            return false;
