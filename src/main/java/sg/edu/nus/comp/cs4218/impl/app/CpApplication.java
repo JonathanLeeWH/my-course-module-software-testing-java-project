@@ -24,7 +24,8 @@ public class CpApplication implements CpInterface {
      *
      * @param srcFile  of path to source file
      * @param destFile of path to destination file which may or may not exists. If it exists, it will be overwritten by the contents of srcFile.
-     * @throws CpException
+     * @throws CpException Throws CpException if source file does not exists or if source file is a directory, or source file and destination file are the same file
+     * or if an IOException occurs.
      */
     @Override
     public String cpSrcFileToDestFile(String srcFile, String destFile) throws CpException {
@@ -52,13 +53,34 @@ public class CpApplication implements CpInterface {
      *
      * @param destFolder of path to destination folder
      * @param fileName   Array of String of file names
-     * @throws CpException
+     * @throws CpException Throws CpException if destination folder does not exists or input source file does not exist, input source file is a directory
+     * or if an IOException occurs.
      */
     @Override
     public String cpFilesToFolder(String destFolder, String... fileName) throws CpException {
         Path destFolderPath = IOUtils.resolveFilePath(destFolder);
         if (!Files.isDirectory(destFolderPath)) {
             throw new CpException(ERR_FILE_NOT_FOUND); // if destination folder does not exist.
+        }
+        CpException cpException = null;
+        for (String current : fileName) {
+            File node = IOUtils.resolveFilePath(current).toFile();
+            if (!node.exists()) {
+                cpException = new CpException(ERR_FILE_NOT_FOUND); // if source file does not exist.
+                continue;
+            }
+            if (Files.isDirectory(node.toPath())) {
+                cpException = new CpException(ERR_IS_DIR);
+                continue;
+            }
+            try {
+                Files.copy(node.toPath(), destFolderPath.resolve(node.toPath().getFileName()), REPLACE_EXISTING);
+            } catch (IOException e) {
+                cpException = (CpException) new CpException(ERR_IO_EXCEPTION).initCause(e);
+            }
+        }
+        if (cpException != null) {
+            throw cpException;
         }
         return destFolder;
     }
