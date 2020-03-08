@@ -18,9 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
-/**
- * The tdd's CpApplicationTest.java should be run with our CpApplicationTest.java for better coverage.
- */
 class CpApplicationTest {
 
     private static final String SRC_FILE = "1.txt";
