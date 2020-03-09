@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.DosFileAttributes;
 import java.util.Arrays;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -41,7 +42,10 @@ public class CpApplication implements CpInterface {
             if (Files.exists(destPath) && Files.isSameFile(srcPath, destPath)) {
                 throw new CpException(ERR_SRC_DEST_SAME);
             }
+            validateReadOnly(destPath.toFile());
             Files.copy(srcPath, destPath, REPLACE_EXISTING);
+        } catch (CpException e) {
+            throw e;
         } catch (IOException e) {
             throw (CpException) new CpException(ERR_IO_EXCEPTION).initCause(e);
         }
@@ -74,7 +78,10 @@ public class CpApplication implements CpInterface {
                 continue;
             }
             try {
+                validateReadOnly(destFolderPath.resolve(node.toPath().getFileName()).toFile());
                 Files.copy(node.toPath(), destFolderPath.resolve(node.toPath().getFileName()), REPLACE_EXISTING);
+            } catch (CpException e) {
+                cpException = e;
             } catch (IOException e) {
                 cpException = (CpException) new CpException(ERR_IO_EXCEPTION).initCause(e);
             }
@@ -118,5 +125,24 @@ public class CpApplication implements CpInterface {
         }
         cpFilesToFolder(lastArg, Arrays.copyOfRange(args, 0, args.length - 1)); // the second argument exclude the last argument
         return;
+    }
+
+    private boolean isReadOnly(File file) throws CpException {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD
+            try {
+                Object object = Files.getAttribute(file.toPath(), "dos:readonly");
+                return Boolean.TRUE == Files.getAttribute(file.toPath(), "dos:readonly");
+            } catch (IOException e) {
+                throw (CpException) new CpException(ERR_IO_EXCEPTION).initCause(e);
+            }
+        } else {
+            return !file.canWrite();
+        }
+    }
+
+    private void validateReadOnly(File file) throws CpException {
+        if (file.exists() && isReadOnly(file)) {
+            throw new CpException(ERR_NO_PERM);
+        }
     }
 }
