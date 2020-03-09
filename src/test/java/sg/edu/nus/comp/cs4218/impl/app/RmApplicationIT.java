@@ -621,7 +621,7 @@ class RmApplicationIT {
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenRFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         String[] argsList = {R_FLAG, FILE_NAME_1};
 
@@ -640,13 +640,13 @@ class RmApplicationIT {
     // More comprehensive test cases to cover those reduced by mc/dc
 
     /**
-     * Tests remove method with -rd flag for an existing non empty directory.
+     * Tests run method with -rd flag for an existing non empty directory.
      * For example: rm -rd hello
      * Where hello is a non empty directory that exist.
      * Expected: Removes hello directory and its contents
      */
     @Test
-    void testRemoveWhenRDFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
+    void testRunWhenRDFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
         String[] argsList = {RD_FLAG, FOLDER_NAME_1};
@@ -666,13 +666,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -rd for a non existing file followed by an existing non empty directory.
+     * Tests run method with -rd for a non existing file followed by an existing non empty directory.
      * For example: rm -rd 1.txt hello
      * Where hello is a non empty directory that exists and 1.txt is a non existing text file.
      * Expected: Throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove a non existing 1.txt file. At the same time, it removes hello directory.
      */
     @Test
-    void testRemoveWhenRDFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRDFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
@@ -698,13 +698,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -rd flag for an existing file followed by an existing directory.
+     * Tests run method with -rd flag for an existing file followed by an existing directory.
      * For example rm -rd 1.txt hello
      * Where hello is a non empty directory that exists and 1.txt is an existing file.
      * Expected: Removes 1.txt and hello directory
      */
     @Test
-    void testRemoveWhenRDFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRDFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
@@ -728,13 +728,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -rd flag for an existing empty directory
+     * Tests run method with -rd flag for an existing empty directory
      * For example: rm -rd hello
      * Where hello is an existing empty directory.
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenRDFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRDFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
         Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
         String[] argsList = {RD_FLAG, FOLDER_NAME_1};
 
@@ -751,13 +751,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with with -rd flag for an existing file.
+     * Tests run method with with -rd flag for an existing file.
      * For example: rm -rd 1.txt
      * Where 1.txt is an existing file.
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenRDFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRDFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         String[] argsList = {RD_FLAG, FILE_NAME_1};
 
@@ -774,13 +774,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -dr flag for an existing non empty directory.
+     * Tests run method with -dr flag for an existing non empty directory.
      * For example: rm -dr hello
      * Where hello is a non empty directory that exist.
      * Expected: Removes hello directory and its contents
      */
     @Test
-    void testRemoveWhenDRFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
+    void testRunWhenDRFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
         String[] argsList = {DR_FLAG, FOLDER_NAME_1};
@@ -800,13 +800,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -dr for a non existing file followed by an existing non empty directory.
+     * Tests run method with -dr for a non existing file followed by an existing non empty directory.
      * For example: rm -dr 1.txt hello
      * Where hello is a non empty directory that exists and 1.txt is a non existing text file.
      * Expected: Throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove a non existing 1.txt file. At the same time, it removes hello directory.
      */
     @Test
-    void testRemoveWhenDRFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenDRFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
@@ -832,13 +832,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -dr flag for an existing file followed by an existing directory.
+     * Tests run method with -dr flag for an existing file followed by an existing directory.
      * For example rm -dr 1.txt hello
      * Where hello is a non empty directory that exists and 1.txt is an existing file.
      * Expected: Removes 1.txt and hello directory
      */
     @Test
-    void testRemoveWhenDRFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenDRFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
@@ -862,13 +862,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -dr flag for an existing empty directory
+     * Tests run method with -dr flag for an existing empty directory
      * For example: rm -dr hello
      * Where hello is an existing empty directory.
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenDRFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenDRFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
         Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
         String[] argsList = {RD_FLAG, FOLDER_NAME_1};
 
@@ -885,13 +885,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with with -dr flag for an existing file.
+     * Tests run method with with -dr flag for an existing file.
      * For example: rm -dr 1.txt
      * Where 1.txt is an existing file.
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenDRFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenDRFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         String[] argsList = {RD_FLAG, FILE_NAME_1};
 
@@ -908,13 +908,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -r -d flag for an existing non empty directory.
+     * Tests run method with -r -d flag for an existing non empty directory.
      * For example: rm -r -d hello
      * Where hello is a non empty directory that exist.
      * Expected: Removes hello directory and its contents
      */
     @Test
-    void testRemoveWhenRFlagDFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
+    void testRunWhenRFlagDFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
         String[] argsList = {R_FLAG, D_FLAG, FOLDER_NAME_1};
@@ -934,13 +934,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -r -d for a non existing file followed by an existing non empty directory.
+     * Tests run method with -r -d for a non existing file followed by an existing non empty directory.
      * For example: rm -r -d 1.txt hello
      * Where hello is a non empty directory that exists and 1.txt is a non existing text file.
      * Expected: Throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove a non existing 1.txt file. At the same time, it removes hello directory.
      */
     @Test
-    void testRemoveWhenRFlagDFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRFlagDFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
@@ -966,13 +966,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -r -d flag for an existing file followed by an existing directory.
+     * Tests run method with -r -d flag for an existing file followed by an existing directory.
      * For example rm -r -d 1.txt hello
      * Where hello is a non empty directory that exists and 1.txt is an existing file.
      * Expected: Removes 1.txt and hello directory
      */
     @Test
-    void testRemoveWhenRFlagDFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRFlagDFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
@@ -996,13 +996,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -r -d flag for an existing empty directory
+     * Tests run method with -r -d flag for an existing empty directory
      * For example: rm -r -d hello
      * Where hello is an existing empty directory.
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenRFlagDFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRFlagDFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
         Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
         String[] argsList = {R_FLAG, D_FLAG, FOLDER_NAME_1};
 
@@ -1019,13 +1019,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with with -r -d flag for an existing file.
+     * Tests run method with with -r -d flag for an existing file.
      * For example: rm -r -d 1.txt
      * Where 1.txt is an existing file.
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenRFlagDFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenRFlagDFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         String[] argsList = {R_FLAG, D_FLAG, FILE_NAME_1};
 
@@ -1042,13 +1042,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -d -r flag for an existing non empty directory.
+     * Tests run method with -d -r flag for an existing non empty directory.
      * For example: rm -d -r hello
      * Where hello is a non empty directory that exist.
      * Expected: Removes hello directory and its contents
      */
     @Test
-    void testRemoveWhenDFlagRFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
+    void testRunWhenDFlagRFlagNonEmptyFolderExistsShouldDeleteNonEmptyFolder(@TempDir Path tempDir) throws Exception {
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
         String[] argsList = {D_FLAG, R_FLAG, FOLDER_NAME_1};
@@ -1068,13 +1068,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -d -r for a non existing file followed by an existing non empty directory.
+     * Tests run method with -d -r for a non existing file followed by an existing non empty directory.
      * For example: rm -d -r 1.txt hello
      * Where hello is a non empty directory that exists and 1.txt is a non existing text file.
      * Expected: Throws latest RmException with ERR_FILE_NOT_FOUND as it attempts to remove a non existing 1.txt file. At the same time, it removes hello directory.
      */
     @Test
-    void testRemoveWhenDFlagRFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenDFlagRFlagNonExistingFileAndExistingNonEmptyDirectoryShouldThrowRmExceptionAndRemoveExistingNonEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
@@ -1100,13 +1100,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -d -r flag for an existing file followed by an existing directory.
+     * Tests run method with -d -r flag for an existing file followed by an existing directory.
      * For example rm -d -r 1.txt hello
      * Where hello is a non empty directory that exists and 1.txt is an existing file.
      * Expected: Removes 1.txt and hello directory
      */
     @Test
-    void testRemoveWhenDFlagRFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenDFlagRFlagExistingFileAndExistingNonEmptyDirectoryShouldRemoveBothFilesAndFolder(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         Path fileInFolder = tempDir.resolve(FOLDER_NAME_1 + File.separator + FILE_NAME_2);
         Path nonEmptyFolder = fileInFolder.getParent();;
@@ -1130,13 +1130,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with -d -r flag for an existing empty directory
+     * Tests run method with -d -r flag for an existing empty directory
      * For example: rm -d -r hello
      * Where hello is an existing empty directory.
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenDFlagRFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenDFlagRFlagExistingEmptyDirectoryShouldRemoveEmptyDirectory(@TempDir Path tempDir) throws RmException, IOException {
         Path emptyFolder = tempDir.resolve(FOLDER_NAME_1);
         String[] argsList = {D_FLAG, R_FLAG, FOLDER_NAME_1};
 
@@ -1153,13 +1153,13 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests remove method with with -d -r flag for an existing file.
+     * Tests run method with with -d -r flag for an existing file.
      * For example: rm -d -r 1.txt
      * Where 1.txt is an existing file.
      * Expected: Removes empty hello directory.
      */
     @Test
-    void testRemoveWhenDFlagRFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
+    void testRunWhenDFlagRFlagExistingFileShouldRemoveFile(@TempDir Path tempDir) throws RmException, IOException {
         Path file = tempDir.resolve(FILE_NAME_1);
         String[] argsList = {D_FLAG, R_FLAG, FILE_NAME_1};
 
