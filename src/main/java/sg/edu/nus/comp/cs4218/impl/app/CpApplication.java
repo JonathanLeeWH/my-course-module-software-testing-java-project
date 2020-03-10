@@ -78,7 +78,8 @@ public class CpApplication implements CpInterface {
                 continue;
             }
             try {
-                validateReadOnly(destFolderPath.resolve(node.toPath().getFileName()).toFile());
+                validateReadOnly(destFolderPath.resolve(node.toPath().getFileName()).toFile()); // if read only throw CpException with ERR_NO_PERM message
+                validateDirectoryExecutePermission(destFolderPath.toFile());
                 Files.copy(node.toPath(), destFolderPath.resolve(node.toPath().getFileName()), REPLACE_EXISTING);
             } catch (CpException e) {
                 cpException = e;
@@ -142,6 +143,12 @@ public class CpApplication implements CpInterface {
 
     private void validateReadOnly(File file) throws CpException {
         if (file.exists() && isReadOnly(file)) {
+            throw new CpException(ERR_NO_PERM);
+        }
+    }
+
+    private void validateDirectoryExecutePermission(File file) throws CpException {
+        if (file.exists() && Files.isDirectory(file.toPath()) && !(file.canExecute())) { // Note: This check might not work on Windows as explained in Assumption report
             throw new CpException(ERR_NO_PERM);
         }
     }
