@@ -543,15 +543,12 @@ public class RmApplicationTest {
     /**
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
-     * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
-     * Technically there is no write only attribute using ATTRIB in windows using windows file attribute API
+     * This test case is disabled on Windows as technically there is no write only attribute using ATTRIB in windows using windows file attribute API
      */
 //    @Disabled("This test case is disabled as it does not match our assumption and technically there is no write only attribute using ATTRIB in windows using windows file attribute API")
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testRemove_onWriteOnlyDir_noRecursiveOption_shouldThrowRmException() throws IOException {
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.WRITE_ONLY_DIR_PATH), "dos:readonly", true);
-        }
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + FilePermissionTestUtil.WRITE_ONLY_DIR_PATH
                 + ": "
@@ -564,9 +561,6 @@ public class RmApplicationTest {
                 FilePermissionTestUtil.WRITE_ONLY_DIR_PATH
         ));
         assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.WRITE_ONLY_DIR_PATH), "dos:readonly", false);
-        }
     }
 
     /**
