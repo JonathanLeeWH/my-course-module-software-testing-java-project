@@ -4,6 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.RmException;
 import sg.edu.nus.comp.cs4218.impl.app.RmApplication;
@@ -64,7 +66,7 @@ public class RmApplicationTest {
         filePermissionTestUtil = new FilePermissionTestUtil();
         filePermissionTestUtil.createTestEnv();
         /**
-         * Modify tdd's test suite to set Environment.currentDirectory to the RM_TEST_DIR at the start of execution of each test case.
+         * Modify tdd's test suite to set EnvironmentHelper.currentDirectory to the RM_TEST_DIR at the start of execution of each test case.
          */
         EnvironmentHelper.currentDirectory = ABSOLUTE_RM_TEST_PATH;
     }
@@ -75,7 +77,7 @@ public class RmApplicationTest {
         rmTestUtil.removeTestEnv();
         filePermissionTestUtil.removeTestEnv();
         /**
-         * Modify tdd's test suite to set Environment.currentDirectory to the default.
+         * Modify tdd's test suite to set EnvironmentHelper.currentDirectory to the default.
          */
         EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
     }
@@ -482,9 +484,11 @@ public class RmApplicationTest {
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
      * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
+     * This test case is disabled for Windows platform.
      */
 //    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testRemove_onExecuteOnlyDir_shouldThrowRmException() throws IOException {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
             Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH), "dos:readonly", true);
@@ -540,9 +544,9 @@ public class RmApplicationTest {
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
      * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
-     * Technically there is no write only attribute using ATTRIB in windows using windows file attribute api
+     * Technically there is no write only attribute using ATTRIB in windows using windows file attribute API
      */
-//    @Disabled("This test case is disabled as it does not match our assumption and technically there is no write only attribute using ATTRIB in windows using windows file attribute api")
+//    @Disabled("This test case is disabled as it does not match our assumption and technically there is no write only attribute using ATTRIB in windows using windows file attribute API")
     @Test
     public void testRemove_onWriteOnlyDir_noRecursiveOption_shouldThrowRmException() throws IOException {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
@@ -593,14 +597,13 @@ public class RmApplicationTest {
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
      * Try to modify to add support for Windows permission but might not be perfect as stated in Assumptions report bug with file permission.
-     * Technically there is no execute only attribute using ATTRIB in windows using windows file attribute api
+     * Technically there is no execute only attribute using ATTRIB in windows using windows file attribute API
+     * This test case is disabled for Windows platform.
      */
 //    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testRemove_onExecuteOnlyFile_shouldThrowRmException() throws IOException {
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_FILE_PATH), "dos:readonly", true);
-        }
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + FilePermissionTestUtil.EXECUTE_ONLY_FILE_PATH
                 + ": "
@@ -613,15 +616,12 @@ public class RmApplicationTest {
                 FilePermissionTestUtil.EXECUTE_ONLY_FILE_PATH
         ));
         assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_FILE_PATH), "dos:readonly", false);
-        }
     }
 
     /**
      * Comment out or disabled tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
-     * Technically there is no execute only attribute using ATTRIB in windows using windows file attribute api
+     * Technically there is no write only attribute using ATTRIB in windows using windows file attribute API
      */
 //    @Disabled("This test case is disabled as it does not match our assumption")
     @Test
