@@ -103,6 +103,7 @@ public class RmApplication implements RmInterface {
                 if (directoryContents != null && directoryContents.length > 0) {
                     throw new RmException(ERR_NON_EMPTY_DIR);
                 }
+                validateWriteOnly(fileName);
             }
             validateReadOnly(fileName);
             Files.delete(fileName.toPath());
@@ -199,6 +200,12 @@ public class RmApplication implements RmInterface {
 
     private void validateReadOnly(File file) throws RmException {
         if (file.exists() && isReadOnly(file)) {
+            throw new RmException(ERR_NO_PERM);
+        }
+    }
+
+    private void validateWriteOnly(File file) throws RmException {
+        if (file.exists() && !file.canRead() && !file.canExecute() && file.canWrite()) { // Might not work on Windows as stated in our Assumptions report. This is just for minimum check.
             throw new RmException(ERR_NO_PERM);
         }
     }
