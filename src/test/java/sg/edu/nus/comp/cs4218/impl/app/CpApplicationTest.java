@@ -2,6 +2,8 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.exception.CpException;
 
@@ -320,14 +322,15 @@ class CpApplicationTest {
     }
 
     /**
-     * Tests cpFilesToFolder method when the input destination file has read only permission and one of the input source file does not exist.
+     * Tests cpFilesToFolder method when the input destination folder has a file which has same file name as one of the input source file with read only permission
+     * and one of the input source file does not exist.
      * For example: cp 1.txt 2.txt dest
-     * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file. 2.txt is a non existing file.
+     * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file which only has read only permission. 2.txt is a non existing file.
      * In this case, it will throw the latest CpException which is ERR_FILE_NOT_FOUND
      * Expected: Throws latest CpException with ERR_FILE_NOT_FOUND
      */
     @Test
-    void testCpFilesToFolderWhenOneOfTheDestinationFileToBeOverwrittenIsReadOnlyAndAnotherInputSourceFileDoesNotExistShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+    void testCpFilesToFolderWhenOneOfTheFileInDestinationFolderToBeOverwrittenIsReadOnlyAndAnotherInputSourceFileDoesNotExistShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path srcFile = tempDir.resolve(SRC_FILE);
         Path srcFile2 = tempDir.resolve(FILE_NAME_1);
         Path destFolder = tempDir.resolve(DEST_FOLDER);
@@ -360,6 +363,43 @@ class CpApplicationTest {
         } else {
             destFile.toFile().setWritable(true); // reset permissions from read only.
         }
+    }
+
+    /**
+     * Tests cpFilesToFolder method when the input destination folder has no execute permission.
+     * Note: As stated earlier, Windows have issue with permission in Java so it might not work on Windows.
+     * This test case is disabled on Windows platform.
+     * For example: cp 1.txt dest
+     * Where 1.txt is an existing file to be copied and dest is an existing folder with no execute permission.
+     * In this case, it will throw CpException: ERR_NO_PERM (similar to in unix shell where file cannot be copied to folder with no execute permission)
+     * Expected: Throws CpException with ERR_NO_PERM
+     */
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void testCpFilesToFolderWhenDestinationDirectoryHasNoExecutablePermissionShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path srcFile2 = tempDir.resolve(FILE_NAME_1);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        Path destFile = destFolder.resolve(SRC_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createDirectory(destFolder);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertFalse(Files.exists(srcFile2)); // check 2.txt does not exist
+        assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
+        assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
+        String[] fileNameList = {srcFile.toString(), srcFile2.toString()};
+        destFolder.toFile().setExecutable(false); // set the dest directory to have no executable permission.
+        assertFalse(destFolder.toFile().canExecute()); // check that the dest directory have no executable permission.
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.cpFilesToFolder(destFolder.toString(), fileNameList);
+        });
+        assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        destFile.toFile().setExecutable(true); // reset permissions from no execute permission
     }
 
     /**
@@ -723,6 +763,43 @@ class CpApplicationTest {
         } else {
             destFile.toFile().setWritable(true); // reset permissions from read only.
         }
+    }
+
+    /**
+     * Tests run method when the input destination folder has no execute permission.
+     * Note: As stated earlier, Windows have issue with permission in Java so it might not work on Windows.
+     * This test case is disabled on Windows platform.
+     * For example: cp 1.txt dest
+     * Where 1.txt is an existing file to be copied and dest is an existing folder with no execute permission.
+     * In this case, it will throw CpException: ERR_NO_PERM (similar to in unix shell where file cannot be copied to folder with no execute permission)
+     * Expected: Throws CpException with ERR_NO_PERM
+     */
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void testRunWhenDestinationDirectoryHasNoExecutablePermissionShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path srcFile2 = tempDir.resolve(FILE_NAME_1);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        Path destFile = destFolder.resolve(SRC_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createDirectory(destFolder);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertFalse(Files.exists(srcFile2)); // check 2.txt does not exist
+        assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
+        assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
+        String[] argsList = {srcFile.toString(), srcFile2.toString(), destFolder.toString()};
+        destFolder.toFile().setExecutable(false); // set the dest directory to have no executable permission.
+        assertFalse(destFolder.toFile().canExecute()); // check that the dest directory have no executable permission.
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+        assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        destFile.toFile().setExecutable(true); // reset permissions from no execute permission
     }
 
 //    private static boolean isFilesEqual(Path first, Path second) throws IOException {
