@@ -378,7 +378,6 @@ class CpApplicationTest {
     @DisabledOnOs(OS.WINDOWS)
     void testCpFilesToFolderWhenDestinationDirectoryHasNoExecutablePermissionShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path srcFile = tempDir.resolve(SRC_FILE);
-        Path srcFile2 = tempDir.resolve(FILE_NAME_1);
         Path destFolder = tempDir.resolve(DEST_FOLDER);
         Path destFile = destFolder.resolve(SRC_FILE);
         List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
@@ -389,10 +388,9 @@ class CpApplicationTest {
         Files.createFile(destFile);
         Files.write(destFile, fileContents2);
         assertTrue(Files.exists(srcFile)); // check 1.txt exists
-        assertFalse(Files.exists(srcFile2)); // check 2.txt does not exist
         assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
         assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
-        String[] fileNameList = {srcFile.toString(), srcFile2.toString()};
+        String[] fileNameList = {srcFile.toString()};
         destFolder.toFile().setExecutable(false); // set the dest directory to have no executable permission.
         assertFalse(destFolder.toFile().canExecute()); // check that the dest directory have no executable permission.
         CpException exception = assertThrows(CpException.class, () -> {
@@ -778,7 +776,6 @@ class CpApplicationTest {
     @DisabledOnOs(OS.WINDOWS)
     void testRunWhenDestinationDirectoryHasNoExecutablePermissionShouldThrowCpException(@TempDir Path tempDir) throws IOException {
         Path srcFile = tempDir.resolve(SRC_FILE);
-        Path srcFile2 = tempDir.resolve(FILE_NAME_1);
         Path destFolder = tempDir.resolve(DEST_FOLDER);
         Path destFile = destFolder.resolve(SRC_FILE);
         List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
@@ -789,10 +786,9 @@ class CpApplicationTest {
         Files.createFile(destFile);
         Files.write(destFile, fileContents2);
         assertTrue(Files.exists(srcFile)); // check 1.txt exists
-        assertFalse(Files.exists(srcFile2)); // check 2.txt does not exist
         assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
         assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
-        String[] argsList = {srcFile.toString(), srcFile2.toString(), destFolder.toString()};
+        String[] argsList = {srcFile.toString(), destFolder.toString()};
         destFolder.toFile().setExecutable(false); // set the dest directory to have no executable permission.
         assertFalse(destFolder.toFile().canExecute()); // check that the dest directory have no executable permission.
         CpException exception = assertThrows(CpException.class, () -> {
