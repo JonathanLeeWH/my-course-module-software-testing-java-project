@@ -30,21 +30,26 @@
                         <exclude>**/tdd/bf/cmd/CallCommandTest.java</exclude>
 <!--                        <exclude>**/tdd/bf/cmd/PipeCommandTest.java</exclude>-->
 <!--                        <exclude>**/tdd/bf/cmd/SequenceCommandTest.java</exclude>-->
-                        <exclude>**/tdd/bf/PasteApplicationTest.java</exclude>
-                        <exclude>**/tdd/bf/SedApplicationTest.java</exclude>
-                        <exclude>**/tdd/ef1/cmd/GlobbingTest.java</exclude>
-                        <exclude>**/tdd/ef1/cmd/QuotingTest.java</exclude>
-                        <exclude>**/tdd/ef1/DiffApplicationTest.java</exclude>
-                        <exclude>**/tdd/ef1/GrepApplicationTest.java</exclude>
-                        <exclude>**/tdd/ef1/WcApplicationTest.java</exclude>
-                        <exclude>**/tdd/ef2/cmd/CommandSubstitutionTest.java</exclude>
-                        <exclude>**/tdd/ef2/cmd/IORedirectionHandlerTest.java</exclude>
-                        <exclude>**/tdd/ef2/cmd/IORedirectionHandlerTest.java</exclude>
-                        <exclude>**/tdd/ef2/CutApplicationTest.java</exclude>
-                        <exclude>**/tdd/ef2/FindApplicationTest.java</exclude>
-                        <exclude>**/tdd/ef2/LsApplicationTest.java</exclude>
-                        <exclude>**/tdd/ef2/MvApplicationTest.java</exclude>
-                        <exclude>**/tdd/ef2/SortApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/PasteApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/SedApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/cmd/GlobbingTest.java</exclude>
+                        <exclude>**/tdd/**/cmd/QuotingTest.java</exclude>
+                        <exclude>**/tdd/**/DiffApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/GrepApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/WcApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/cmd/CommandSubstitutionTest.java</exclude>
+                        <exclude>**/tdd/**/cmd/IORedirectionHandlerTest.java</exclude>
+                        <exclude>**/tdd/**/cmd/IORedirectionHandlerTest.java</exclude>
+                        <exclude>**/tdd/**/CutApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/FindApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/LsApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/MvApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/SortApplicationTest.java</exclude>
+                        <exclude>**/tdd/**/ArgsParserTest.java</exclude>
+                        <exclude>**/tdd/**/CutArgsParserTest.java</exclude>
+                        <exclude>**/tdd/**/GrepArgsParserTest.java</exclude>
+                        <exclude>**/tdd/**/LsArgsParserTest.java</exclude>
+                        <exclude>**/tdd/**/MvArgsParserTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
