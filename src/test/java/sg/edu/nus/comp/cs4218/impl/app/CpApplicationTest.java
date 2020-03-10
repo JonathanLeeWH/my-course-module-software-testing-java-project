@@ -397,7 +397,7 @@ class CpApplicationTest {
             cpApplication.cpFilesToFolder(destFolder.toString(), fileNameList);
         });
         assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
-        destFile.toFile().setExecutable(true); // reset permissions from no execute permission
+        destFolder.toFile().setExecutable(true); // reset permissions from no execute permission
     }
 
     /**
@@ -795,7 +795,7 @@ class CpApplicationTest {
             cpApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
         });
         assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
-        destFile.toFile().setExecutable(true); // reset permissions from no execute permission
+        destFolder.toFile().setExecutable(true); // reset permissions from no execute permission
     }
 
 //    private static boolean isFilesEqual(Path first, Path second) throws IOException {
