@@ -4,12 +4,17 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.CdException;
 import sg.edu.nus.comp.cs4218.impl.app.CdApplication;
 import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.*;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,6 +24,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
  * Modify tdd's CdApplicationTest.java expected exception message as the format of the CdException message thrown differs in implementation.
  * The tdd's CdApplicationTest.java should be run with our CdApplicationTest.java for better coverage.
  * Permissions related test cases are disabled especially since even with workaround Windows ATTRIB only support readOnly and does not support executeOnly etc.
+ * I have attempted to resolved it by disabling tests that does not work properly on Windows.
  * Read more: https://web.csulb.edu/~murdock/attrib.html
  */
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.LongVariable"})
@@ -111,14 +117,16 @@ class CdApplicationTest {
     /**
      * Ignore tdd's test cases involving permissions as stated in our assumptions we assume all files and folders have correct permissions for commands to execute properly due to difference in behaviour in setting file permissions using Java API between filesystems as well as operating system
      * You can read more about it on our Assumptions report.
+     * This test case is disabled for Windows platform.
      */
-    @Disabled("This test case is disabled as it does not match our assumption and Windows Attribute ATTRIB only support read only permission")
+//    @Disabled("This test case is disabled as it does not match our assumption and Windows Attribute ATTRIB only support read only permission")
     @Test
-    public void testChangeToDirectory_noReadPermission() {
+    @DisabledOnOs(OS.WINDOWS)
+    public void testChangeToDirectory_noExecutePermission(@TempDir Path tempDir) {
         Exception exception = assertThrows(Exception.class, () -> {
             app.changeToDirectory(CD_PATH);
         });
-        assertEquals("cd: " + CD_PATH + NO_READ_PERM, exception.getMessage());
+        assertEquals(new CdException(ERR_NO_PERM).getMessage(), exception.getMessage());
     }
 
     /**
