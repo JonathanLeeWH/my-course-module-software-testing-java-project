@@ -16,13 +16,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>3.0.0-M4</version>
                 <configuration>
                     <excludes>
 <!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
                         <exclude>**/DiffApplicationTest.java</exclude>
                         <exclude>**/GrepApplicationTest.java</exclude>
-                        <exclude>**/WcApplicationTest.java</exclude>
                         <exclude>**/WcArgumentsTest.java</exclude>
                         <exclude>**/ArgumentResolverTest.java</exclude>
 <!--                    Add exclusion for tdd folder in tests so travis will still run properly. This can be removed when tdd is resolved.-->
@@ -70,4 +69,47 @@
         </dependency>
         <!-- ... -->
     </dependencies>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.0.0-M4</version>
+                <configuration>
+                    <showSuccess>false</showSuccess>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>3.1.8</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <rulesets>
+                        <!-- Custom local file system rule set -->
+                        <ruleset>/Users/joseph/IdeaProjects/cs4218-project-ay1920-s2-2020-team22/pmd/PMD.Rules.xml</ruleset>
+                    </rulesets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
