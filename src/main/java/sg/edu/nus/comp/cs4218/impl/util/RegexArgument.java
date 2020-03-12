@@ -69,6 +69,7 @@ public final class RegexArgument {
 
     public List<String> globFiles() {
         List<String> globbedFiles = new LinkedList<>();
+        List<String> globbedFolders = new LinkedList<>();
 
         if (isRegex) {
             Pattern regexPattern = Pattern.compile(regex.toString());
@@ -88,18 +89,27 @@ public final class RegexArgument {
                 String fileName = Paths.get(EnvironmentHelper.currentDirectory).relativize(candidateFile.toPath()).toString();
 
                 if (regexPattern.matcher(fileName).matches()) {
-                    globbedFiles.add(fileName);
+                    if(candidateFile.isDirectory()) {
+                        globbedFolders.add(fileName);
+                    }
+                    else{
+                        globbedFiles.add(fileName);
+                    }
                 }
 
                 if (candidateFile.isDirectory()) {
                     String folderName = fileName + "/";
                     if (regexPattern.matcher(folderName).matches()) {
-                        globbedFiles.add(folderName);
+                        globbedFolders.add(folderName);
                     }
                 }
             }
 
             Collections.sort(globbedFiles);
+            Collections.sort(globbedFolders);
+            for(String folder: globbedFolders) {
+                globbedFiles.add(folder);
+            }
         }
 
         if (globbedFiles.isEmpty()) {

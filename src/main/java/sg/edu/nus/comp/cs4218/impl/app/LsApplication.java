@@ -126,10 +126,16 @@ public class LsApplication implements LsInterface {
      */
     private String buildResult(List<Path> paths, List<String> folderNames, Boolean isFoldersOnly, Boolean isRecursive) throws LsException {
         StringBuilder result = new StringBuilder();
+        File previousFile = new File("");
+        boolean lastFileInFolder = false;
         for (Path path : paths) {
             try {
                 File file = new File(path.toString());
                 if(file.isDirectory() && !isFoldersOnly) {
+                    if(!previousFile.getPath().equals("") && !previousFile.isDirectory() && lastFileInFolder == false && !isRecursive){
+                        result.append(System.lineSeparator());
+                        lastFileInFolder = true;
+                    }
                     List<Path> contents = getContents(path, isFoldersOnly);
                     String formatted = formatContents(contents);
                     buildRelativePath(isRecursive, result, path);
@@ -173,6 +179,7 @@ public class LsApplication implements LsInterface {
                     if(!file.exists()) {
                         throw (LsException) new LsException(NO_FILE_OR_FOLDER);
                     }
+                    previousFile = file;
                     result.append(file.getName());
                     result.append(System.lineSeparator());
                 }
