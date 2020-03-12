@@ -117,6 +117,13 @@ An example `build` tag content in `pom.xml` of a list of excluded `**Test.java` 
 
 You will just need to run `mvn test` (Not recommended for Windows as Windows usually do not have mvn preinstalled).
 
+## Instructions to generate automated project report
+
+Run `mvn clean compile jxr:jxr jxr:test-jxr site-attach-descriptor site`
+
+* Note that you are not suppose to remove anything inside the `src/site` folder
+* Remember to change the file path of the PMD ruleset to your local file path.
+
 ## External libraries / plugins / tools / technologies used
 (The below has been approved by Prof or is as stated in Project Specification) 
 - Maven: For Build Automation
@@ -125,6 +132,17 @@ You will just need to run `mvn test` (Not recommended for Windows as Windows usu
 - Maven Failsafe Plugin: Required by Maven in order to run integration test file (`**IT.java`) within Java Maven Project.
 - JUnit 5 for Java testing purposes
 - Mockito for mocking and stubbing
+
+For bug report:
+
+- Maven Surefire Report Plugin: Parses the generated TEST-*.xml files under ${basedir}/target/surefire-reports and renders them using DOXIA, which creates the web interface version of the test results.
+- Maven Jxr Plugin: Aid in source code cross reference for the report.
+- Maven Site Plugin: Generate a site for the project.
+- Maven Project Info Reports Plugin: Generate various project information reports.
+- SpotBugs Plugin: Look for various bugs in our program.
+- Maven Fluido Skins: Skins to help in beautify the HTML-generated report
+- Maven PMD Plugin: Static code analyser tool.
+- Jacoco Maven Plugin: Code coverage runner tool.
 
 ## Acknowledges / References
 [TBC]

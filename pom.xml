@@ -54,7 +54,6 @@
                         <exclude>**/WcApplicationIT.java</exclude>
                         <exclude>**/DiffApplicationIT.java</exclude>
                     </excludes>
-
                     <forkCount>4</forkCount>
                     <reuseForks>true</reuseForks>
                     <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
@@ -92,7 +91,7 @@
                         </goals>
                         <configuration>
                             <rulesets>
-                                <!-- Custom local file system rule set -->
+                                <!-- TODO: Change to your local absolute file path for the PMD.xml -->
                                 <ruleset>/Users/joseph/IdeaProjects/cs4218-project-ay1920-s2-2020-team22/pmd/PMD.Rules.xml</ruleset>
                             </rulesets>
                             <skipEmptyReport>false</skipEmptyReport>
@@ -170,7 +169,7 @@
                 <version>3.13.0</version>
                 <configuration>
                     <rulesets>
-                        <!-- Custom local file system rule set -->
+                        <!-- TODO: Change to your local absolute file path for the PMD.xml -->
                         <ruleset>/Users/joseph/IdeaProjects/cs4218-project-ay1920-s2-2020-team22/pmd/PMD.Rules.xml</ruleset>
                     </rulesets>
                     <skipEmptyReport>false</skipEmptyReport>
