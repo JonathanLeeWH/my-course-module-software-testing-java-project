@@ -2,13 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>sg.edu.nus.comp.cs4218</groupId>
-    <artifactId>CS4218 Shell</artifactId>
+    <artifactId>Shell</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
-    <name>Shell</name>
+    <name>J4Shell</name>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <pmdVersion>6.21.0</pmdVersion>
     </properties>
     <!-- To allow mvn test to run any and all test java classes -->
     <build>
@@ -22,12 +23,26 @@
 <!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
                         <exclude>**/DiffApplicationTest.java</exclude>
                         <exclude>**/GrepApplicationTest.java</exclude>
+                        <exclude>**/WcApplicationTest.java</exclude>
                         <exclude>**/WcArgumentsTest.java</exclude>
                         <exclude>**/ArgumentResolverTest.java</exclude>
 <!--                    Add exclusion for tdd folder in tests so travis will still run properly. This can be removed when tdd is resolved.-->
                         <exclude>**/tdd/**</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.6</version>
+                <executions>
+                    <execution>
+                        <id>attach-descriptor</id>
+                        <goals>
+                            <goal>attach-descriptor</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -39,7 +54,51 @@
                         <exclude>**/WcApplicationIT.java</exclude>
                         <exclude>**/DiffApplicationIT.java</exclude>
                     </excludes>
+
+                    <forkCount>4</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.13.0</version>
+                <executions>
+                    <execution>
+                        <id>pmd-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>pmd</goal>
+                        </goals>
+                        <configuration>
+                            <rulesets>
+                                <!-- Custom local file system rule set -->
+                                <ruleset>/Users/joseph/IdeaProjects/cs4218-project-ay1920-s2-2020-team22/pmd/PMD.Rules.xml</ruleset>
+                            </rulesets>
+                            <skipEmptyReport>false</skipEmptyReport>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -82,7 +141,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.6</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -93,6 +152,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>3.0.0</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
@@ -108,7 +173,28 @@
                         <!-- Custom local file system rule set -->
                         <ruleset>/Users/joseph/IdeaProjects/cs4218-project-ay1920-s2-2020-team22/pmd/PMD.Rules.xml</ruleset>
                     </rulesets>
+                    <skipEmptyReport>false</skipEmptyReport>
                 </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>pmd</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <!-- select non-aggregate reports -->
+                            <report>report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
         </plugins>
     </reporting>
