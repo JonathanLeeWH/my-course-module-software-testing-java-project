@@ -92,7 +92,7 @@
                         </goals>
                         <configuration>
                             <rulesets>
-                                <!-- TODO: Change to your local absolute file path for the PMD.xml -->
+                                <ruleset>https://github.com/nus-cs4218/cs4218-project-ay1920-s2-2020-team22/blob/master/pmd/PMD.Rules.xml</ruleset>
                             </rulesets>
                             <skipEmptyReport>false</skipEmptyReport>
                         </configuration>
@@ -169,7 +169,7 @@
                 <version>3.13.0</version>
                 <configuration>
                     <rulesets>
-                        <!-- TODO: Change to your local absolute file path for the PMD.xml -->
+                        <ruleset>https://github.com/nus-cs4218/cs4218-project-ay1920-s2-2020-team22/blob/master/pmd/PMD.Rules.xml</ruleset>
                     </rulesets>
                     <skipEmptyReport>false</skipEmptyReport>
                 </configuration>

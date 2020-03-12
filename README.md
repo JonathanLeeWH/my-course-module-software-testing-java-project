@@ -123,7 +123,6 @@ You will just need to run `mvn test` (Not recommended for Windows as Windows usu
 * Go to [http://localhost:8080](http://localhost:8080) to access the generated automated project report.
 
 * Note that you are not suppose to remove anything inside the `src/site` folder.
-* Remember to change the file path of the PMD ruleset to your local file path.
 
 ## External libraries / plugins / tools / technologies used
 (The below has been approved by Prof or is as stated in Project Specification) 
