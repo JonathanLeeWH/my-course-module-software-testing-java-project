@@ -80,9 +80,22 @@ public final class RegexArgument {
 
             File currentDir = Paths.get(EnvironmentHelper.currentDirectory + File.separator + dir).toFile();
 
-            for (String candidate : currentDir.list()) {
-                if (regexPattern.matcher(candidate).matches()) {
-                    globbedFiles.add(dir + candidate);
+            for (File candidateFile : currentDir.listFiles()) {
+                if (candidateFile.getName().startsWith(".")) {
+                    continue;
+                }
+
+                String fileName = Paths.get(EnvironmentHelper.currentDirectory).relativize(candidateFile.toPath()).toString();
+
+                if (regexPattern.matcher(fileName).matches()) {
+                    globbedFiles.add(fileName);
+                }
+
+                if (candidateFile.isDirectory()) {
+                    String folderName = fileName + "/";
+                    if (regexPattern.matcher(folderName).matches()) {
+                        globbedFiles.add(folderName);
+                    }
                 }
             }
 
