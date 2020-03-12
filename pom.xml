@@ -10,6 +10,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <pmdVersion>6.21.0</pmdVersion>
+        <mavenSureFireVersion>3.0.0-M1</mavenSureFireVersion>
     </properties>
     <!-- To allow mvn test to run any and all test java classes -->
     <build>
@@ -17,7 +18,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M4</version>
+                <version>${mavenSureFireVersion}</version>
                 <configuration>
                     <excludes>
 <!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
@@ -27,7 +28,7 @@
                         <exclude>**/WcArgumentsTest.java</exclude>
                         <exclude>**/ArgumentResolverTest.java</exclude>
 <!--                    Add exclusion for tdd folder in tests so travis will still run properly. This can be removed when tdd is resolved.-->
-                        <exclude>**/tdd/**</exclude>
+
                     </excludes>
                 </configuration>
             </plugin>
@@ -92,7 +93,7 @@
                         <configuration>
                             <rulesets>
                                 <!-- TODO: Change to your local absolute file path for the PMD.xml -->
-                                
+                                <ruleset>/Users/joseph/IdeaProjects/cs4218-project-ay1920-s2-2020-team22/pmd/PMD.Rules.xml</ruleset>
                             </rulesets>
                             <skipEmptyReport>false</skipEmptyReport>
                         </configuration>
@@ -132,7 +133,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>${mavenSureFireVersion}</version>
                 <configuration>
                     <showSuccess>false</showSuccess>
                 </configuration>
@@ -170,6 +171,7 @@
                 <configuration>
                     <rulesets>
                         <!-- TODO: Change to your local absolute file path for the PMD.xml -->
+                        <ruleset>/Users/joseph/IdeaProjects/cs4218-project-ay1920-s2-2020-team22/pmd/PMD.Rules.xml</ruleset>
                     </rulesets>
                     <skipEmptyReport>false</skipEmptyReport>
                 </configuration>
