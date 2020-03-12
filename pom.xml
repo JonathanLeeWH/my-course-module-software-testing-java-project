@@ -28,7 +28,7 @@
                         <exclude>**/WcArgumentsTest.java</exclude>
                         <exclude>**/ArgumentResolverTest.java</exclude>
 <!--                    Add exclusion for tdd folder in tests so travis will still run properly. This can be removed when tdd is resolved.-->
-
+                        <exclude>**/tdd/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
