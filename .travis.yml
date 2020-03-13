@@ -1,8 +1,8 @@
 language: shell
 os: windows
-before_install:
-- SET JAVA_HOME=${JAVA_HOME:-/c/jdk}
-- SET PATH=${JAVA_HOME}/bin:${PATH}
+before_script:
+- export JAVA_HOME=${JAVA_HOME:-/c/jdk}
+- export PATH=${JAVA_HOME}/bin:${PATH}
 - choco install ojdkbuild8
 - choco install maven
 - powershell refreshenv
