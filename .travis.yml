@@ -5,8 +5,7 @@ before_script:
 - choco install maven
 - powershell refreshenv
 script:
-- cd ../../../../../Program*Files
-- cd /c/Program*Files/ojdkbuild/java-1.8.0-openjdk-1.8.0.242-1/
+- SET JAVA_HOME=/c/Program*Files/ojdkbuild/java-1.8.0-openjdk-1.8.0.242-1/bin
 - ls -l
 - ls /c/
 - /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn
