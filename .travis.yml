@@ -5,5 +5,6 @@ before_script:
 - choco install maven
 - powershell refreshenv
 script:
-- cd ../../../../../ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin
+- cd ../../../../../Program Files
+- ls -l
 - /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn
