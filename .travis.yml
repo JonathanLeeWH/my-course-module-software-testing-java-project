@@ -6,5 +6,6 @@ before_install:
 - choco install ojdkbuild8
 - choco install maven
 script:
-- set PATH=%M2_HOME%\bin;
+- set PATH=%M2_HOME%\bin
+- powershell refreshenv
 - mvn install test -B -V
