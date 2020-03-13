@@ -5,7 +5,6 @@ before_install:
 - export PATH=${JAVA_HOME}/bin:${PATH}
 - choco install ojdkbuild8
 - choco install maven
-script:
-- set PATH=%M2_HOME%\bin
 - powershell refreshenv
+script:
 - mvn install test -B -V
