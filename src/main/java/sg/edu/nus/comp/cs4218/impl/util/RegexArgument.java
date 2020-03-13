@@ -105,11 +105,13 @@ public final class RegexArgument {
                 }
             }
 
-            Collections.sort(globbedFiles);
-            Collections.sort(globbedFolders);
+//            Collections.sort(globbedFiles);
+//            Collections.sort(globbedFolders);
             for(String folder: globbedFolders) {
                 globbedFiles.add(folder);
             }
+            Collections.sort(globbedFiles);
+
         }
 
         if (globbedFiles.isEmpty()) {
