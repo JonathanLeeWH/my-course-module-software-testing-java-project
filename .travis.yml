@@ -1,2 +1,5 @@
-language: java
-jdk: openjdk8
+language: shell
+os: windows
+before_install:
+  choco install jdk8
+  choco install maven
