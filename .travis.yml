@@ -5,6 +5,5 @@ before_install:
 - export PATH=${JAVA_HOME}/bin:${PATH}
 - choco install ojdkbuild8
 - choco install maven
-- refreshenv
-install:
+script:
 - mvn install test -B -V
