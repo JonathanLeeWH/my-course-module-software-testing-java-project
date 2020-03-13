@@ -1,12 +1,5 @@
-language: shell
-os: windows
-before_script:
-- choco install ojdkbuild8
-- choco install maven
-- powershell refreshenv
-script:
-- export JAVA_HOME=/c/Program*Files/ojdkbuild/java-1.8.0-openjdk-1.8.0.242-1/bin
-- export PATH=/c/Program*Files/ojdkbuild/java-1.8.0-openjdk-1.8.0.242-1/bin
-- ls -l
-- ls /c/
-- /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn
+language: java
+jdk: openjdk8
+os:
+  - linux
+  - windows
