@@ -6,4 +6,5 @@ before_install:
 - choco install ojdkbuild8
 - choco install maven
 script:
+- set PATH=%M2_HOME%\bin;
 - mvn install test -B -V
