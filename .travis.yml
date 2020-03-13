@@ -9,5 +9,6 @@ before_script:
 script:
 - ls
 - pwd
-- cd /c/ProgramData/chocolatey/lib/maven/bin
+- echo %PATH%
+- cd ../../../../
 - mvn install test -B -V
