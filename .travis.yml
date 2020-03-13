@@ -8,4 +8,4 @@ before_script:
 - powershell refreshenv
 script:
 - cd ../../../../../ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin
-- /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn test
+- /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn
