@@ -4,3 +4,7 @@ before_install:
   export JAVA_HOME=${JAVA_HOME:-/c/jdk}
   export PATH=${JAVA_HOME}/bin:${PATH}
   choco install ojdkbuild8 maven
+install:
+  mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+script:
+  mvn test -B
