@@ -6,6 +6,4 @@ before_install:
 - choco install ojdkbuild8
 - choco install maven
 install:
-  mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-script:
-  mvn test -B
+- mvn install test -B -V
