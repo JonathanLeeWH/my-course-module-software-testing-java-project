@@ -8,6 +8,6 @@ before_script:
 - powershell refreshenv
 script:
 - ls
-- dir
+- pwd
 - cd ../../../ProgramData/chocolatey/lib/maven/bin
 - mvn install test -B -V
