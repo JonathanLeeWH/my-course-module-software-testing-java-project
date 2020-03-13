@@ -1,9 +1,10 @@
 language: shell
 os: windows
 before_install:
-  export JAVA_HOME=${JAVA_HOME:-/c/jdk}
-  export PATH=${JAVA_HOME}/bin:${PATH}
-  choco install ojdkbuild8 maven
+- export JAVA_HOME=${JAVA_HOME:-/c/jdk}
+- export PATH=${JAVA_HOME}/bin:${PATH}
+- choco install ojdkbuild8
+- choco install maven
 install:
   mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script:
