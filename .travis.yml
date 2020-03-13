@@ -7,7 +7,7 @@ before_script:
 - choco install maven
 - powershell refreshenv
 script:
-- cd ../../../../../ProgramData/chocolatey/lib/maven/apache-maven-3.6.2
+- cd ../../../../../ProgramData/chocolatey/lib/maven
 - ls -l
 - pwd
 - mvn install test -B -V
