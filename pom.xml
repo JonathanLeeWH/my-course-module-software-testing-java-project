@@ -22,6 +22,7 @@
                 <configuration>
                     <includes>
                         <include>**/*IT.java</include>
+                        <include>**/*Test.java</include>
                     </includes>
                     <excludes>
 <!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
