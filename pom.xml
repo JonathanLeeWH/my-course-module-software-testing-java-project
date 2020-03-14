@@ -20,6 +20,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${mavenSureFireVersion}</version>
                 <configuration>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
                     <excludes>
 <!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
                         <exclude>**/DiffApplicationTest.java</exclude>
