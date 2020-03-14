@@ -32,6 +32,7 @@ class RmApplicationIT {
     private static final String D_FLAG = "-d";
     private static final String RD_FLAG = "-rd";
     private static final String DR_FLAG = "-dr";
+    private static final String RELATIVE_UP = "..";
 
     private RmApplication rmApplication;
 
@@ -1153,7 +1154,7 @@ class RmApplicationIT {
     }
 
     /**
-     * Tests run method with with -d -r flag for an existing file.
+     * Tests run method with -d -r flag for an existing file.
      * For example: rm -d -r 1.txt
      * Where 1.txt is an existing file.
      * Expected: Removes empty hello directory.
@@ -1173,5 +1174,116 @@ class RmApplicationIT {
 
         // Check that the empty folder is deleted.
         assertFalse(Files.exists(file));
+    }
+
+    /**
+     * Tests run method when attempting to remove sub path of the current path in this case, the parent of the current directory.
+     * For example: rm ..
+     * Expected: Throws RmException ERR_IS_SUB_PATH
+     */
+    @Test
+    public void testRunWhenInputSubPathOfCurrentPathShouldThrowRmException() {
+        String[] args = {RELATIVE_UP};
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.run(args, mock(InputStream.class), mock(OutputStream.class));
+        });
+        assertEquals(new RmException(ERR_IS_SUB_PATH).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests run method when attempting to remove the current path in this case, the current directory.
+     * For example: rm .
+     * Expected: Throws RmException ERR_IS_SUB_PATH
+     */
+    @Test
+    public void testRunWhenInputCurrentPathShouldThrowRmException() {
+        String[] args = {"."};
+        RmException exception = assertThrows(RmException.class, () -> {
+            rmApplication.run(args, mock(InputStream.class), mock(OutputStream.class));
+        });
+        assertEquals(new RmException(ERR_IS_CURR_DIR).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests run method when attempting to remove files in sub path for the current path.
+     * For example: rm ../1.txt
+     * Where 1.txt is a file that exists in the parent directory of the current directory.
+     * Expected: Removes 1.txt file.
+     */
+    @Test
+    public void testRunWhenNoFlagInputExistingFilePathWhichInSubPathOfCurrentPathShouldRemoveFile(@TempDir Path tempDir) throws IOException, RmException {
+        Path currentDirectory = tempDir.resolve(FOLDER_NAME_1);
+        Path fileInParentDirectory = tempDir.resolve(FILE_NAME_1);
+        String[] argsList = {RELATIVE_UP + File.separator + FILE_NAME_1};
+
+        Files.createFile(fileInParentDirectory);
+        Files.createDirectories(currentDirectory);
+        assertTrue(Files.exists(fileInParentDirectory)); // check 1.txt file in parent directory of current directory exists.
+        assertTrue(Files.isDirectory(currentDirectory)); // check current directory exists.
+
+        EnvironmentHelper.currentDirectory = currentDirectory.toString();
+
+        rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+
+        assertFalse(Files.exists(fileInParentDirectory)); // check 1.txt file in parent directory of current directory is deleted.
+    }
+
+    /**
+     * Tests run method when attempting to remove an empty folder in sub path but not sub path for the current path.
+     * For example: rm -d ../hello2
+     * Where hello2 is an empty folder that exists in the parent directory of the current directory.
+     * For example: The current directory is cd C:\Users\<COMPUTER_USER_NAME>\Documents\cs4218-project-ay1920-s2-2020-team22 and the input directory path to remove is C:\Users\<COMPUTER_USER_NAME>\Documents\hello2
+     * Expected: Removes hello2 directory.
+     */
+    @Test
+    public void testRunWhenDFlagInputExistingEmptyFolderPathWhichIsNotSubPathButIsInSubPathOfCurrentPathShouldRemoveEmptyFolder(@TempDir Path tempDir) throws IOException, RmException {
+        Path currentDirectory = tempDir.resolve(FOLDER_NAME_1);
+        Path folderInParentDirectory = tempDir.resolve(FOLDER_NAME_2);
+        String[] argsList = {D_FLAG, RELATIVE_UP + File.separator + FOLDER_NAME_2};
+
+        Files.createDirectories(folderInParentDirectory);
+        Files.createDirectories(currentDirectory);
+        assertTrue(Files.isDirectory(folderInParentDirectory)); // check hello2 folder in parent directory of current directory exists.
+        String[] list = folderInParentDirectory.toFile().list();
+        assertNotNull(list);
+        assertEquals(0, list.length); // check that hello folder is empty.
+        assertTrue(Files.isDirectory(currentDirectory)); // check current directory exists.
+
+        EnvironmentHelper.currentDirectory = currentDirectory.toString();
+
+        rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+
+        assertFalse(Files.isDirectory(folderInParentDirectory)); // check hello2 in parent directory of current directory is deleted.
+    }
+
+    /**
+     * Tests run method when attempting to remove a non empty folder in sub path but not sub path for the current path.
+     * For example: rm -rd ../hello2
+     * Where hello2 is a non empty folder that exists in the parent directory of the current directory.
+     * For example: The current directory is cd C:\Users\<COMPUTER_USER_NAME>\Documents\cs4218-project-ay1920-s2-2020-team22 and the input directory path to remove is C:\Users\<COMPUTER_USER_NAME>\Documents\hello2
+     * Expected: Removes hello2 directory.
+     */
+    @Test
+    public void testRunWhenRDFlagInputExistingNonEmptyFolderPathWhichIsNotSubPathButIsInSubPathOfCurrentPathShouldRemoveNonEmptyFolder(@TempDir Path tempDir) throws IOException, RmException {
+        Path currentDirectory = tempDir.resolve(FOLDER_NAME_1);
+        Path folderInParentDirectory = tempDir.resolve(FOLDER_NAME_2);
+        Path fileInFolderInParentDirectory = folderInParentDirectory.resolve(FILE_NAME_1);
+        String[] argsList = {RD_FLAG, RELATIVE_UP + File.separator + FOLDER_NAME_2};
+
+        Files.createDirectories(folderInParentDirectory);
+        Files.createFile(fileInFolderInParentDirectory); // create 1.txt in hello2 folder.
+        Files.createDirectories(currentDirectory);
+        assertTrue(Files.isDirectory(folderInParentDirectory)); // check hello2 folder in parent directory of current directory exists.
+        assertTrue(Files.exists(fileInFolderInParentDirectory)); // check 1.txt exists in hello2 folder.
+        String[] list = folderInParentDirectory.toFile().list();
+        assertNotNull(list);
+        assertNotEquals(0, list.length); // check that hello folder is not empty.
+        assertTrue(Files.isDirectory(currentDirectory)); // check current directory exists.
+
+        EnvironmentHelper.currentDirectory = currentDirectory.toString();
+
+        rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+
+        assertFalse(Files.isDirectory(folderInParentDirectory)); // check hello2 in parent directory of current directory is deleted.
     }
 }
