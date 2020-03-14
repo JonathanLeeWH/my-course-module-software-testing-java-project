@@ -19,18 +19,35 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${mavenSureFireVersion}</version>
-                <configuration>
-                    <excludes>
-<!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
-                        <exclude>**/DiffApplicationTest.java</exclude>
-                        <exclude>**/GrepApplicationTest.java</exclude>
-                        <exclude>**/WcApplicationTest.java</exclude>
-                        <exclude>**/WcArgumentsTest.java</exclude>
-                        <exclude>**/ArgumentResolverTest.java</exclude>
-<!--                    Add exclusion for tdd folder in tests so travis will still run properly. This can be removed when tdd is resolved.-->
-                        <exclude>**/tdd/**</exclude>
-                    </excludes>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Never skip running the tests when the test phase is invoked -->
+                            <skip>false</skip>
+                            <includes>
+                                <!-- Include unit tests within integration-test phase. -->
+                                <include>**/*Test.java</include>
+                                <include>**/*IT.java</include>
+                            </includes>
+                            <excludes>
+                                <!-- Exclude integration tests within (unit) test phase. -->
+                                <exclude>**/DiffApplicationTest.java</exclude>
+                                <exclude>**/GrepApplicationTest.java</exclude>
+                                <exclude>**/WcApplicationTest.java</exclude>
+                                <exclude>**/WcArgumentsTest.java</exclude>
+                                <exclude>**/ArgumentResolverTest.java</exclude>
+                                <exclude>**/WcApplicationIT.java</exclude>
+                                <exclude>**/DiffApplicationIT.java</exclude>
+                                <exclude>**/tdd/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -49,16 +66,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.0</version>
-                <configuration>
-                    <excludes>
-<!--                    The configuration below are excluding extended functionality 1 integration test from maven build-->
-                        <exclude>**/WcApplicationIT.java</exclude>
-                        <exclude>**/DiffApplicationIT.java</exclude>
-                    </excludes>
-                    <forkCount>4</forkCount>
-                    <reuseForks>true</reuseForks>
-                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
