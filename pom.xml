@@ -10,7 +10,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <pmdVersion>6.21.0</pmdVersion>
-        <mavenSureFireVersion>3.0.0-M1</mavenSureFireVersion>
+        <mavenSureFireVersion>3.0.0-M3</mavenSureFireVersion>
     </properties>
     <!-- To allow mvn test to run any and all test java classes -->
     <build>
@@ -36,13 +36,13 @@
                             </includes>
                             <excludes>
                                 <!-- Exclude integration tests within (unit) test phase. -->
+                                <exclude>**/WcApplicationIT.java</exclude>
+                                <exclude>**/DiffApplicationIT.java</exclude>
                                 <exclude>**/DiffApplicationTest.java</exclude>
                                 <exclude>**/GrepApplicationTest.java</exclude>
                                 <exclude>**/WcApplicationTest.java</exclude>
                                 <exclude>**/WcArgumentsTest.java</exclude>
                                 <exclude>**/ArgumentResolverTest.java</exclude>
-                                <exclude>**/WcApplicationIT.java</exclude>
-                                <exclude>**/DiffApplicationIT.java</exclude>
                                 <exclude>**/tdd/**</exclude>
                             </excludes>
                         </configuration>
@@ -53,6 +53,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.6</version>
+                <configuration>
+                    <tempWebappDirectory>${basedir}/target/site</tempWebappDirectory>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-descriptor</id>
@@ -63,16 +66,12 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.0</version>
-            </plugin>
-            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.5</version>
                 <executions>
                     <execution>
+                        <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
@@ -83,26 +82,6 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.13.0</version>
-                <executions>
-                    <execution>
-                        <id>pmd-report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>pmd</goal>
-                        </goals>
-                        <configuration>
-                            <rulesets>
-                                <ruleset>https://jjlee050.github.io/PMD-Rules/PMD.Rules.xml</ruleset>
-                            </rulesets>
-                            <skipEmptyReport>false</skipEmptyReport>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -158,6 +137,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>3.0.0</version>
+                <configuration>
+                    <linkJavadoc>false</linkJavadoc>
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -169,24 +151,6 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>3.1.8</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <rulesets>
-                        <ruleset>https://jjlee050.github.io/PMD-Rules/PMD.Rules.xml</ruleset>
-                    </rulesets>
-                    <skipEmptyReport>false</skipEmptyReport>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>pmd</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
