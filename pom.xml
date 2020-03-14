@@ -30,6 +30,9 @@
                         <exclude>**/WcApplicationTest.java</exclude>
                         <exclude>**/WcArgumentsTest.java</exclude>
                         <exclude>**/ArgumentResolverTest.java</exclude>
+<!--                    The configuration below are excluding extended functionality 1 integration test from maven build-->
+                        <exclude>**/WcApplicationIT.java</exclude>
+                        <exclude>**/DiffApplicationIT.java</exclude>
 <!--                    Add exclusion for tdd folder in tests so travis will still run properly. This can be removed when tdd is resolved.-->
                         <exclude>**/tdd/**</exclude>
                     </excludes>
