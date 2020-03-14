@@ -21,28 +21,26 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
  */
 class CpApplicationTest {
 
+    static final InputStream INPUT_STREAM = mock(InputStream.class);
+    static final OutputStream OUTPUT_STREAM = mock(OutputStream.class);
+    static final String FILE_NAME_1 = "file1.txt";
+    static final File FILE_1 = new File(FILE_NAME_1);
+    static final String FILE_NAME_2 = "file2.txt";
+    static final File FILE_2 = new File(FILE_NAME_2);
+    static final String FILE_1_DATA = "hello world";
+    static final String FILE_2_DATA = "lol more stuff here";
     CpApplication cpApplication;
-    InputStream inputStream = mock(InputStream.class);
-    OutputStream outputStream = mock(OutputStream.class);
-    private String FILENAME1 = "file1.txt";
-    private File file1 = new File(FILENAME1);
-    private String FILENAME2 = "file2.txt";
-    private File file2 = new File(FILENAME2);
-    private String file1Data = "hello world";
-    private String file2Data = "lol more stuff here";
 
     @BeforeEach
     void setUp() {
         cpApplication = new CpApplication();
         try {
-            file1.createNewFile();
-            file2.createNewFile();
-            FileWriter fw1 = new FileWriter(FILENAME1);
-            fw1.write(file1Data);
-            fw1.close();
-            FileWriter fw2 = new FileWriter(FILENAME2);
-            fw2.write(file2Data);
-            fw2.close();
+            FILE_1.createNewFile();
+            FILE_2.createNewFile();
+            try (FileWriter fw1 = new FileWriter(FILE_NAME_1); FileWriter fw2 = new FileWriter(FILE_NAME_2)) {
+                fw1.write(FILE_1_DATA);
+                fw2.write(FILE_2_DATA);
+            }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -50,11 +48,11 @@ class CpApplicationTest {
 
     @AfterEach
     void tearDown() {
-        file1.delete();
-        file2.delete();
+        FILE_1.delete();
+        FILE_2.delete();
     }
 
-    private void assertFileContentsEqual(String expected, Path path) {
+    void assertFileContentsEqual(String expected, Path path) {
         String actual = null;
         try {
             actual = new String(Files.readAllBytes(path));
@@ -70,7 +68,7 @@ class CpApplicationTest {
     @Test
     @DisplayName("should throw error if null args")
     void throwsExceptionNullArgs() {
-        CpException exception = assertThrows(CpException.class, () -> cpApplication.run(null, inputStream, outputStream));
+        CpException exception = assertThrows(CpException.class, () -> cpApplication.run(null, INPUT_STREAM, OUTPUT_STREAM));
         assertEquals(new CpException(ERR_NULL_ARGS).getMessage(), exception.getMessage());
     }
 
@@ -80,13 +78,13 @@ class CpApplicationTest {
     @Test
     @DisplayName("should throw error if not enough args")
     void throwsExceptionNotEnoughArgs() {
-        CpException exception = assertThrows(CpException.class, () -> cpApplication.run(new String[]{"src.txt"}, inputStream, outputStream));
+        CpException exception = assertThrows(CpException.class, () -> cpApplication.run(new String[]{"src.txt"}, INPUT_STREAM, OUTPUT_STREAM));
         assertEquals(new CpException(ERR_MISSING_ARG).getMessage(), exception.getMessage());
     }
 
     @Nested
     @DisplayName("cpSrcFileToDestFileTest")
-    class cpSrcFileToDestFileTests {
+    class CpSrcFileToDestFileTests {
 
         /**
          * Modify tdd's test method to include check for assert throw message. (Not initially provided in tdd's version)
@@ -95,26 +93,26 @@ class CpApplicationTest {
         @DisplayName("should throw exception if invalid src file")
         void throwsExceptionSrcFileNotFound() {
             CpException exception = assertThrows(CpException.class, () -> cpApplication.run(new String[]{"src.txt", "dest.txt"},
-                    inputStream, outputStream));
+                    INPUT_STREAM, OUTPUT_STREAM));
             assertEquals(new CpException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
         }
 
         @Test
         @DisplayName("should copy contents of one file to another")
         void copySrcFileToDest() throws AbstractApplicationException {
-            cpApplication.run(new String[]{FILENAME1, FILENAME2}, inputStream, outputStream);
-            assertFileContentsEqual(file1Data, file1.toPath());
-            assertFileContentsEqual(file1Data, file2.toPath());
+            cpApplication.run(new String[]{FILE_NAME_1, FILE_NAME_2}, INPUT_STREAM, OUTPUT_STREAM);
+            assertFileContentsEqual(FILE_1_DATA, FILE_1.toPath());
+            assertFileContentsEqual(FILE_1_DATA, FILE_2.toPath());
         }
 
         @Test
         @DisplayName("should create dest file if nonexistent and copy contents of src")
         void copySrcFileToDestandCreateDest() throws AbstractApplicationException {
             String destFile = "dest.txt";
-            cpApplication.run(new String[]{FILENAME1, destFile}, inputStream, outputStream);
+            cpApplication.run(new String[]{FILE_NAME_1, destFile}, INPUT_STREAM, OUTPUT_STREAM);
 
-            assertFileContentsEqual(file1Data, file1.toPath());
-            assertFileContentsEqual(file1Data, Paths.get(destFile));
+            assertFileContentsEqual(FILE_1_DATA, FILE_1.toPath());
+            assertFileContentsEqual(FILE_1_DATA, Paths.get(destFile));
             new File(destFile).delete();
         }
     }
@@ -122,19 +120,19 @@ class CpApplicationTest {
     @Nested
     @DisplayName("CpFilesToFolderTests")
     class CpFilesToFolderTests {
-        private String DIR_NAME = "destDir";
-        private File destDirectory = new File(DIR_NAME);
-        private File fileInDestDirectory = new File(destDirectory, FILENAME2);
-        private String fileInDestData = "different content";
+        private static final String DIR_NAME = "destDir";
+        private final File destDirectory = new File(DIR_NAME);
+        private final File fileInDest = new File(destDirectory, FILE_NAME_2);
+        private static final String DEST_DATA = "different content";
 
         @BeforeEach
         void setUp() {
             try {
                 destDirectory.mkdir();
-                fileInDestDirectory.createNewFile();
-                FileWriter fw = new FileWriter(fileInDestDirectory);
-                fw.write(fileInDestData);
-                fw.close();
+                fileInDest.createNewFile();
+                try (FileWriter fileWriter = new FileWriter(fileInDest)) {
+                    fileWriter.write(DEST_DATA);
+                }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -154,34 +152,34 @@ class CpApplicationTest {
         @Test
         @DisplayName("should throw exception when invalid src file but copy the rest")
         void throwExceptionInvalidSrcFilesAndCopyValidOnes() {
-            CpException exception = assertThrows(CpException.class, () -> cpApplication.run(new String[]{FILENAME1, "invalid file name",
-                    DIR_NAME}, inputStream, outputStream));
+            CpException exception = assertThrows(CpException.class, () -> cpApplication.run(new String[]{FILE_NAME_1, "invalid file name",
+                    DIR_NAME}, INPUT_STREAM, OUTPUT_STREAM));
 
             assertEquals(new CpException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
 
-            assertFileContentsEqual(file1Data, file1.toPath());
-            assertFileContentsEqual(file1Data, Paths.get(DIR_NAME, FILENAME1));
-            assertFileContentsEqual(fileInDestData, fileInDestDirectory.toPath());
+            assertFileContentsEqual(FILE_1_DATA, FILE_1.toPath());
+            assertFileContentsEqual(FILE_1_DATA, Paths.get(DIR_NAME, FILE_NAME_1));
+            assertFileContentsEqual(DEST_DATA, fileInDest.toPath());
         }
 
         @Test
         @DisplayName("should copy one file to target folder")
         void copyFileToDestFolder() throws AbstractApplicationException {
-            cpApplication.run(new String[]{FILENAME1, DIR_NAME}, inputStream, outputStream);
+            cpApplication.run(new String[]{FILE_NAME_1, DIR_NAME}, INPUT_STREAM, OUTPUT_STREAM);
 
-            assertFileContentsEqual(file1Data, file1.toPath());
-            assertFileContentsEqual(file1Data, Paths.get(DIR_NAME, FILENAME1));
-            assertFileContentsEqual(fileInDestData, fileInDestDirectory.toPath());
+            assertFileContentsEqual(FILE_1_DATA, FILE_1.toPath());
+            assertFileContentsEqual(FILE_1_DATA, Paths.get(DIR_NAME, FILE_NAME_1));
+            assertFileContentsEqual(DEST_DATA, fileInDest.toPath());
         }
 
         @Test
         @DisplayName("should copy multiple file to target folder")
         void copyMultiFilesToDestFolder() throws AbstractApplicationException {
-            cpApplication.run(new String[]{FILENAME1, FILENAME2, DIR_NAME}, inputStream, outputStream);
+            cpApplication.run(new String[]{FILE_NAME_1, FILE_NAME_2, DIR_NAME}, INPUT_STREAM, OUTPUT_STREAM);
 
-            assertFileContentsEqual(file1Data, file1.toPath());
-            assertFileContentsEqual(file1Data, Paths.get(DIR_NAME, FILENAME1));
-            assertFileContentsEqual(file2Data, fileInDestDirectory.toPath());
+            assertFileContentsEqual(FILE_1_DATA, FILE_1.toPath());
+            assertFileContentsEqual(FILE_1_DATA, Paths.get(DIR_NAME, FILE_NAME_1));
+            assertFileContentsEqual(FILE_2_DATA, fileInDest.toPath());
         }
     }
 }

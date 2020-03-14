@@ -1213,19 +1213,19 @@ class RmApplicationIT {
     @Test
     public void testRunWhenNoFlagInputExistingFilePathWhichInSubPathOfCurrentPathShouldRemoveFile(@TempDir Path tempDir) throws IOException, RmException {
         Path currentDirectory = tempDir.resolve(FOLDER_NAME_1);
-        Path fileInParentDirectory = tempDir.resolve(FILE_NAME_1);
+        Path fileInParent = tempDir.resolve(FILE_NAME_1);
         String[] argsList = {RELATIVE_UP + File.separator + FILE_NAME_1};
 
-        Files.createFile(fileInParentDirectory);
+        Files.createFile(fileInParent);
         Files.createDirectories(currentDirectory);
-        assertTrue(Files.exists(fileInParentDirectory)); // check 1.txt file in parent directory of current directory exists.
+        assertTrue(Files.exists(fileInParent)); // check 1.txt file in parent directory of current directory exists.
         assertTrue(Files.isDirectory(currentDirectory)); // check current directory exists.
 
         EnvironmentHelper.currentDirectory = currentDirectory.toString();
 
         rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
 
-        assertFalse(Files.exists(fileInParentDirectory)); // check 1.txt file in parent directory of current directory is deleted.
+        assertFalse(Files.exists(fileInParent)); // check 1.txt file in parent directory of current directory is deleted.
     }
 
     /**
@@ -1238,13 +1238,13 @@ class RmApplicationIT {
     @Test
     public void testRunWhenDFlagInputExistingEmptyFolderPathWhichIsNotSubPathButIsInSubPathOfCurrentPathShouldRemoveEmptyFolder(@TempDir Path tempDir) throws IOException, RmException {
         Path currentDirectory = tempDir.resolve(FOLDER_NAME_1);
-        Path folderInParentDirectory = tempDir.resolve(FOLDER_NAME_2);
+        Path folderInParent = tempDir.resolve(FOLDER_NAME_2);
         String[] argsList = {D_FLAG, RELATIVE_UP + File.separator + FOLDER_NAME_2};
 
-        Files.createDirectories(folderInParentDirectory);
+        Files.createDirectories(folderInParent);
         Files.createDirectories(currentDirectory);
-        assertTrue(Files.isDirectory(folderInParentDirectory)); // check hello2 folder in parent directory of current directory exists.
-        String[] list = folderInParentDirectory.toFile().list();
+        assertTrue(Files.isDirectory(folderInParent)); // check hello2 folder in parent directory of current directory exists.
+        String[] list = folderInParent.toFile().list();
         assertNotNull(list);
         assertEquals(0, list.length); // check that hello folder is empty.
         assertTrue(Files.isDirectory(currentDirectory)); // check current directory exists.
@@ -1253,7 +1253,7 @@ class RmApplicationIT {
 
         rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
 
-        assertFalse(Files.isDirectory(folderInParentDirectory)); // check hello2 in parent directory of current directory is deleted.
+        assertFalse(Files.isDirectory(folderInParent)); // check hello2 in parent directory of current directory is deleted.
     }
 
     /**
@@ -1266,16 +1266,16 @@ class RmApplicationIT {
     @Test
     public void testRunWhenRDFlagInputExistingNonEmptyFolderPathWhichIsNotSubPathButIsInSubPathOfCurrentPathShouldRemoveNonEmptyFolder(@TempDir Path tempDir) throws IOException, RmException {
         Path currentDirectory = tempDir.resolve(FOLDER_NAME_1);
-        Path folderInParentDirectory = tempDir.resolve(FOLDER_NAME_2);
-        Path fileInFolderInParentDirectory = folderInParentDirectory.resolve(FILE_NAME_1);
+        Path folderInParent = tempDir.resolve(FOLDER_NAME_2);
+        Path fileInFolder = folderInParent.resolve(FILE_NAME_1);
         String[] argsList = {RD_FLAG, RELATIVE_UP + File.separator + FOLDER_NAME_2};
 
-        Files.createDirectories(folderInParentDirectory);
-        Files.createFile(fileInFolderInParentDirectory); // create 1.txt in hello2 folder.
+        Files.createDirectories(folderInParent);
+        Files.createFile(fileInFolder); // create 1.txt in hello2 folder.
         Files.createDirectories(currentDirectory);
-        assertTrue(Files.isDirectory(folderInParentDirectory)); // check hello2 folder in parent directory of current directory exists.
-        assertTrue(Files.exists(fileInFolderInParentDirectory)); // check 1.txt exists in hello2 folder.
-        String[] list = folderInParentDirectory.toFile().list();
+        assertTrue(Files.isDirectory(folderInParent)); // check hello2 folder in parent directory of current directory exists.
+        assertTrue(Files.exists(fileInFolder)); // check 1.txt exists in hello2 folder.
+        String[] list = folderInParent.toFile().list();
         assertNotNull(list);
         assertNotEquals(0, list.length); // check that hello folder is not empty.
         assertTrue(Files.isDirectory(currentDirectory)); // check current directory exists.
@@ -1284,6 +1284,6 @@ class RmApplicationIT {
 
         rmApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
 
-        assertFalse(Files.isDirectory(folderInParentDirectory)); // check hello2 in parent directory of current directory is deleted.
+        assertFalse(Files.isDirectory(folderInParent)); // check hello2 in parent directory of current directory is deleted.
     }
 }
