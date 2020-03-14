@@ -131,7 +131,7 @@ class PipeCommandIT {
         Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
         Files.write(file2, Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2));
         pipeCommand.evaluate(System.in, outputStream);
-        assertEquals("       2       5      26 A4218A" + STRING_NEWLINE, outputStream.toString());
+        assertEquals("       2       5      " + file2.toFile().length() + " A4218A.txt" + STRING_NEWLINE, outputStream.toString());
     }
 
     /**
@@ -207,6 +207,6 @@ class PipeCommandIT {
         callCommands.add(new CallCommand(Arrays.asList("grep", "CS4218"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
         pipeCommand.evaluate(System.in, outputStream);
-        assertEquals("CS4218A" + System.lineSeparator(), outputStream.toString());
+        assertEquals("CS4218A.txt" + System.lineSeparator(), outputStream.toString());
     }
 }
