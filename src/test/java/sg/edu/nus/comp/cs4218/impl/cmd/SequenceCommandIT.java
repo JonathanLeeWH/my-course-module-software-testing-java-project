@@ -258,8 +258,7 @@ class SequenceCommandIT {
         Files.createFile(srcFile);
         assertTrue(Files.exists(srcFile)); // check that B.txt exists
         assertFalse(Files.exists(targetFile)); // check that AB.txt does not exist.
-        EnvironmentHelper.currentDirectory = tempDir.toString();
-        commands.add(new CallCommand(Arrays.asList(MV_APP, srcFile.toString(), FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(MV_APP, srcFile.toString(), targetFile.toString()), new ApplicationRunner(), new ArgumentResolver()));
         commands.add(new CallCommand(Arrays.asList(RM_APP, targetFile.toString()), new ApplicationRunner(), new ArgumentResolver()));
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
