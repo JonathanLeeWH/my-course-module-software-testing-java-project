@@ -69,6 +69,7 @@ public final class RegexArgument {
 
     public List<String> globFiles() {
         List<String> globbedFiles = new LinkedList<>();
+        List<String> globbedFolders = new LinkedList<>();
 
         if (isRegex) {
             Pattern regexPattern = Pattern.compile(regex.toString());
@@ -80,13 +81,44 @@ public final class RegexArgument {
 
             File currentDir = Paths.get(EnvironmentHelper.currentDirectory + File.separator + dir).toFile();
 
-            for (String candidate : currentDir.list()) {
-                if (regexPattern.matcher(candidate).matches()) {
-                    globbedFiles.add(dir + candidate);
+            if(!currentDir.exists()) {
+                globbedFiles.add(plaintext.toString());
+            }
+            else{
+                for (File candidateFile : currentDir.listFiles()) {
+                    if (candidateFile.getName().startsWith(".")) {
+                        continue;
+                    }
+
+                    String fileName = Paths.get(EnvironmentHelper.currentDirectory).relativize(candidateFile.toPath()).toString();
+
+                    if (regexPattern.matcher(fileName).matches()) {
+                        if(candidateFile.isDirectory()) {
+                            globbedFolders.add(fileName);
+                        }
+                        else{
+                            globbedFiles.add(fileName);
+                        }
+                    }
+
+                    if (candidateFile.isDirectory()) {
+                        String folderName = fileName + "/";
+                        if (regexPattern.matcher(folderName).matches()) {
+                            globbedFolders.add(folderName);
+                        }
+                    }
                 }
+
             }
 
+
+//            Collections.sort(globbedFiles);
+//            Collections.sort(globbedFolders);
+            for(String folder: globbedFolders) {
+                globbedFiles.add(folder);
+            }
             Collections.sort(globbedFiles);
+
         }
 
         if (globbedFiles.isEmpty()) {
