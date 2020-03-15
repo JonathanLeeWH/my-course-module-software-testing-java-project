@@ -38,6 +38,10 @@ public class LsApplication implements LsInterface {
         }
 
         List<Path> paths;
+        List<String> folderNames = new ArrayList<>();
+        for(String folder: folderName) {
+            folderNames.add(folder);
+        }
 
         if (folderName.length == 0 && isRecursive) {
             String[] directories = new String[1];
@@ -57,7 +61,7 @@ public class LsApplication implements LsInterface {
             }
         }
 
-        return buildResult(paths, isFoldersOnly, isRecursive);
+        return buildResult(paths,folderNames, isFoldersOnly, isRecursive);
     }
 
     @Override
@@ -72,6 +76,7 @@ public class LsApplication implements LsInterface {
         }
 
         LsArgsParser parser = new LsArgsParser();
+        String currentDirectory = EnvironmentHelper.currentDirectory;
         try {
             parser.parse(args);
         } catch (InvalidArgsException e) {
@@ -90,6 +95,7 @@ public class LsApplication implements LsInterface {
         } catch (Exception e) {
             throw (LsException) new LsException(ERR_WRITE_STREAM).initCause(e);
         }
+        EnvironmentHelper.currentDirectory = currentDirectory;
     }
 
     /**
@@ -118,12 +124,18 @@ public class LsApplication implements LsInterface {
      * @param isRecursive   - recursive mode, repeatedly ls the child directories
      * @return String to be written to output stream.
      */
-    private String buildResult(List<Path> paths, Boolean isFoldersOnly, Boolean isRecursive) throws LsException {
+    private String buildResult(List<Path> paths, List<String> folderNames, Boolean isFoldersOnly, Boolean isRecursive) throws LsException {
         StringBuilder result = new StringBuilder();
+        File previousFile = new File("");
+        boolean lastFileInFolder = false;
         for (Path path : paths) {
             try {
                 File file = new File(path.toString());
                 if(file.isDirectory() && !isFoldersOnly) {
+                    if(!previousFile.getPath().equals("") && !previousFile.isDirectory() && lastFileInFolder == false && !isRecursive){
+                        result.append(System.lineSeparator());
+                        lastFileInFolder = true;
+                    }
                     List<Path> contents = getContents(path, isFoldersOnly);
                     String formatted = formatContents(contents);
                     buildRelativePath(isRecursive, result, path);
@@ -139,19 +151,35 @@ public class LsApplication implements LsInterface {
                     // RECURSE!
                     if (isRecursive) {
                         List<Path> contentRe = new ArrayList<Path>();
-                        buildRecurse(isFoldersOnly, isRecursive, result, contents, contentRe);
+                        buildRecurse(isFoldersOnly,  isRecursive, result, contents, contentRe ,folderNames);
                         result.append(System.lineSeparator());
                     }
 
                 }
                 else if (file.isDirectory() && isFoldersOnly) {
-                    result.append(file.getName());
-                    result.append(System.lineSeparator());
+                    String toPrintName="";
+                    boolean useFolderName = false;
+                    for(String folder : folderNames) {
+                        if(folder.contains(file.getName())) {
+                            toPrintName = folder;
+                            useFolderName = true;
+                        }
+                    }
+                    if(useFolderName) {
+                        result.append(toPrintName);
+                        result.append(System.lineSeparator());
+                    }
+                    else{
+                        result.append(file.getName());
+                        result.append(System.lineSeparator());
+                    }
+
                 }
                 else{
                     if(!file.exists()) {
                         throw (LsException) new LsException(NO_FILE_OR_FOLDER);
                     }
+                    previousFile = file;
                     result.append(file.getName());
                     result.append(System.lineSeparator());
                 }
@@ -241,14 +269,14 @@ public class LsApplication implements LsInterface {
         result.append(StringUtils.isBlank(relativePath) ? PATH_CURR_DIR : relativePath);
     }
 
-    private void buildRecurse(Boolean isFoldersOnly, Boolean isRecursive, StringBuilder result, List<Path> contents, List<Path> contentRe) throws LsException {
+    private void buildRecurse(Boolean isFoldersOnly, Boolean isRecursive, StringBuilder result, List<Path> contents, List<Path> contentRe , List<String> folderNames) throws LsException {
         for(Path content : contents) {
             File fileCheck = new File(content.toString());
             if(fileCheck.isDirectory()) {
                 contentRe.add(content);
             }
         }
-        result.append(buildResult(contentRe, isFoldersOnly, isRecursive));
+        result.append(buildResult(contentRe,folderNames, isFoldersOnly, isRecursive));
     }
 
     private void buildRecurseForNoArgs(Boolean isFoldersOnly, Boolean isRecursive, StringBuilder result, List<Path> contents, List<Path> contentRe) {
