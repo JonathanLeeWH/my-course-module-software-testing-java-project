@@ -148,7 +148,6 @@ class PipeCommandIT {
         assertEquals("a" + STRING_NEWLINE, outputStream.toString());
     }
 
-
     /**
      * Tests evaluate method echo and cut interaction
      * For example: cut -c 5-7 | sort

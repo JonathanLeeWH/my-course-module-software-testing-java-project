@@ -27,12 +27,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_FILE_NOT_FOUND;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_APP;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_REDIR_OUTPUT;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 class SequenceCommandIT {
 
     private static final String ECHO_APP = "echo";
     private static final String PASTE_APP = "paste";
     private static final String RM_APP = "rm";
+    private static final String CP_APP = "cp";
+    private static final String CD_APP = "cd";
+    private static final String MV_APP = "mv";
+    private static final String SORT_APP = "sort";
+    private static final String WC_APP = "wc";
     private static final String INVALID_APP = "lsa";
     private static final String FOLDER_NAME_1 = "folder1";
     private static final String FILE_NAME_1 = "CS4218A";
@@ -41,6 +47,8 @@ class SequenceCommandIT {
     private static final String FILE_NAME_4 = "A.txt";
     private static final String FILE_NAME_5 = "B.txt";
     private static final String FILE_NAME_6 = "AB.txt";
+    private static final String FILE_CONTENT_1 = "Hello world";
+    private static final String FILE_CONTENT_2 = "How are you";
 
     private OutputStream outputStream;
     private List<Command> commands;
@@ -206,5 +214,125 @@ class SequenceCommandIT {
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
         assertFalse(Files.exists(file1)); // Check that AB.txt does not exist as it should be removed
+    }
+
+    /**
+     * Tests evaluate method when involving cp command and rm command interaction
+     * For example: cp B.txt AB.txt; rm B.txt
+     * Where B.txt is an existing file. AB.txt is a non existing file.
+     * Expected: Removes B.txt while AB.txt should be a copy of the deleted B.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandWithCpCommandAndRmCommandInteractionShouldRemoveTheCpSrcFile(@TempDir Path tempDir) throws Exception {
+        Path srcFile = tempDir.resolve(FILE_NAME_5);
+        Path destFile = tempDir.resolve(FILE_NAME_6);
+        List<String> contents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        Files.createFile(srcFile);
+        Files.write(srcFile, contents);
+        assertTrue(Files.exists(srcFile)); // check that B.txt exists
+        assertFalse(Files.exists(destFile)); // check that AB.txt does not exist.
+        assertEquals(contents, Files.readAllLines(srcFile));
+        commands.add(new CallCommand(Arrays.asList(CP_APP, srcFile.toString(), destFile.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, srcFile.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(srcFile)); // check that B.txt does not exist.
+        assertTrue(Files.exists(destFile)); // check that AB.txt exists.
+        assertEquals(contents, Files.readAllLines(destFile)); // check that file content is copied.
+    }
+
+    /**
+     * Tests evaluate method when involving mv command rm command interaction
+     * For example: mv B.txt AB.txt; rm AB.txt
+     * Where B.txt is an existing file and AB.txt is a non existing file.
+     * Expected: Renames B.txt to AB.txt and then remove AB.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandWithMvCommandAndRmCommandInteractionShouldRenameSrcFileToTargetFileThenRemoveTargetFile(@TempDir Path tempDir) throws Exception {
+        Path srcFile = tempDir.resolve(FILE_NAME_5);
+        Path targetFile = tempDir.resolve(FILE_NAME_6);
+        Files.createFile(srcFile);
+        assertTrue(Files.exists(srcFile)); // check that B.txt exists
+        assertFalse(Files.exists(targetFile)); // check that AB.txt does not exist.
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        commands.add(new CallCommand(Arrays.asList(MV_APP, srcFile.toString(), FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, targetFile.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(srcFile)); // check that B.txt does not exists.
+        assertFalse(Files.exists(targetFile)); // check that AB.txt doest not exist.
+    }
+
+    /**
+     * Tests evaluate method when involving cd command and rm command interaction
+     * For example: cd folder1; rm B.txt
+     * Where folder1 is an existing directory and the folder1 directory contains an existing B.txt file.
+     * Removes B.txt file in folder1 directory.
+     */
+    @Test
+    void testEvaluateSeqeuenceCommandWithCdCommandAndRmCommandInteractionShouldRemoveFileInDirectory(@TempDir Path tempDir) throws Exception {
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Path file = folder.resolve(FILE_NAME_5);
+        Files.createDirectory(folder);
+        Files.createFile(file);
+        assertTrue(Files.isDirectory(folder));
+        assertTrue(Files.exists(file));
+        commands.add(new CallCommand(Arrays.asList(CD_APP, folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(file)); // check that B.txt is deleted.
+    }
+
+    /**
+     * Tests evaluate method when involving sort command and rm command interaction
+     * For example: sort AB.txt; rm AB.txt
+     * Where AB.txt is an existing file containing 2 lines. The first line is How are you and the second line is Hello World.
+     * It is mainly to test to ensure stream is closed for those commands that read files. As if streams are not closed, remove command
+     * would not be able to remove the file.
+     * Expected: Outputs correctly as shown below and remove AB.txt
+     * Output:
+     * Hello World
+     * How are you
+     */
+    @Test
+    void testEvaluateSequenceCommandWithSortCommandAndRmCommandInteractionShouldRemoveFile(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve(FILE_NAME_6);
+        Files.createFile(file);
+        assertTrue(Files.exists(file)); // check that AB.txt exists.
+        List<String> contents = Arrays.asList(FILE_CONTENT_2, FILE_CONTENT_1);
+        Files.write(file, contents);
+        assertEquals(contents, Files.readAllLines(file));
+        commands.add(new CallCommand(Arrays.asList(SORT_APP, file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals(FILE_CONTENT_1 + STRING_NEWLINE + FILE_CONTENT_2 + STRING_NEWLINE, outputStream.toString());
+        assertFalse(Files.exists(file)); // check that AB.txt is deleted.
+    }
+
+    /**
+     * Tests evaluate method when involving wc command and rm command
+     * For example: wc AB.txt; rm Ab.txt
+     * Where AB.txt is an existing file.
+     * It is mainly to test to ensure stream is closed for those commands that read files. As if streams are not closed, remove command
+     * would not be able to remove the file.
+     * Expected: Outputs correctly as shown below and remove AB.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandWithWcCommmandAndRmCommandInteractionShouldRemoveFile(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve(FILE_NAME_6);
+        Files.createFile(file);
+        assertTrue(Files.exists(file)); // check that AB.txt exists.
+        List<String> contents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        Files.write(file, contents);
+        assertEquals(contents, Files.readAllLines(file));
+        String expected = "       2       5      " + file.toFile().length() + " " + file.toString() + STRING_NEWLINE;
+        commands.add(new CallCommand(Arrays.asList(WC_APP, file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals(expected, outputStream.toString());
+        assertFalse(Files.exists(file)); // check that AB.txt is deleted.
     }
 }
