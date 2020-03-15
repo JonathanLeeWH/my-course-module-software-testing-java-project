@@ -8,11 +8,13 @@ import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CdException;
+import sg.edu.nus.comp.cs4218.exception.CpException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -24,8 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_FILE_NOT_FOUND;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_APP;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_REDIR_OUTPUT;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
@@ -49,10 +50,12 @@ class SequenceCommandIT {
     private static final String FILE_NAME_4 = "A.txt";
     private static final String FILE_NAME_5 = "B.txt";
     private static final String FILE_NAME_6 = "AB.txt";
+    private static final String FILE_NAME_7 = "1.txt";
     private static final String FILE_CONTENT_1 = "Hello world";
     private static final String FILE_CONTENT_2 = "How are you";
     private static final String REGEX_EXPR_1 = "s/^/> /";
     private static final String C_FLAG = "-c";
+    private static final String RELATIVE_UP = "..";
 
     private OutputStream outputStream;
     private List<Command> commands;
@@ -110,26 +113,6 @@ class SequenceCommandIT {
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
         assertEquals("Goodnight" + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator(), outputStream.toString());
-    }
-
-    /**
-     * Tests evaluate method for a valid <Command> ; <Command> format
-     * In this case we will test one call commands and one seq command
-     * Based on Grammar command can be <call> | <seq> | <pipe>
-     * For example: echo Good Afternoon ; echo Hi ; echo Sweet dreams
-     * Expected: Outputs
-     * Good Afternoon
-     * Hi
-     * Sweet dreams
-     */
-    @Test
-    void testEvaluateSequenceCommandWithValidCallCommandAndSequenceCommandFormatShouldOutputCorrect() throws AbstractApplicationException, ShellException {
-        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Good", "Afternoon"), new ApplicationRunner(), new ArgumentResolver()));
-        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Hi"), new ApplicationRunner(), new ArgumentResolver()));
-        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Sweet", "dreams"), new ApplicationRunner(), new ArgumentResolver()));
-        SequenceCommand sequenceCommand = new SequenceCommand(commands);
-        sequenceCommand.evaluate(System.in, outputStream);
-        assertEquals("Good Afternoon" + System.lineSeparator() + "Hi" + System.lineSeparator() + "Sweet dreams" + System.lineSeparator(), outputStream.toString());
     }
 
     /**
@@ -365,7 +348,7 @@ class SequenceCommandIT {
 
     /**
      * Tests evaluate method when involving cut command and rm command
-     * For example: sed "s/^/> /" AB.txt; rm Ab.txt
+     * For example: sed "s/^/> /" AB.txt; rm AB.txt
      * Where AB.txt is an existing file.
      * It is mainly to test to ensure stream is closed for those commands that read files. As if streams are not closed, remove command
      * would not be able to remove the file.
@@ -385,5 +368,171 @@ class SequenceCommandIT {
         sequenceCommand.evaluate(System.in, outputStream);
         assertEquals("o w" + STRING_NEWLINE + "are" + STRING_NEWLINE, outputStream.toString());
         assertFalse(Files.exists(file)); // check that AB.txt is deleted.
+    }
+
+    // Tests with at least 2 semicolon operators
+
+    /**
+     * Tests evaluate method for a valid <Command> ; <Command> format
+     * In this case we will test one call commands and one seq command
+     * Based on Grammar command can be <call> | <seq> | <pipe>
+     * For example: echo Good Afternoon ; echo Hi ; echo Sweet dreams
+     * Expected: Outputs
+     * Good Afternoon
+     * Hi
+     * Sweet dreams
+     */
+    @Test
+    void testEvaluateSequenceCommandWithValidCallCommandAndSequenceCommandFormatShouldOutputCorrect() throws AbstractApplicationException, ShellException {
+        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Good", "Afternoon"), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Hi"), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(ECHO_APP, "Sweet", "dreams"), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals("Good Afternoon" + System.lineSeparator() + "Hi" + System.lineSeparator() + "Sweet dreams" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method with paste command cd command and rm command
+     * For example paste A.txt B.txt AB.txt; cd folder1; rm ../A.txt ../B.txt ../AB.txt
+     * Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
+     * Expected: Removes all the three files.
+     */
+    @Test
+    void testEvaluateSequenceCommandsWithPasteCommandAndCdCommandAndRmCommandShouldRemoveFiles(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Path file3 = tempDir.resolve(FILE_NAME_6);
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Files.createDirectory(folder);
+        Files.createFile(file1);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.createFile(file2);
+        Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
+        Files.createFile(file3);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(CD_APP, folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, RELATIVE_UP + File.separator + FILE_NAME_4, RELATIVE_UP + File.separator + FILE_NAME_5, RELATIVE_UP + File.separator + FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(file1)); // check that A.txt is deleted
+        assertFalse(Files.exists(file2)); // check that B.txt is deleted
+        assertFalse(Files.exists(file3)); // check that AB.txt is deleted
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+    }
+
+    /**
+     * Tests evaluate method with paste command mv command and rm command
+     * For example paste A.txt B.txt AB.txt; mv AB.txt folder1; rm A.txt B.txt folder1/AB.txt
+     * Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
+     * Expected: Removes A.txt B.txt and folder1/AB.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandsWithPasteCommandAndMvCommandAndRmCommandShouldRemoveFile(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Path file3 = tempDir.resolve(FILE_NAME_6);
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Files.createDirectory(folder);
+        Files.createFile(file1);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.createFile(file2);
+        Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
+        Files.createFile(file3);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(MV_APP, file3.toString(), folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, file1.toString(), file2.toString(), folder.resolve(FILE_NAME_6).toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(file1)); // check that A.txt is deleted
+        assertFalse(Files.exists(file2)); // check that B.txt is deleted
+        assertFalse(Files.exists(file3)); // check that AB.txt is moved
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_6))); // check that folder1/AB.txt is deleted
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+    }
+
+    /**
+     * Tests evaluate method with paste command mv command and rm command
+     * For example paste A.txt B.txt AB.txt; cp A.txt B.txt AB.txt folder1; rm folder1/A.txt folder1/B.txt folder1/AB.txt
+     * Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
+     * Expected: Removes folder1/A.txt, folder1/B.txt and folder1/AB.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandsWithPasteCommandAndCpCommandAndRmCommandShouldRemoveFilesInFolder(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Path file3 = tempDir.resolve(FILE_NAME_6);
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Files.createDirectory(folder);
+        Files.createFile(file1);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.createFile(file2);
+        Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
+        Files.createFile(file3);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(CP_APP, file1.toString(), file2.toString(), file3.toString(), folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, folder.resolve(FILE_NAME_4).toString(), folder.resolve(FILE_NAME_5).toString(), folder.resolve(FILE_NAME_6).toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_4))); // check that folder1/A.txt is deleted
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_5))); // check that folder1/B.txt is deleted
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_6))); // check that folder1/AB.txt is deleted
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+    }
+
+    /**
+     * Tests evaluate method with paste command mv command and rm command
+     * For example cd A.txt; cp A.txt B.txt AB.txt 1.txt folder1; rm folder1/A.txt folder1/B.txt
+     * Where A.txt and B.txt and AB.txt exist and 1.txt does not exist and folder1 is an existing directory.
+     * Expected: Outputs cd ERR_IS_NOT_DIR exception followed by a new line and cp ERR_FILE_NOT_FOUND exception followed by a new line.
+     * At the same time, A.txt, B.txt and AB.txt are copied to folder1 and then folder1/A.txt and folder1/B.txt folder1/AB.txt are removed.
+     */
+    @Test
+    void testEvaluateSequenceCommandsWithInvalidCdCommandAndInvalidCpCommandAndValidRmCommandShouldOutputExceptionsAndRemoveFilesInFolder(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Path file3 = tempDir.resolve(FILE_NAME_6);
+        Path file4 = tempDir.resolve(FILE_NAME_7);
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Files.createDirectory(folder);
+        Files.createFile(file1);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.createFile(file2);
+        Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
+        Files.createFile(file3);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertFalse(Files.exists(file4)); // check that 1.txt does not exist
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        commands.add(new CallCommand(Arrays.asList(CD_APP, file1.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(CP_APP, file1.toString(), file2.toString(), file3.toString(), file4.toString(), folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, folder.resolve(FILE_NAME_4).toString(), folder.resolve(FILE_NAME_5).toString(), folder.resolve(FILE_NAME_6).toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertFalse(Files.exists(file4)); // check that 1.txt does not exist
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_4))); // check that folder1/A.txt is deleted
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_5))); // check that folder1/B.txt is deleted
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_6))); // check that folder1/AB.txt is deleted
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        assertEquals(new CdException(ERR_IS_NOT_DIR).getMessage() + STRING_NEWLINE + new CpException(ERR_FILE_NOT_FOUND).getMessage() + STRING_NEWLINE, outputStream.toString());
     }
 }
