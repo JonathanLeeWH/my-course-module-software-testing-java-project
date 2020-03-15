@@ -10,6 +10,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
@@ -22,7 +24,8 @@ public class MvApplicationTest {
     private static final String TEST_DIFFERENT2 = "testFile3";
     private static final String TEST_FOLDER = "testFolder";
     private static MvApplication mvApplication;
-
+    private static final String FOLDER_PATH = System.getProperty("user.dir");
+    private List<File> allFiles = new ArrayList<File>();
 
     @BeforeEach
     void setupBeforeTest() throws IOException {
@@ -95,16 +98,6 @@ public class MvApplicationTest {
     }
 
 
-    @Test
-    public void runWhenTooManyArgsNoOverwriteThrowsArgException() {
-
-        String[] constructArgs = new String [] {TEST_FILE,TEST_DIFFERENT,TEST_DIFFERENT2};
-        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
-            mvApplication.run(constructArgs, System.in, System.out);
-        });
-
-        assertEquals(new MvException(ERR_TOO_MANY_ARGS).getMessage(), exception.getMessage());
-    }
     @Test
     public void runWhenMvFileToDestFileWithOverwriteSuccess() throws Exception {
 
@@ -347,10 +340,12 @@ public class MvApplicationTest {
 
         Files.createFile(file1);
         assertTrue(Files.exists(file1));
-        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
-            mvApplication.mvFilesToFolder("",fileSrcString);
-        });
-        assertEquals(new MvException(FAILED_TO_MOVE).getMessage(), exception.getMessage());
+        mvApplication.mvFilesToFolder("",fileSrcString);
+
+
+        File fileInCurrFolder = new File(file1.getFileName().toString());
+        assertTrue(fileInCurrFolder.exists());
+        fileInCurrFolder.delete();
     }
 
     @Test

@@ -13,6 +13,7 @@ import static java.nio.file.StandardCopyOption.*;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
@@ -42,27 +43,32 @@ public class MvApplication implements MvInterface {
         if(sourceDestination.isEmpty() || sourceDestination.size() ==1) {
             throw new MvException(MISSING_ARG_EXCEPTION);
         }
-        if(sourceDestination.size() >= 3) {
-            throw new MvException(ERR_TOO_MANY_ARGS);
+
+        String dest = sourceDestination.get(sourceDestination.size()-1);
+
+        List<String> sources = new ArrayList<String>();
+        for(String sourceName : sourceDestination) {
+            if(!sourceName.equals(dest)) {
+                sources.add(sourceName);
+            }
         }
+        for(String source: sources) {
 
-        String source = sourceDestination.get(0);
-        String destFile = sourceDestination.get(1);
-        String dest = sourceDestination.get(1);
-        String currentDir = EnvironmentHelper.currentDirectory.trim();
+            String currentDir = EnvironmentHelper.currentDirectory.trim();
 
-        StringBuilder stringbuilder = new StringBuilder(currentDir);
-        stringbuilder.append(dest);
-        String checkDest = dest;
+            StringBuilder stringbuilder = new StringBuilder(currentDir);
+            stringbuilder.append(dest);
+            String checkDest = dest;
 
-        File file = new File(checkDest);
-        File sourceFile = new File(source);
+            File file = new File(checkDest);
+            File sourceFile = new File(source);
 
-        if(parser.isNotOverWrite()) {
-            noOverwriteProcess(sourceFile.getName(), destFile, checkDest, file);
-        }
-        else{
-            overWriteProcess(source, checkDest, file);
+            if(parser.isNotOverWrite()) {
+                noOverwriteProcess(sourceFile.getName(),checkDest, file);
+            }
+            else{
+                overWriteProcess(source, checkDest, file);
+            }
         }
     }
 
@@ -124,7 +130,7 @@ public class MvApplication implements MvInterface {
         for(String sourceFile : fileName) {
             File file = IOUtils.resolveFilePath(sourceFile).toFile();
             String currentSrcName = file.getName();
-            String dest = destFolder + File.separator + currentSrcName;
+            String dest = destinationFile.getPath().toString() + File.separator + currentSrcName;
             try {
                 Files.move(Paths.get(sourceFile), Paths.get(dest), REPLACE_EXISTING);
 
@@ -166,7 +172,7 @@ public class MvApplication implements MvInterface {
         }
     }
 
-    private void noOverwriteProcess(String source, String destFile, String checkDest, File file) throws MvException {
+    private void noOverwriteProcess(String source, String checkDest, File file) throws MvException {
         if(file.isDirectory()) {
             String fileInDir = checkDest + File.separator + source;
             File fileCheck = new File(fileInDir);
@@ -178,7 +184,7 @@ public class MvApplication implements MvInterface {
             }
         }
         else{
-            File fileCheck = new File(destFile);
+            File fileCheck = new File(checkDest);
             if(fileCheck.exists()){
                 throw (MvException) new MvException(NO_OVERWRITE);
             }
