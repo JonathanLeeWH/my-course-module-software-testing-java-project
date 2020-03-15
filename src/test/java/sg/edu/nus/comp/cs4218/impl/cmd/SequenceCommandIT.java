@@ -39,6 +39,8 @@ class SequenceCommandIT {
     private static final String MV_APP = "mv";
     private static final String SORT_APP = "sort";
     private static final String WC_APP = "wc";
+    private static final String SED_APP = "sed";
+    private static final String CUT_APP = "cut";
     private static final String INVALID_APP = "lsa";
     private static final String FOLDER_NAME_1 = "folder1";
     private static final String FILE_NAME_1 = "CS4218A";
@@ -49,6 +51,8 @@ class SequenceCommandIT {
     private static final String FILE_NAME_6 = "AB.txt";
     private static final String FILE_CONTENT_1 = "Hello world";
     private static final String FILE_CONTENT_2 = "How are you";
+    private static final String REGEX_EXPR_1 = "s/^/> /";
+    private static final String C_FLAG = "-c";
 
     private OutputStream outputStream;
     private List<Command> commands;
@@ -320,7 +324,7 @@ class SequenceCommandIT {
      * Expected: Outputs correctly as shown below and remove AB.txt
      */
     @Test
-    void testEvaluateSequenceCommandWithWcCommmandAndRmCommandInteractionShouldRemoveFile(@TempDir Path tempDir) throws Exception {
+    void testEvaluateSequenceCommandWithWcCommandAndRmCommandInteractionShouldRemoveFile(@TempDir Path tempDir) throws Exception {
         Path file = tempDir.resolve(FILE_NAME_6);
         Files.createFile(file);
         assertTrue(Files.exists(file)); // check that AB.txt exists.
@@ -333,6 +337,54 @@ class SequenceCommandIT {
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
         assertEquals(expected, outputStream.toString());
+        assertFalse(Files.exists(file)); // check that AB.txt is deleted.
+    }
+
+    /**
+     * Tests evaluate method when involving sed command and rm command
+     * For example: sed "s/^/> /" AB.txt; rm Ab.txt
+     * Where AB.txt is an existing file.
+     * It is mainly to test to ensure stream is closed for those commands that read files. As if streams are not closed, remove command
+     * would not be able to remove the file.
+     * Expected: Outputs correctly as shown below and remove AB.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandWithSedCommandAndRmCommandInteractionShouldRemoveFile(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve(FILE_NAME_6);
+        Files.createFile(file);
+        assertTrue(Files.exists(file)); // check that AB.txt exists.
+        List<String> contents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        Files.write(file, contents);
+        assertEquals(contents, Files.readAllLines(file));
+        commands.add(new CallCommand(Arrays.asList(SED_APP, REGEX_EXPR_1, file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals("> " + FILE_CONTENT_1 + STRING_NEWLINE + "> " + FILE_CONTENT_2 + STRING_NEWLINE, outputStream.toString());
+        assertFalse(Files.exists(file)); // check that AB.txt is deleted.
+    }
+
+    /**
+     * Tests evaluate method when involving cut command and rm command
+     * For example: sed "s/^/> /" AB.txt; rm Ab.txt
+     * Where AB.txt is an existing file.
+     * It is mainly to test to ensure stream is closed for those commands that read files. As if streams are not closed, remove command
+     * would not be able to remove the file.
+     * Expected: Outputs correctly as shown below and remove AB.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandWithCutCommandAndRmCommandInteractionShouldRemoveFile(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve(FILE_NAME_6);
+        Files.createFile(file);
+        assertTrue(Files.exists(file)); // check that AB.txt exists.
+        List<String> contents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        Files.write(file, contents);
+        assertEquals(contents, Files.readAllLines(file));
+        commands.add(new CallCommand(Arrays.asList(CUT_APP, C_FLAG, "5-7", file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, file.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals("o w" + STRING_NEWLINE + "are" + STRING_NEWLINE, outputStream.toString());
         assertFalse(Files.exists(file)); // check that AB.txt is deleted.
     }
 }
