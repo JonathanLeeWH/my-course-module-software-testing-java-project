@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GlobbingUnitTest {
+public class GlobbingTest {
     private static final Path DIRECTORY = Paths.get("src","test","java" , "tdd","util", "dummyTestFolder", "GlobbingTestFolder");
     private static final String RESOURCE_PATH = DIRECTORY.toString() + File.separator;
     private static final String FOLDER_WITH_FILE = RESOURCE_PATH + "B";
@@ -52,7 +52,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_singleAsteriskOnly() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentSingleAsteriskOnlySuccess() throws AbstractApplicationException, ShellException {
         String input = RESOURCE_PATH + "*";
         List<String> expected = Arrays.asList(emptyFolder, FOLDER_WITH_FILE, FILE_1, FILE_2, FILE_3);
         Collections.sort(expected);
@@ -61,7 +61,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_singleAsterisk_fileExtension_exist() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentSingleAsteriskFileExtensionExistSuccess() throws AbstractApplicationException, ShellException {
         String input = RESOURCE_PATH + "*.txt";
         List<String> expected = Arrays.asList(FILE_1, FILE_2);
         Collections.sort(expected);
@@ -70,7 +70,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_singleAsterisk_fileExtension_nonExistent() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentSingleAsteriskFileExtensionNonExistentSuccess() throws AbstractApplicationException, ShellException {
         String input = RESOURCE_PATH + "*.t";
         List<String> expected = Arrays.asList(input);
         Collections.sort(expected);
@@ -79,7 +79,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_multipleAsterisksInARow_workTheSameAsSingleAsterisk() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentMultipleAsterisksInARowWorkTheSameAsSingleAsteriskSuccess() throws AbstractApplicationException, ShellException {
         // Double asterisks
         String input = RESOURCE_PATH + "**";
         List<String> expected = Arrays.asList(emptyFolder, FOLDER_WITH_FILE, FILE_1, FILE_2, FILE_3);
@@ -94,7 +94,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_multipleAsterisk_fileExtension() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentMultipleAsteriskFileExtensionSuccess() throws AbstractApplicationException, ShellException {
         String input = RESOURCE_PATH + "*.t*";
         List<String> expected = Arrays.asList(FILE_1, FILE_2);
         Collections.sort(expected);
@@ -116,7 +116,7 @@ public class GlobbingUnitTest {
 
 
     @Test
-    void testResolveOneArgument_singleAsterisk_emptyFolder() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentSingleAsteriskEmptyFolderSuccess() throws AbstractApplicationException, ShellException {
         String input = emptyFolder + File.separator + "*";
         // Not sure about the expected output
         List<String> expected = Arrays.asList(input);
@@ -125,7 +125,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_singleAsterisk_nonExistentFolder() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentSingleAsteriskNonExistentFolderSuccess() throws AbstractApplicationException, ShellException {
         String input = RESOURCE_PATH + File.separator + "nonExistent" + File.separator + "*";
         List<String> expected = Arrays.asList(input);
         List<String> actual = argumentResolver.resolveOneArgument(input);
@@ -133,7 +133,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_singleAsterisk_folderWithFile() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentSingleAsteriskFolderWithFileSuccess() throws AbstractApplicationException, ShellException {
         String input = FOLDER_WITH_FILE_PATH + "*";
         List<String> expected = Arrays.asList(FWF_FILE_1);
         List<String> actual = argumentResolver.resolveOneArgument(input);
@@ -141,7 +141,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_singleAsterisk_folderWithFile_fileExtension_exist() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentSingleAsteriskFolderWithFileFileExtensionExistSuccess() throws AbstractApplicationException, ShellException {
         String input = FOLDER_WITH_FILE_PATH + "*.txt";
         List<String> expected = Arrays.asList(FWF_FILE_1);
         Collections.sort(expected);
@@ -150,7 +150,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_singleAsterisk_folderWithFile_fileExtension_nonExistent() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentSingleAsteriskFolderWithFileFileExtensionNonExistentSuccess() throws AbstractApplicationException, ShellException {
         String input = FOLDER_WITH_FILE_PATH + "*.t";
         List<String> expected = Arrays.asList(input);
         Collections.sort(expected);
@@ -159,7 +159,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_multipleAsterisksInARow_folderWithFile_workTheSameAsSingleAsterisk() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentMultipleAsterisksInARowFolderWithFileWorkTheSameAsSingleAsteriskSuccess() throws AbstractApplicationException, ShellException {
         // Double asterisks
         String input = FOLDER_WITH_FILE_PATH + "**";
         List<String> expected = Arrays.asList(FWF_FILE_1);
@@ -174,7 +174,7 @@ public class GlobbingUnitTest {
     }
 
     @Test
-    void testResolveOneArgument_multipleAsterisk_folderWithFile_fileExtension() throws AbstractApplicationException, ShellException {
+    void resolveOneArgumentMultipleAsteriskFolderWithFileFileExtensionSuccess() throws AbstractApplicationException, ShellException {
         String input = FOLDER_WITH_FILE_PATH + "*.t*";
         List<String> expected = Arrays.asList(FWF_FILE_1);
         Collections.sort(expected);
