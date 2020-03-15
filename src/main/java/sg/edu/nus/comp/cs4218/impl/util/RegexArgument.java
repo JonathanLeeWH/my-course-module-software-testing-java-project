@@ -102,7 +102,7 @@ public final class RegexArgument {
                     }
 
                     if (candidateFile.isDirectory()) {
-                        String folderName = fileName + "/";
+                        String folderName = fileName + File.separator;
                         if (regexPattern.matcher(folderName).matches()) {
                             globbedFolders.add(folderName);
                         }
