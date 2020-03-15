@@ -48,17 +48,18 @@ public class MvApplication implements MvInterface {
 
         String source = sourceDestination.get(0);
         String destFile = sourceDestination.get(1);
-        String dest = File.separator + sourceDestination.get(1);
+        String dest = sourceDestination.get(1);
         String currentDir = EnvironmentHelper.currentDirectory.trim();
 
         StringBuilder stringbuilder = new StringBuilder(currentDir);
         stringbuilder.append(dest);
-        String checkDest = stringbuilder.toString();
+        String checkDest = dest;
 
         File file = new File(checkDest);
+        File sourceFile = new File(source);
 
         if(parser.isNotOverWrite()) {
-            noOverwriteProcess(source, destFile, checkDest, file);
+            noOverwriteProcess(sourceFile.getName(), destFile, checkDest, file);
         }
         else{
             overWriteProcess(source, checkDest, file);
