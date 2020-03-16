@@ -44,24 +44,6 @@ public class WcApplicationTest {
      */
     // Error test cases
     @Test
-    void testCountFromFilesUsingASingleFileWithFileNotFoundInDirShouldThrowException() {
-        Throwable thrown = assertThrows(Exception.class, () -> wcApplication.countFromFiles(
-                false, false, false,
-                "no-file.txt"
-        ));
-        assertEquals(thrown.getMessage(), ERR_FILE_NOT_FOUND);
-    }
-
-    @Test
-    void testCountFromFilesUsingMultipleFilesWithAtLeastOneFileNotFoundInDirShouldThrowException() {
-        Throwable thrown = assertThrows(Exception.class, () -> wcApplication.countFromFiles(
-                false, false, false,
-                testFile3.toFile().toString(), "no-file.txt"
-        ));
-        assertEquals(thrown.getMessage(), ERR_FILE_NOT_FOUND);
-    }
-
-    @Test
     void testCountFromFilesWithNullFileNameShouldThrowException() {
         Throwable thrown = assertThrows(Exception.class, () -> wcApplication.countFromFiles(
                 false, false, false,
@@ -81,13 +63,37 @@ public class WcApplicationTest {
         assertEquals(thrown.getMessage(), ERR_NO_PERM);
     }
 
+    // Single test cases
     @Test
-    void testCountFromFilesUsingASingleFileWithFilenameIsADirShouldThrowException() {
-        Throwable thrown = assertThrows(Exception.class, () -> wcApplication.countFromFiles(
+    void testCountFromFilesUsingASingleFileWithFileNotFoundInDirShouldRunSuccessfullyAndShowErrorMessage() throws Exception {
+        String actualResult = wcApplication.countFromFiles(
+                false, false, false,
+                "no-file.txt"
+        );
+        String expectedResult = "wc: " + ERR_FILE_NOT_FOUND;
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCountFromFilesUsingMultipleFilesWithAtLeastOneFileNotFoundInDirShouldRunSuccessfullyAndShowErrorMessage() throws Exception {
+        String actualResult = wcApplication.countFromFiles(
+                false, false, false,
+                testFile3.toFile().toString(), "no-file.txt"
+        );
+        String expectedResult = String.format(" %7d %7d %7d", 7, 14, 60) + " " + testFile3.toFile().getPath() + System.lineSeparator()
+                + "wc: " + ERR_FILE_NOT_FOUND + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 7, 14, 60) + " total";
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testCountFromFilesUsingASingleFileWithFilenameIsADirShouldRunSuccessfullyAndShowErrorMessage() throws Exception {
+        String actualResult = wcApplication.countFromFiles(
                 true, false, false,
                 TestFileUtils.TESTDATA_DIR
-        ));
-        assertEquals(thrown.getMessage(), ERR_IS_DIR);
+        );
+        String expectedResult = "wc: " + ERR_IS_DIR;
+        assertEquals(expectedResult, actualResult);
     }
 
     // Positive test cases
@@ -383,7 +389,7 @@ public class WcApplicationTest {
                 false, false, false,
                 new ByteArrayInputStream(new byte[0])
         );
-        String expectedResult = "";
+        String expectedResult = String.format(" %7d %7d %7d", 0, 0, 0);
         assertEquals(expectedResult, actualResult);
     }
 

@@ -53,7 +53,7 @@ public class WcApplicationIT {
     @Test
     void testWcApplicationAndWcArgumentWithMultipleFilesShouldRunSuccessfully() throws WcException {
         wcApplication.run(Arrays.asList("-c", testFile3.toFile().getPath()).toArray(new String[2]), ourTestStdin, ourTestStdout);
-        String expectedResult = String.format(" %7d", 53) + " " + testFile3.toFile().getPath() + System.lineSeparator();
+        String expectedResult = String.format(" %7d", 60) + " " + testFile3.toFile().getPath() + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
