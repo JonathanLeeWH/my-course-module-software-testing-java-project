@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_FLAG;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_ARGS;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 
 
@@ -29,8 +30,12 @@ public class WcArguments {
      *
      * @param args Array of arguments to parse
      */
-    public void parse(String... args) throws WcException {
+    public void parse(String... args) throws Exception {
         boolean parsingFlag = true, isLines = false, isWords = false, isBytes = false;
+        if (args == null) {
+            throw new Exception(ERR_NULL_ARGS);
+        }
+
         // Parse arguments
         if (args != null && args.length > 0) {
             for (String arg : args) {
@@ -55,7 +60,7 @@ public class WcArguments {
                             isWords = true;
                             continue;
                         }
-                        throw new WcException(ERR_INVALID_FLAG);
+                        throw new Exception(ERR_INVALID_FLAG);
                     }
                 } else {
                     parsingFlag = false;

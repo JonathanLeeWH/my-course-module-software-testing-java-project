@@ -37,9 +37,14 @@ public class WcApplication implements WcInterface {
         if (stdout == null) {
             throw new WcException(ERR_NULL_STREAMS);
         }
-        WcArguments wcArgs = new WcArguments();
-        wcArgs.parse(args);
         String result;
+        WcArguments wcArgs = new WcArguments();
+
+        try {
+            wcArgs.parse(args);
+        } catch (Exception e) {
+            throw new WcException(e.getMessage()); //NOPMD
+        }
         try {
             if (wcArgs.getFiles().isEmpty()) {
                 result = countFromStdin(wcArgs.isBytes(), wcArgs.isLines(), wcArgs.isWords(), stdin);
