@@ -22,7 +22,7 @@ public class WcApplicationIT {
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
     private static final String TEST_STDIN_MSG_1 = "11"+  System.lineSeparator() +
-            "1 test 1 2" +  System.lineSeparator() + "5" + System.lineSeparator() + "+";
+            "1 test 1 2" +  System.lineSeparator() + "5" + System.lineSeparator() + "+" + System.lineSeparator();
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
 
     @BeforeEach
@@ -51,16 +51,34 @@ public class WcApplicationIT {
 
     // Positive test cases
     @Test
-    void testWcApplicationAndWcArgumentWithMultipleFilesShouldRunSuccessfully() throws WcException {
+    void testWcApplicationAndWcArgumentUsingByteArgsOnlyWithMultipleFilesShouldRunSuccessfully() throws WcException {
         wcApplication.run(Arrays.asList("-c", testFile3.toFile().getPath()).toArray(new String[2]), ourTestStdin, ourTestStdout);
         String expectedResult = String.format(" %7d", 60) + " " + testFile3.toFile().getPath() + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
-    void testWcApplicationAndWcArgumentWithNoFilesShouldRunSuccessfully() throws WcException {
-        wcApplication.run(defaultWcArgs, ourTestStdin, ourTestStdout);
-        String expectedResult = "";
+    void testWcApplicationAndWcArgumentUsingWordArgsOnlyWithNoFilesAndInputStreamWithValidValuesShouldRunSuccessfully() throws WcException {
+        wcApplication.run(Collections.singletonList("-w").toArray(new String[1]), ourTestStdin, ourTestStdout);
+        String expectedResult = String.format(" %7d", 7) + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
+    }
+
+    @Test
+    void testWcApplicationAndWcArgumentUsingAllArgsWithFlagArgsTogetherAndNoFilesAndInputStreamWithNoValuesShouldRunSuccessfully() throws WcException, IOException {
+        InputStream emptyInputStream = new ByteArrayInputStream(new byte[0]);
+        wcApplication.run(Collections.singletonList("-lcw").toArray(new String[1]), emptyInputStream, ourTestStdout);
+        String expectedResult = String.format(" %7d %7d %7d", 0, 0, 0) + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
+        emptyInputStream.close();
+    }
+
+    @Test
+    void testWcApplicationAndWcArgumentUsingAllArgsWithFlagArgsSeparatedAndNoFilesAndInputStreamWithNoValuesShouldRunSuccessfully() throws WcException, IOException {
+        InputStream emptyInputStream = new ByteArrayInputStream(new byte[0]);
+        wcApplication.run(Arrays.asList("-w", "-c", "-l").toArray(new String[3]), emptyInputStream, ourTestStdout);
+        String expectedResult = String.format(" %7d %7d %7d", 0, 0, 0) + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
+        emptyInputStream.close();
     }
 }
