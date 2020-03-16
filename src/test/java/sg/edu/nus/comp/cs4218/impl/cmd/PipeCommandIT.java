@@ -31,20 +31,32 @@ class PipeCommandIT {
     private static final String FILE_NAME_1 = "CS4218A.txt";
     private static final String FILE_NAME_2 = "A4218A.txt";
     private static final String FILE_NAME_3 = "CS3203A.txt";
+    private static final String FILE_NAME_4 = "1.txt";
+    private static final String FILE_NAME_5 = "2.txt";
     private static final String FOLDER_NAME_1 = "folder1";
     private static final String FILE_CONTENT_1 = "Hello world";
     private static final String FILE_CONTENT_2 = "How are you";
+    private static final String FILE_CONTENT_3 = "1";
+    private static final String FILE_CONTENT_4 = "2";
+    private static final String FILE_CONTENT_5 = "3";
+    private static final String FILE_CONTENT_6 = "A";
+    private static final String FILE_CONTENT_7 = "B";
+    private static final String FILE_CONTENT_8 = "AA";
     private static final String WC_APP = "wc";
     private static final String ECHO_APP = "echo";
     private static final String GREP_APP = "grep";
     private static final String CUT_APP = "cut";
     private static final String SORT_APP = "sort";
     private static final String FIND_APP = "find";
+    private static final String LS_APP = "ls";
+    private static final String PASTE_APP = "paste";
+    private static final String SED_APP = "sed";
     private static final String INVALID_APP = "lsa";
     private static final String B_FLAG = "-b";
     private static final String C_FLAG = "-c";
     private static final String NAME_FLAG = "-name";
     private static final String RELATIVE_CURR = ".";
+    private static final String REGEX_EXPR_1 = "s/^/> /";
 
     private OutputStream outputStream;
     private List<CallCommand> callCommands;
@@ -187,6 +199,108 @@ class PipeCommandIT {
         assertEquals(RELATIVE_CURR + File.separator + FILE_NAME_3 + STRING_NEWLINE, outputStream.toString());
     }
 
+    /**
+     * Tests evaluate method ls and grep interaction
+     * For example: ls | grep "A4"
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithLsCommandAndGrepCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        Files.createFile(tempDir.resolve(FILE_NAME_1));
+        Files.createFile(tempDir.resolve(FILE_NAME_2));
+        Files.createFile(tempDir.resolve(FILE_NAME_3));
+        callCommands.add(new CallCommand(Collections.singletonList(LS_APP), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "A4"), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("A4218A.txt" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method paste and sed interaction
+     * For example: paste 1.txt 2.txt | sed "s/^/> /"
+     * Where 1.txt and 2.txt exists.
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithPasteCommandAndSedCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        assertTrue(Files.exists(file2)); // check that 2.txt exists.
+        Files.write(file1, Arrays.asList(FILE_CONTENT_3, FILE_CONTENT_4, FILE_CONTENT_5));
+        Files.write(file2, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        callCommands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(SED_APP, REGEX_EXPR_1), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("> 1\tA" + System.lineSeparator() + "> 2\tB" + System.lineSeparator() + "> 3\tAA" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method paste and grep interaction
+     * For example: paste 1.txt 2.txt | grep "A"
+     * Where 1.txt and 2.txt exists.
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithPasteCommandAndGrepCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        assertTrue(Files.exists(file2)); // check that 2.txt exists.
+        Files.write(file1, Arrays.asList(FILE_CONTENT_3, FILE_CONTENT_4, FILE_CONTENT_5));
+        Files.write(file2, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        callCommands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "A"), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("1\tA" + System.lineSeparator() + "3\tAA" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method sed and grep interaction
+     * For example: sed "s/^/> /" 1.txt | grep "> A"
+     * Where 1.txt exists.
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithSedCommandAndGrepCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        Files.write(file1, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        callCommands.add(new CallCommand(Arrays.asList(SED_APP, REGEX_EXPR_1, file1.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "> A"), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("> A" + System.lineSeparator() + "> AA" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method sed and cut interaction
+     * For example: sed "s/^/> /" 1.txt | cut -c 1-2
+     * Where 1.txt exists.
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithSedCommandAndCutCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        Files.write(file1, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        callCommands.add(new CallCommand(Arrays.asList(SED_APP, REGEX_EXPR_1, file1.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(CUT_APP, C_FLAG, "1-2"), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("> " + System.lineSeparator() + "> " + System.lineSeparator() + "> " + System.lineSeparator(), outputStream.toString());
+    }
+
     // At least two pipes test case
 
     /**
@@ -201,9 +315,9 @@ class PipeCommandIT {
         Files.createFile(tempDir.resolve(FILE_NAME_1));
         Files.createFile(tempDir.resolve(FILE_NAME_2));
         Files.createFile(tempDir.resolve(FILE_NAME_3));
-        callCommands.add(new CallCommand(Collections.singletonList("ls"), new ApplicationRunner(), new ArgumentResolver()));
-        callCommands.add(new CallCommand(Arrays.asList("grep", "4218"), new ApplicationRunner(), new ArgumentResolver()));
-        callCommands.add(new CallCommand(Arrays.asList("grep", "CS4218"), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Collections.singletonList(LS_APP), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "4218"), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "CS4218"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
         pipeCommand.evaluate(System.in, outputStream);
         assertEquals("CS4218A.txt" + System.lineSeparator(), outputStream.toString());
