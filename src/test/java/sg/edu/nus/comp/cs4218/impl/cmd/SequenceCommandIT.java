@@ -394,8 +394,8 @@ class SequenceCommandIT {
 
     /**
      * Tests evaluate method with paste command cd command and rm command
-     * For example paste A.txt B.txt AB.txt; cd folder1; rm ../A.txt ../B.txt ../AB.txt
-     * Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
+     * For example paste A.txt B.txt > AB.txt; cd folder1; rm ../A.txt ../B.txt ../AB.txt
+     * Where A.txt and B.txt exists and AB.txt does not exist initially and folder1 is an existing directory.
      * Expected: Removes all the three files.
      */
     @Test
@@ -409,12 +409,11 @@ class SequenceCommandIT {
         Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
         Files.createFile(file2);
         Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
-        Files.createFile(file3);
         assertTrue(Files.exists(file1)); // check that A.txt exists
         assertTrue(Files.exists(file2)); // check that B.txt exists
-        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertFalse(Files.exists(file3)); // check that AB.txt does not exist
         assertTrue(Files.isDirectory(folder)); // check that folder1 exists
-        commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), Character.toString(CHAR_REDIR_OUTPUT), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
         commands.add(new CallCommand(Arrays.asList(CD_APP, folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
         commands.add(new CallCommand(Arrays.asList(RM_APP, RELATIVE_UP + File.separator + FILE_NAME_4, RELATIVE_UP + File.separator + FILE_NAME_5, RELATIVE_UP + File.separator + FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
