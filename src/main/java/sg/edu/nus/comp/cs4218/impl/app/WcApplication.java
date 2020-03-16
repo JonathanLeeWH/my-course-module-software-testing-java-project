@@ -118,12 +118,12 @@ public class WcApplication implements WcInterface {
             if (isBytes) {
                 sb.append(String.format(NUMBER_FORMAT, count[2]));
             }
-            if ((!isLines) && (!isWords) && (!isBytes)) {
-                sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT + " %s",
-                        count[0], count[1], count[2], file));
+            if ((isLines) || (isWords) || (isBytes)) {
+                sb.append(String.format(" %s", file));
             }
             else {
-                sb.append(String.format(" %s", file));
+                sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT + " %s",
+                        count[0], count[1], count[2], file));
             }
             result.add(sb.toString());
         }
@@ -140,12 +140,12 @@ public class WcApplication implements WcInterface {
             if (isBytes) {
                 sb.append(String.format(NUMBER_FORMAT, totalBytes));
             }
-            if ((!isLines) && (!isWords) && (!isBytes)) {
-                sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT + " total",
-                        totalLines, totalWords, totalBytes));
+            if ((isLines) || (isWords) || (isBytes)) {
+                sb.append(" total");
             }
             else {
-                sb.append(" total");
+                sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT + " total",
+                        totalLines, totalWords, totalBytes));
             }
             result.add(sb.toString());
         }
@@ -171,11 +171,7 @@ public class WcApplication implements WcInterface {
 
         StringBuilder sb = new StringBuilder(); //NOPMD
 
-        if ((!isLines) && (!isWords) && (!isBytes)) {
-            sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT,
-                    count[0], count[1], count[2]));
-        }
-        else {
+        if ((isLines) || (isWords) || (isBytes)) {
             if (isLines) {
                 sb.append(String.format(NUMBER_FORMAT, count[0]));
             }
@@ -185,6 +181,10 @@ public class WcApplication implements WcInterface {
             if (isBytes) {
                 sb.append(String.format(NUMBER_FORMAT, count[2]));
             }
+        }
+        else {
+            sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT,
+                    count[0], count[1], count[2]));
         }
         return sb.toString();
     }
