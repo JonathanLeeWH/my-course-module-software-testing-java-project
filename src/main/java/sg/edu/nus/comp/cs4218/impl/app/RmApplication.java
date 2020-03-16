@@ -36,7 +36,7 @@ public class RmApplication implements RmInterface {
         }
         RmException rmException = null;
         for (String current : fileName) {
-            File node = IOUtils.resolveFilePath(current).toFile();
+            File node = IOUtils.resolveFilePath(current).normalize().toFile();
             if (!node.exists()) {
                 rmException = new RmException(ERR_FILE_NOT_FOUND);
                 continue;

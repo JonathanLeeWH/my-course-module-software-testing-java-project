@@ -2,7 +2,6 @@ package tdd.bf;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -21,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.parser.ArgsParser.ILLEGAL_FLAG_MSG;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static tdd.util.RmTestUtil.ABSOLUTE_RM_TEST_PATH;
-import static tdd.util.RmTestUtil.RM_TEST_DIR;
 
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.LongVariable"})
 /**
@@ -45,9 +43,10 @@ public class RmApplicationTest {
     private static final boolean IS_EMPTY_DIR = true;
     private static final boolean IS_RECURSIVE = true;
     private static final String EXCEPTION_MESSAGE_HEADER = "rm: ";
+    private static final String DOS_READONLY = "dos:readonly";
     private InputStream inputStream;
     private OutputStream outputStream;
-    private OutputStream checkingOutputStream;
+    private OutputStream checkingOutputStream;//NOPMD
     private PrintStream checkingPrintStream;//NOPMD
     private String[] expected;
     private String expectedMsg;
@@ -461,7 +460,7 @@ public class RmApplicationTest {
     @Test
     public void testRemove_onReadOnlyDir_shouldThrowRmException() throws IOException {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_DIR_PATH), "dos:readonly", true);
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_DIR_PATH), DOS_READONLY, true);
         }
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + FilePermissionTestUtil.READ_ONLY_DIR_PATH
@@ -476,7 +475,7 @@ public class RmApplicationTest {
         ));
         assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_DIR_PATH), "dos:readonly", false);
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_DIR_PATH), DOS_READONLY, false);
         }
     }
 
@@ -491,7 +490,7 @@ public class RmApplicationTest {
     @DisabledOnOs(OS.WINDOWS)
     public void testRemove_onExecuteOnlyDir_shouldThrowRmException() throws IOException {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH), "dos:readonly", true);
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH), DOS_READONLY, true);
         }
         expectedMsg = EXCEPTION_MESSAGE_HEADER
                 + FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH
@@ -505,7 +504,7 @@ public class RmApplicationTest {
         ));
         assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH), "dos:readonly", false);
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.EXECUTE_ONLY_DIR_PATH), DOS_READONLY, false);
         }
     }
 
@@ -572,7 +571,7 @@ public class RmApplicationTest {
     @Test
     public void testRemove_onReadOnlyFile_shouldThrowRmException() throws IOException {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_FILE_PATH), "dos:readonly", true);
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_FILE_PATH), DOS_READONLY, true);
         }
 
         Exception exception = assertThrows(RmException.class, () -> rmApplication.remove(
@@ -583,7 +582,7 @@ public class RmApplicationTest {
         assertEquals(new RmException(ERR_NO_PERM).getMessage(), exception.getMessage());
 
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_FILE_PATH), "dos:readonly", false);
+            Files.setAttribute(Paths.get(FilePermissionTestUtil.READ_ONLY_FILE_PATH), DOS_READONLY, false);
         }
     }
 
