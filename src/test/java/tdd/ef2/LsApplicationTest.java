@@ -38,6 +38,7 @@ class LsApplicationTest {
         String path = ORIGINAL_DIR
                 + StringUtils.fileSeparator() + "src"
                 + StringUtils.fileSeparator() + "test"
+                + StringUtils.fileSeparator() + "java"
                 + StringUtils.fileSeparator() + "tdd"
                 + StringUtils.fileSeparator() + "util"
                 + StringUtils.fileSeparator() + "dummyTestFolder"

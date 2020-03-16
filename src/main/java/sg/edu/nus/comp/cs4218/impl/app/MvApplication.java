@@ -47,9 +47,32 @@ public class MvApplication implements MvInterface {
         String dest = sourceDestination.get(sourceDestination.size()-1);
 
         List<String> sources = new ArrayList<String>();
-        for(String sourceName : sourceDestination) {
+        for(int i = 0 ; i < sourceDestination.size()-1 ; i++){
+
+            String sourceName = sourceDestination.get(i);
             if(!sourceName.equals(dest)) {
                 sources.add(sourceName);
+            }
+            else{
+                File file = new File(dest);
+                File sourceFile = new File(sourceName);
+
+                if(file.getPath().toString().equals(sourceFile.getPath().toString())) {
+                    throw new MvException(SRC_DEST_SAME);
+                }
+
+            }
+        }
+
+        if(sources.size() > 1) {
+            File destFile = new File(dest);
+            if(destFile.exists()) {
+                if(!destFile.isDirectory()) {
+                    throw new MvException(DESTINATION_FOLDER_NOT);
+                }
+            }
+            else{
+                throw new MvException(DESTINATION_FOLDER_NOT);
             }
         }
         for(String source: sources) {
