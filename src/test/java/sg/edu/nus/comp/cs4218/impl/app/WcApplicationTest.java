@@ -21,7 +21,7 @@ public class WcApplicationTest {
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
     private static final String TEST_STDIN_MSG_1 = "11"+  System.lineSeparator() +
-            "1 test 1 2" +  System.lineSeparator() + "5" + System.lineSeparator() + "+";
+            "1 test 1 2" +  System.lineSeparator() + "5" + System.lineSeparator() + "+" + System.lineSeparator();
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
@@ -97,7 +97,7 @@ public class WcApplicationTest {
                 false, false, false,
                 testFile1.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d %7d", 6, 73, 547) + " " + testFile1.toFile().getPath();
+        String expectedResult = String.format(" %7d %7d %7d", 6, 73, 553) + " " + testFile1.toFile().getPath();
         assertEquals(expectedResult, actualResult);
     }
 
@@ -107,9 +107,9 @@ public class WcApplicationTest {
                 false, false, false,
                 testFile3.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d %7d", 7, 14, 53) + " " + testFile3.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 7, 14, 53) + " " + testFile3.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 14, 28, 106) + " total";
+        String expectedResult = String.format(" %7d %7d %7d", 7, 14, 60) + " " + testFile3.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 7, 14, 60) + " " + testFile3.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 14, 28, 120) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -119,9 +119,9 @@ public class WcApplicationTest {
                 false, false, false,
                 testFile2.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d %7d", 5, 320, 2076) + " " + testFile2.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 6, 73, 547) + " " + testFile1.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 11, 393, 2623) + " total";
+        String expectedResult = String.format(" %7d %7d %7d", 5, 320, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 6, 73, 553) + " " + testFile1.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 11, 393, 2634) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -131,7 +131,7 @@ public class WcApplicationTest {
                 true, false, false,
                 testFile3.toFile().toString()
         );
-        String expectedResult = String.format(" %7d", 53) + " " + testFile3.toFile().getPath();
+        String expectedResult = String.format(" %7d", 60) + " " + testFile3.toFile().getPath();
         assertEquals(expectedResult, actualResult);
     }
 
@@ -141,9 +141,9 @@ public class WcApplicationTest {
                 true, false, false,
                 testFile1.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = String.format(" %7d", 547) + " " + testFile1.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d", 547) + " " + testFile1.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d", 1094) + " total";
+        String expectedResult = String.format(" %7d", 553) + " " + testFile1.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d", 553) + " " + testFile1.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d", 1106) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -153,9 +153,9 @@ public class WcApplicationTest {
                 true, false, false,
                 testFile3.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = String.format(" %7d", 53) + " " + testFile3.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d", 547) + " " + testFile1.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d", 600) + " total";
+        String expectedResult = String.format(" %7d", 60) + " " + testFile3.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d", 553) + " " + testFile1.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d", 613) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -233,7 +233,7 @@ public class WcApplicationTest {
                 true, true, false,
                 testFile2.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d", 5, 2076) + " " + testFile2.toFile().getPath();
+        String expectedResult = String.format(" %7d %7d", 5, 2081) + " " + testFile2.toFile().getPath();
         assertEquals(expectedResult, actualResult);
     }
 
@@ -243,9 +243,9 @@ public class WcApplicationTest {
                 true, true, false,
                 testFile1.toFile().toString(), testFile1.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d", 6, 547) + " " + testFile1.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d", 6, 547) + " " + testFile1.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d", 12, 1094) + " total";
+        String expectedResult = String.format(" %7d %7d", 6, 553) + " " + testFile1.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d", 6, 553) + " " + testFile1.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d", 12, 1106) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -255,9 +255,9 @@ public class WcApplicationTest {
                 true, true, false,
                 testFile2.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d", 5, 2076) + " " + testFile2.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d", 7, 53) + " " + testFile3.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d", 12, 2129) + " total";
+        String expectedResult = String.format(" %7d %7d", 5, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d", 7, 60) + " " + testFile3.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d", 12, 2141) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -267,7 +267,7 @@ public class WcApplicationTest {
                 true, false, true,
                 testFile3.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d", 14, 53) + " " + testFile3.toFile().getPath();
+        String expectedResult = String.format(" %7d %7d", 14, 60) + " " + testFile3.toFile().getPath();
         assertEquals(expectedResult, actualResult);
     }
 
@@ -277,9 +277,9 @@ public class WcApplicationTest {
                 true, false, true,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d", 320, 2076) + " " + testFile2.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d", 320, 2076) + " " + testFile2.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d", 640, 4152) + " total";
+        String expectedResult = String.format(" %7d %7d", 320, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d", 320, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d", 640, 4162) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -289,9 +289,9 @@ public class WcApplicationTest {
                 true, false, true,
                 testFile2.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d", 320, 2076) + " " + testFile2.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d", 14, 53) + " " + testFile3.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d", 334, 2129) + " total";
+        String expectedResult = String.format(" %7d %7d", 320, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d", 14, 60) + " " + testFile3.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d", 334, 2141) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -335,7 +335,7 @@ public class WcApplicationTest {
                 true, true, true,
                 testFile1.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d %7d", 6, 73, 547) + " " + testFile1.toFile().getPath();
+        String expectedResult = String.format(" %7d %7d %7d", 6, 73, 553) + " " + testFile1.toFile().getPath();
         assertEquals(expectedResult, actualResult);
     }
 
@@ -345,9 +345,9 @@ public class WcApplicationTest {
                 true, true, true,
                 testFile2.toFile().toString(), testFile2.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d %7d", 5, 320, 2076) + " " + testFile2.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 5, 320, 2076) + " " + testFile2.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 10, 640, 4152) + " total";
+        String expectedResult = String.format(" %7d %7d %7d", 5, 320, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 5, 320, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 10, 640, 4162) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
@@ -357,10 +357,10 @@ public class WcApplicationTest {
                 true, true, true,
                 testFile1.toFile().toString(), testFile2.toFile().toString(), testFile3.toFile().toString()
         );
-        String expectedResult = String.format(" %7d %7d %7d", 6, 73, 547) + " " + testFile1.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 5, 320, 2076) + " " + testFile2.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 7, 14, 53) + " " + testFile3.toFile().getPath() + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 18, 407, 2676) + " total";
+        String expectedResult = String.format(" %7d %7d %7d", 6, 73, 553) + " " + testFile1.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 5, 320, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 7, 14, 60) + " " + testFile3.toFile().getPath() + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 18, 407, 2694) + " total";
         assertEquals(expectedResult, actualResult);
     }
 
