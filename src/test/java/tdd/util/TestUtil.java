@@ -6,7 +6,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SuppressWarnings("PMD.LongVariable")
-public class TestUtil {
+public final class TestUtil {
+
+    private TestUtil () {
+        // empty constructor
+    }
 
     public static Path resolveFilePath(String fileName) {
         Path currentDirectory = Paths.get(EnvironmentHelper.currentDirectory);

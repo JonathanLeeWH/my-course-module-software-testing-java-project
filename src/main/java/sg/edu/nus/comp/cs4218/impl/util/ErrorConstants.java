@@ -67,6 +67,8 @@ public class ErrorConstants {
     public static final String MISSING_ARG_EXCEPTION = "Missing Arguments";
     public static final String NO_DESTINATION = "No destination file specified";
     public static final String NO_DESTINATION_FOLDER = "No destination folder specified";
+    public static final String DESTINATION_FOLDER_NOT = "No destination folder specified does not exist";
+    public static final String SRC_DEST_SAME = "Source File and Destination specified is the same";
     public static final String FAILED_TO_MOVE = "Failed to move file";
     public static final String NO_FILE = "No file specified found";
     public static final String NO_OVERWRITE = "No overwrite and destination file exist";

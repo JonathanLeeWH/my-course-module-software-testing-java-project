@@ -28,6 +28,9 @@ class SequenceCommandTest {
     InputStream inputStream;
     OutputStream outputStream;
     SequenceCommand sequenceCommand;
+    
+    private static final String TEST_STRING = "test ";
+    private static final String ECHO_EXCEP = "echo: EchoException";
 
     @BeforeEach
     void setUp() {
@@ -45,7 +48,7 @@ class SequenceCommandTest {
     @Test
     public void testTwoCommandNoExceptionThrown() throws AbstractApplicationException, ShellException {
 
-        String expectedResult = "test " + "test ";
+        String expectedResult = TEST_STRING + TEST_STRING;
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         sequenceCommand = new SequenceCommand(commands);
@@ -56,7 +59,7 @@ class SequenceCommandTest {
     @Test
     public void testFirstCommandExceptionThrown() throws AbstractApplicationException, ShellException {
 
-        String expectedResult = "echo: EchoException" + STRING_NEWLINE + "test ";
+        String expectedResult = ECHO_EXCEP + STRING_NEWLINE + TEST_STRING;
         commands.add(new CommandStub(CommandStub.CommandT.ECHO_EXCEPTION));
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         sequenceCommand = new SequenceCommand(commands);
@@ -67,7 +70,7 @@ class SequenceCommandTest {
     @Test
     public void testSecondCommandExceptionThrown() throws AbstractApplicationException, ShellException {
 
-        String expectedResult = "test " + "echo: EchoException" + STRING_NEWLINE;
+        String expectedResult = TEST_STRING + ECHO_EXCEP + STRING_NEWLINE;
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         commands.add(new CommandStub(CommandStub.CommandT.ECHO_EXCEPTION));
         sequenceCommand = new SequenceCommand(commands);
@@ -78,7 +81,7 @@ class SequenceCommandTest {
     @Test
     public void testTwoCommandTwoExceptionThrown() throws AbstractApplicationException, ShellException {
 
-        String expectedResult = "echo: EchoException" + STRING_NEWLINE + "echo: EchoException" + STRING_NEWLINE;
+        String expectedResult = ECHO_EXCEP + STRING_NEWLINE + ECHO_EXCEP + STRING_NEWLINE;
         commands.add(new CommandStub(CommandStub.CommandT.ECHO_EXCEPTION));
         commands.add(new CommandStub(CommandStub.CommandT.ECHO_EXCEPTION));
         sequenceCommand = new SequenceCommand(commands);
@@ -89,7 +92,7 @@ class SequenceCommandTest {
 
     @Test
     public void testFirstCommandEmpty() throws AbstractApplicationException, ShellException {
-        String expectedResult = STRING_NEWLINE + "test ";
+        String expectedResult = STRING_NEWLINE + TEST_STRING;
         commands.add(new CommandStub(CommandStub.CommandT.WHITESPACE));
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         sequenceCommand = new SequenceCommand(commands);
@@ -99,7 +102,7 @@ class SequenceCommandTest {
 
     @Test
     public void testSecondCommandEmpty() throws AbstractApplicationException, ShellException {
-        String expectedResult = "test " + STRING_NEWLINE;
+        String expectedResult = TEST_STRING + STRING_NEWLINE;
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         commands.add(new CommandStub(CommandStub.CommandT.WHITESPACE));
         sequenceCommand = new SequenceCommand(commands);
@@ -120,7 +123,7 @@ class SequenceCommandTest {
     @Test
     public void testThreeCommands() throws AbstractApplicationException, ShellException {
 
-        String expectedResult = "test " + "test " + "test ";
+        String expectedResult = TEST_STRING + TEST_STRING + TEST_STRING;
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
@@ -133,7 +136,7 @@ class SequenceCommandTest {
     @Test
     public void testThreeCommandsMiddleThrowException() throws AbstractApplicationException, ShellException {
 
-        String expectedResult = "test " + "echo: EchoException" + STRING_NEWLINE + "test ";
+        String expectedResult = TEST_STRING + ECHO_EXCEP + STRING_NEWLINE + TEST_STRING;
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));
         commands.add(new CommandStub(CommandStub.CommandT.ECHO_EXCEPTION));
         commands.add(new CommandStub(CommandStub.CommandT.PRINT_TO_STDOUT));

@@ -36,7 +36,7 @@ public class RmApplication implements RmInterface {
         }
         RmException rmException = null;
         for (String current : fileName) {
-            File node = IOUtils.resolveFilePath(current).toFile();
+            File node = IOUtils.resolveFilePath(current).normalize().toFile();
             if (!node.exists()) {
                 rmException = new RmException(ERR_FILE_NOT_FOUND);
                 continue;
@@ -82,9 +82,9 @@ public class RmApplication implements RmInterface {
         try {
             if (fileName.isDirectory()) {
                 throw new RmException(ERR_IS_DIR);
-            } else {
-                Files.delete(fileName.toPath());
             }
+            validateReadOnly(fileName);
+            Files.delete(fileName.toPath());
         } catch (IOException e) {
             throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
         }
@@ -98,9 +98,15 @@ public class RmApplication implements RmInterface {
      */
     public void removeFileAndEmptyFolderOnly(File fileName) throws RmException {
         try {
+            if (Files.isDirectory(fileName.toPath())) {
+                String[] directoryContents = fileName.list();
+                if (directoryContents != null && directoryContents.length > 0) {
+                    throw new RmException(ERR_NON_EMPTY_DIR);
+                }
+                validateWriteOnly(fileName);
+            }
+            validateReadOnly(fileName);
             Files.delete(fileName.toPath());
-        } catch (DirectoryNotEmptyException e) {
-            throw (RmException) new RmException(ERR_NON_EMPTY_DIR).initCause(e);
         } catch (IOException e) {
             throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
         }
@@ -123,6 +129,7 @@ public class RmApplication implements RmInterface {
         }
 
         try {
+            validateReadOnly(fileName);
             Files.delete(fileName.toPath()); // delete the file.
         } catch (IOException e) {
             throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
@@ -169,11 +176,37 @@ public class RmApplication implements RmInterface {
 
     /**
      * Returns true if the input path is a sub path of the current directory. Otherwise, returns false.
+     *
      * @param inputPath The input path to be check whether it is the sub path of the current directory.
      * @return Returns true if the input path is sub path of the current directory. Otherwise, returns false.
      */
     private boolean isSubPath(Path inputPath) {
         Path currentDirectory = Paths.get(EnvironmentHelper.currentDirectory).normalize().toAbsolutePath();
         return currentDirectory.startsWith(inputPath.normalize().toAbsolutePath());
+    }
+
+    private boolean isReadOnly(File file) throws RmException {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD
+            try {
+                Object object = Files.getAttribute(file.toPath(), "dos:readonly");
+                return Boolean.TRUE == Files.getAttribute(file.toPath(), "dos:readonly");
+            } catch (IOException e) {
+                throw (RmException) new RmException(ERR_IO_EXCEPTION).initCause(e);
+            }
+        } else {
+            return !file.canWrite();
+        }
+    }
+
+    private void validateReadOnly(File file) throws RmException {
+        if (file.exists() && isReadOnly(file)) {
+            throw new RmException(ERR_NO_PERM);
+        }
+    }
+
+    private void validateWriteOnly(File file) throws RmException {
+        if (file.exists() && !file.canRead() && !file.canExecute() && file.canWrite()) { // Might not work on Windows as stated in our Assumptions report. This is just for minimum check.
+            throw new RmException(ERR_NO_PERM);
+        }
     }
 }

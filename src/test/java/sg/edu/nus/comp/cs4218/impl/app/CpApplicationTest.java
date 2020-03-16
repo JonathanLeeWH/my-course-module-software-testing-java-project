@@ -2,6 +2,8 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.exception.CpException;
 
@@ -27,6 +29,7 @@ class CpApplicationTest {
     private static final String FILE_NAME_1 = "2.txt";
     private static final String FILE_CONTENT_1 = "Hello world";
     private static final String FILE_CONTENT_2 = "How are you";
+    private static final String DOS_READONLY = "dos:readonly";
 
     private CpApplication cpApplication;
 
@@ -109,13 +112,49 @@ class CpApplicationTest {
      */
     @Test
     void testCpSrcFileToDestFileWhenSourceFileAndDestinationFileInputSameShouldThrowCpException(@TempDir Path tempDir) throws IOException {
-        Path srcFile = tempDir.resolve(SRC_FILE);;
+        Path srcFile = tempDir.resolve(SRC_FILE);
         Files.createFile(srcFile);
 
         CpException exception = assertThrows(CpException.class, () -> {
            cpApplication.cpSrcFileToDestFile(srcFile.toString(), srcFile.toString());
         });
         assertEquals(new CpException(ERR_SRC_DEST_SAME).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests cpSrcFileToDestFile method when the input destination file has read only permission.
+     * For example: cp 1.txt dest.txt
+     * Where 1.txt and dest.txt are existing files. dest.txt has read only permissions.
+     * Expected: Throws CpException with ERR_NO_PERM
+     */
+    @Test
+    void testCpSrcFileToDestFileWhenDestinationFileIsReadOnlyShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path destFile = tempDir.resolve(DEST_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertTrue(Files.exists(destFile)); // check dest.txt exists
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, true);
+        } else {
+            destFile.toFile().setReadOnly();
+        }
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.cpSrcFileToDestFile(srcFile.toString(), destFile.toString());
+        });
+        assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        assertTrue(Files.exists(destFile)); // check dest.txt exists.
+        assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, false);
+        } else {
+            destFile.toFile().setWritable(true); // reset permissions from read only.
+        }
     }
 
     /**
@@ -240,6 +279,125 @@ class CpApplicationTest {
         Path copiedFile = destFolder.resolve(FILE_NAME_1);
         assertTrue(Files.exists(copiedFile));
         assertEquals(fileContents, Files.readAllLines(copiedFile));
+    }
+
+    /**
+     * Tests cpFilesToFolder method when the input destination file to be overwritten has read only permission.
+     * For example: cp 1.txt dest
+     * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file.
+     * Expected: Throws CpException with ERR_NO_PERM
+     */
+    @Test
+    void testCpFilesToFolderWhenDestinationFileToBeOverwrittenIsReadOnlyShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        Path destFile = destFolder.resolve(SRC_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createDirectory(destFolder);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
+        assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
+        String[] fileNameList = {srcFile.toString()};
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, true);
+        } else {
+            destFile.toFile().setReadOnly();
+        }
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.cpFilesToFolder(destFolder.toString(), fileNameList);
+        });
+        assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        assertTrue(Files.exists(destFile)); // check dest.txt exists.
+        assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, false);
+        } else {
+            destFile.toFile().setWritable(true); // reset permissions from read only.
+        }
+    }
+
+    /**
+     * Tests cpFilesToFolder method when the input destination folder has a file which has same file name as one of the input source file with read only permission
+     * and one of the input source file does not exist.
+     * For example: cp 1.txt 2.txt dest
+     * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file which only has read only permission. 2.txt is a non existing file.
+     * In this case, it will throw the latest CpException which is ERR_FILE_NOT_FOUND
+     * Expected: Throws latest CpException with ERR_FILE_NOT_FOUND
+     */
+    @Test
+    void testCpFilesToFolderWhenOneOfTheFileInDestinationFolderToBeOverwrittenIsReadOnlyAndAnotherInputSourceFileDoesNotExistShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path srcFile2 = tempDir.resolve(FILE_NAME_1);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        Path destFile = destFolder.resolve(SRC_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createDirectory(destFolder);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertFalse(Files.exists(srcFile2)); // check 2.txt does not exist
+        assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
+        assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
+        String[] fileNameList = {srcFile.toString(), srcFile2.toString()};
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, true);
+        } else {
+            destFile.toFile().setReadOnly();
+        }
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.cpFilesToFolder(destFolder.toString(), fileNameList);
+        });
+        assertEquals(new CpException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
+        assertTrue(Files.exists(destFile)); // check dest.txt exists.
+        assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, false);
+        } else {
+            destFile.toFile().setWritable(true); // reset permissions from read only.
+        }
+    }
+
+    /**
+     * Tests cpFilesToFolder method when the input destination folder has no execute permission.
+     * Note: As stated earlier, Windows have issue with permission in Java so it might not work on Windows.
+     * This test case is disabled on Windows platform.
+     * For example: cp 1.txt dest
+     * Where 1.txt is an existing file to be copied and dest is an existing folder with no execute permission.
+     * In this case, it will throw CpException: ERR_NO_PERM (similar to in unix shell where file cannot be copied to folder with no execute permission)
+     * Expected: Throws CpException with ERR_NO_PERM
+     */
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void testCpFilesToFolderWhenDestinationDirectoryHasNoExecutablePermissionShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        Path destFile = destFolder.resolve(SRC_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createDirectory(destFolder);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
+        assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
+        String[] fileNameList = {srcFile.toString()};
+        destFolder.toFile().setExecutable(false); // set the dest directory to have no executable permission.
+        assertFalse(destFolder.toFile().canExecute()); // check that the dest directory have no executable permission.
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.cpFilesToFolder(destFolder.toString(), fileNameList);
+        });
+        assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        destFolder.toFile().setExecutable(true); // reset permissions from no execute permission
     }
 
     /**
@@ -480,7 +638,7 @@ class CpApplicationTest {
      */
     @Test
     void testRunWhenSourceFileAndDestinationFileInputSameShouldThrowCpException(@TempDir Path tempDir) throws IOException {
-        Path srcFile = tempDir.resolve(SRC_FILE);;
+        Path srcFile = tempDir.resolve(SRC_FILE);
         Files.createFile(srcFile);
 
         String[] argsList = {srcFile.toString(), srcFile.toString()};
@@ -520,6 +678,124 @@ class CpApplicationTest {
         Path copiedFile = destFolder.resolve(FILE_NAME_1);
         assertTrue(Files.exists(copiedFile));
         assertEquals(fileContents, Files.readAllLines(copiedFile));
+    }
+
+    /**
+     * Tests run method when the input destination file to be overwritten has read only permission.
+     * For example: cp 1.txt dest
+     * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file.
+     * Expected: Throws CpException with ERR_NO_PERM
+     */
+    @Test
+    void testRunWhenDestinationFileToBeOverwrittenIsReadOnlyShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        Path destFile = destFolder.resolve(SRC_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createDirectory(destFolder);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
+        assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
+        String[] argsList = {srcFile.toString(), destFile.toString()};
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, true);
+        } else {
+            destFile.toFile().setReadOnly();
+        }
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+        assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        assertTrue(Files.exists(destFile)); // check dest.txt exists.
+        assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, false);
+        } else {
+            destFile.toFile().setWritable(true); // reset permissions from read only.
+        }
+    }
+
+    /**
+     * Tests run method when the input destination file has read only permission and one of the input source file does not exist.
+     * For example: cp 1.txt 2.txt dest
+     * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file. 2.txt is a non existing file.
+     * In this case, it will throw the latest CpException which is ERR_FILE_NOT_FOUND
+     * Expected: Throws latest CpException with ERR_FILE_NOT_FOUND
+     */
+    @Test
+    void testRunWhenOneOfTheDestinationFileToBeOverwrittenIsReadOnlyAndAnotherInputSourceFileDoesNotExistShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path srcFile2 = tempDir.resolve(FILE_NAME_1);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        Path destFile = destFolder.resolve(SRC_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createDirectory(destFolder);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertFalse(Files.exists(srcFile2)); // check 2.txt does not exist
+        assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
+        assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
+        String[] argsList = {srcFile.toString(), srcFile2.toString(), destFolder.toString()};
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, true);
+        } else {
+            destFile.toFile().setReadOnly();
+        }
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+        assertEquals(new CpException(ERR_FILE_NOT_FOUND).getMessage(), exception.getMessage());
+        assertTrue(Files.exists(destFile)); // check dest.txt exists.
+        assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Files.setAttribute(destFile, DOS_READONLY, false);
+        } else {
+            destFile.toFile().setWritable(true); // reset permissions from read only.
+        }
+    }
+
+    /**
+     * Tests run method when the input destination folder has no execute permission.
+     * Note: As stated earlier, Windows have issue with permission in Java so it might not work on Windows.
+     * This test case is disabled on Windows platform.
+     * For example: cp 1.txt dest
+     * Where 1.txt is an existing file to be copied and dest is an existing folder with no execute permission.
+     * In this case, it will throw CpException: ERR_NO_PERM (similar to in unix shell where file cannot be copied to folder with no execute permission)
+     * Expected: Throws CpException with ERR_NO_PERM
+     */
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void testRunWhenDestinationDirectoryHasNoExecutablePermissionShouldThrowCpException(@TempDir Path tempDir) throws IOException {
+        Path srcFile = tempDir.resolve(SRC_FILE);
+        Path destFolder = tempDir.resolve(DEST_FOLDER);
+        Path destFile = destFolder.resolve(SRC_FILE);
+        List<String> fileContents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        List<String> fileContents2 = Arrays.asList(FILE_CONTENT_1);
+        Files.createFile(srcFile);
+        Files.write(srcFile, fileContents);
+        Files.createDirectory(destFolder);
+        Files.createFile(destFile);
+        Files.write(destFile, fileContents2);
+        assertTrue(Files.exists(srcFile)); // check 1.txt exists
+        assertTrue(Files.isDirectory(destFolder)); // check dest directory exists
+        assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
+        String[] argsList = {srcFile.toString(), destFolder.toString()};
+        destFolder.toFile().setExecutable(false); // set the dest directory to have no executable permission.
+        assertFalse(destFolder.toFile().canExecute()); // check that the dest directory have no executable permission.
+        CpException exception = assertThrows(CpException.class, () -> {
+            cpApplication.run(argsList, mock(InputStream.class), mock(OutputStream.class));
+        });
+        assertEquals(new CpException(ERR_NO_PERM).getMessage(), exception.getMessage());
+        destFolder.toFile().setExecutable(true); // reset permissions from no execute permission
     }
 
 //    private static boolean isFilesEqual(Path first, Path second) throws IOException {
