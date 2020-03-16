@@ -427,9 +427,9 @@ class SequenceCommandIT {
 
     /**
      * Tests evaluate method with paste command mv command and rm command
-     * For example paste A.txt B.txt AB.txt; mv AB.txt folder1; rm A.txt B.txt folder1/AB.txt
+     * For example paste A.txt B.txt AB.txt; mv A.txt B.txt AB.txt folder1; rm A.txt B.txt folder1/AB.txt
      * Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
-     * Expected: Removes A.txt B.txt and folder1/AB.txt
+     * Expected: Removes folder1/A.txt folder1/B.txt and folder1/AB.txt
      */
     @Test
     void testEvaluateSequenceCommandsWithPasteCommandAndMvCommandAndRmCommandShouldRemoveFile(@TempDir Path tempDir) throws Exception {
@@ -448,13 +448,15 @@ class SequenceCommandIT {
         assertTrue(Files.exists(file3)); // check that AB.txt exists
         assertTrue(Files.isDirectory(folder)); // check that folder1 exists
         commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
-        commands.add(new CallCommand(Arrays.asList(MV_APP, file3.toString(), folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
-        commands.add(new CallCommand(Arrays.asList(RM_APP, file1.toString(), file2.toString(), folder.resolve(FILE_NAME_6).toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(MV_APP, file1.toString(), file2.toString(), file3.toString(), folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(RM_APP, folder.resolve(FILE_NAME_4).toString(), folder.resolve(FILE_NAME_5).toString(), folder.resolve(FILE_NAME_6).toString()), new ApplicationRunner(), new ArgumentResolver()));
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
-        assertFalse(Files.exists(file1)); // check that A.txt is deleted
-        assertFalse(Files.exists(file2)); // check that B.txt is deleted
+        assertFalse(Files.exists(file1)); // check that A.txt is moved
+        assertFalse(Files.exists(file2)); // check that B.txt is moved
         assertFalse(Files.exists(file3)); // check that AB.txt is moved
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_4))); // check that folder1/A.txt is deleted
+        assertFalse(Files.exists(folder.resolve(FILE_NAME_5))); // check that folder1/B.txt is deleted
         assertFalse(Files.exists(folder.resolve(FILE_NAME_6))); // check that folder1/AB.txt is deleted
         assertTrue(Files.isDirectory(folder)); // check that folder1 exists
     }
