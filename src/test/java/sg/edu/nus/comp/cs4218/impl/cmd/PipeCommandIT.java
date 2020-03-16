@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
-import sg.edu.nus.comp.cs4218.exception.CdException;
 import sg.edu.nus.comp.cs4218.exception.GrepException;
+import sg.edu.nus.comp.cs4218.exception.SedException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
@@ -21,10 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
-import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.fileSeparator;
 
 class PipeCommandIT {
 
@@ -57,6 +55,7 @@ class PipeCommandIT {
     private static final String NAME_FLAG = "-name";
     private static final String RELATIVE_CURR = ".";
     private static final String REGEX_EXPR_1 = "s/^/> /";
+    private static final String REGEX_EXPR_2 = "s/^/1/";
 
     private OutputStream outputStream;
     private List<CallCommand> callCommands;
@@ -131,7 +130,7 @@ class PipeCommandIT {
      * Expected: Outputs correctly
      */
     @Test
-    void testEvaluatePipeCommandWithWcCommandAndGrepInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+    void testEvaluatePipeCommandWithWcCommandAndGrepCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
         callCommands.add(new CallCommand(Arrays.asList(WC_APP, FILE_NAME_1, FILE_NAME_2), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList(GREP_APP, FILE_NAME_2), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -152,7 +151,7 @@ class PipeCommandIT {
      * Expected: Outputs correctly
      */
     @Test
-    void testEvaluatePipeCommandWithEchoCommandAndCutInteractionShouldOutputCorrectly() throws AbstractApplicationException, ShellException {
+    void testEvaluatePipeCommandWithEchoCommandAndCutCommandInteractionShouldOutputCorrectly() throws AbstractApplicationException, ShellException {
         callCommands.add(new CallCommand(Arrays.asList(ECHO_APP, FILE_CONTENT_2), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList(CUT_APP, B_FLAG, "5"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -161,12 +160,12 @@ class PipeCommandIT {
     }
 
     /**
-     * Tests evaluate method echo and cut interaction
+     * Tests evaluate method cut and sort interaction
      * For example: cut -c 5-7 | sort
      * Expected: Outputs correctly
      */
     @Test
-    void testEvaluatePipeCommandWithCutCommandAndSortInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+    void testEvaluatePipeCommandWithCutCommandAndSortCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
         callCommands.add(new CallCommand(Arrays.asList(CUT_APP, C_FLAG, "5-7", FILE_NAME_1), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Collections.singletonList(SORT_APP), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -184,7 +183,7 @@ class PipeCommandIT {
      * Expected: Outputs correctly
      */
     @Test
-    void testEvaluatePipeCommandWithFindCommandAndGrepInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+    void testEvaluatePipeCommandWithFindCommandAndGrepCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
         callCommands.add(new CallCommand(Arrays.asList(FIND_APP, RELATIVE_CURR, NAME_FLAG, "\"*.txt\""), new ApplicationRunner(), new ArgumentResolver()));
         callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "3A"), new ApplicationRunner(), new ArgumentResolver()));
         PipeCommand pipeCommand = new PipeCommand(callCommands);
@@ -304,6 +303,33 @@ class PipeCommandIT {
     // At least two pipes test case
 
     /**
+     * Tests evaluate method with at least 2 pipes when there is an exception in one part
+     * For example: paste 1.txt 2.txt | sed "s" | sort
+     * Where 1.txt and 2.txt exists.
+     * In this case, sed has the wrong arguments and should throw sed exception with ERR_INVALID_REP_RULE
+     * Expected: Throws sed exception with ERR_INVALID_REP_RULE
+     */
+    @Test
+    void testEvaluatePipeCommandWithValidPasteCommandAndInvalidSedCommandAndValidSortCommandInteractionShouldThrowSedException(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        assertTrue(Files.exists(file2)); // check that 2.txt exists.
+        Files.write(file1, Arrays.asList(FILE_CONTENT_4, FILE_CONTENT_3, FILE_CONTENT_5));
+        Files.write(file2, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        callCommands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(SED_APP, "s"), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(SORT_APP), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        SedException exception = assertThrows(SedException.class, () -> {
+            pipeCommand.evaluate(System.in, outputStream);
+        });
+        assertEquals(new SedException(ERR_INVALID_REP_RULE).getMessage(), exception.getMessage());
+    }
+
+    /**
      * Tests evaluate method for a valid  <Pipe> | <Call> format
      * For example: ls | grep "4218" | grep "CS4218"
      * Assuming, ls would return a list of files with names, CS4218A, A4218A, CS3203A.
@@ -321,5 +347,72 @@ class PipeCommandIT {
         PipeCommand pipeCommand = new PipeCommand(callCommands);
         pipeCommand.evaluate(System.in, outputStream);
         assertEquals("CS4218A.txt" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method paste command and sed command and grep interaction
+     * For example: paste 1.txt 2.txt | sed "s/^/> /" | grep "A"
+     * Where 1.txt and 2.txt exists.
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithPasteCommandAndSedCommandAndGrepCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        assertTrue(Files.exists(file2)); // check that 2.txt exists.
+        Files.write(file1, Arrays.asList(FILE_CONTENT_3, FILE_CONTENT_4, FILE_CONTENT_5));
+        Files.write(file2, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        callCommands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(SED_APP, REGEX_EXPR_1), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "A"), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("> 1\tA" + System.lineSeparator() + "> 3\tAA" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method sed command and cut command and sort command interaction
+     * For example: sed "s/^/1/" 1.txt | cut -c 1-2 | sort
+     * Where 1.txt exists.
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithSedCommandAndCutCommandAndSortCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        Files.write(file1, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        callCommands.add(new CallCommand(Arrays.asList(SED_APP, REGEX_EXPR_2, file1.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(CUT_APP, C_FLAG, "1-2"), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(SORT_APP), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("1A" + System.lineSeparator() + "1A" + System.lineSeparator() + "1B" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method wc command and sed command and sort command interaction
+     * For example: wc A4218A CS4218A | sed "s/^/1/" | sort
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithWcCommandAndSedCommandAndSortCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+        callCommands.add(new CallCommand(Arrays.asList(WC_APP, FILE_NAME_2, FILE_NAME_1), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(SED_APP, REGEX_EXPR_2), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(SORT_APP), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        Path file1 = tempDir.resolve(FILE_NAME_1);
+        Path file2 = tempDir.resolve(FILE_NAME_2);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.write(file2, Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2));
+        pipeCommand.evaluate(System.in, outputStream);
+        long expectedTotalBytes = file1.toFile().length() + file2.toFile().length();
+        assertEquals("1       1       2      " + file1.toFile().length() + " CS4218A.txt" + STRING_NEWLINE + "1       2       5      " + file2.toFile().length() + " A4218A.txt" + STRING_NEWLINE + "1       3       7      " + expectedTotalBytes +" total" + STRING_NEWLINE, outputStream.toString());
     }
 }
