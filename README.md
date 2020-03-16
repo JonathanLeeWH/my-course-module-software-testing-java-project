@@ -123,14 +123,12 @@ You will just need to run `mvn test` (Not recommended for Windows as Windows usu
 * Go to [http://localhost:8080](http://localhost:8080) to access the generated automated project report.
 
 * Note that you are not suppose to remove anything inside the `src/site` folder.
-* Remember to change the file path of the PMD ruleset to your local file path.
 
 ## External libraries / plugins / tools / technologies used
 (The below has been approved by Prof or is as stated in Project Specification) 
 - Maven: For Build Automation
 - Travis: For Continuous Integration
-- Maven Surefire Plugin: Required by Maven in order to run unit test file (`**Test.java`) within Java Maven Project.
-- Maven Failsafe Plugin: Required by Maven in order to run integration test file (`**IT.java`) within Java Maven Project.
+- Maven Surefire Plugin: Required by Maven in order to run unit test file (`**Test.java`) and  unit test file (`**IT.java`) within Java Maven Project.
 - JUnit 5 for Java testing purposes
 - Mockito for mocking and stubbing
 
@@ -142,7 +140,6 @@ For bug report:
 - Maven Project Info Reports Plugin: Generate various project information reports.
 - SpotBugs Plugin: Look for various bugs in our program.
 - Maven Fluido Skins: Skins to help in beautify the HTML-generated report
-- Maven PMD Plugin: Static code analyser tool.
 - Jacoco Maven Plugin: Code coverage runner tool.
 
 ## Acknowledges / References

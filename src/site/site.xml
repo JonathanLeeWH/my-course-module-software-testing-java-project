@@ -21,11 +21,14 @@
             <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
             <copyrightClass>pull-right</copyrightClass>
             <sideBarEnabled>false</sideBarEnabled>
-            <breadcrumbDivider>»</breadcrumbDivider>
+            <breadcrumbDivider> > </breadcrumbDivider>
         </fluidoSkin>
     </custom>
 
     <body>
+        <breadcrumbs>
+            <item name="Home" href="./index.html"/>
+        </breadcrumbs>
         <menu ref="reports" inherit="top"/>
     </body>
 </project>
