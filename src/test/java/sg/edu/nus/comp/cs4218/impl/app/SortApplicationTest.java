@@ -432,7 +432,7 @@ public class SortApplicationTest {
                 "CS4218: Software Testing" + System.lineSeparator() +
                 "crucial skills on testing and debugging through hands-on assignments." + System.lineSeparator() +
                 "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the";
-                assertEquals(expectedResult, actualResult);
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
