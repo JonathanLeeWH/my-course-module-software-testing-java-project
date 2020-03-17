@@ -28,7 +28,7 @@ public class SortArgumentsTest {
     // Error test cases
     @Test
     public void testParseWithNullArgsShouldThrowException() {
-        Throwable thrown = assertThrows(Exception.class, () -> sortArguments.parse((String) null));
+        Throwable thrown = assertThrows(Exception.class, () -> sortArguments.parse(null));
         assertEquals(thrown.getMessage(), ERR_NULL_ARGS);
     }
 
