@@ -1,2 +1,6 @@
 language: java
 jdk: openjdk8
+script:
+  - unix2dos src/test/java/sg/edu/nus/comp/cs4218/testdata/test1.txt
+  - unix2dos src/test/java/sg/edu/nus/comp/cs4218/testdata/test2.txt
+  - unix2dos src/test/java/sg/edu/nus/comp/cs4218/testdata/test3.csv
