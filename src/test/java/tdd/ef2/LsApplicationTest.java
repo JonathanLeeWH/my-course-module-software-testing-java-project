@@ -84,6 +84,7 @@ class LsApplicationTest {
      * @throws LsException
      */
     @Test
+    @Disabled
     public void testNonExistentDirectory() throws LsException {
         lsApp.run(new String[]{"no-folder-named-like-this"}, System.in, stdout);
 
@@ -123,6 +124,7 @@ class LsApplicationTest {
      * @throws LsException
      */
     @Test
+    @Disabled
     void testLsOnlyFolders() throws LsException {
 
         lsApp.run(new String[]{"-d"}, System.in, stdout);
@@ -150,6 +152,7 @@ class LsApplicationTest {
      * @throws LsException
      */
     @Test
+    @Disabled
     void testLsRecursiveFolderOnlyDirectory() throws LsException {
 
         lsApp.run(new String[]{"-R", "-d"}, System.in, stdout);

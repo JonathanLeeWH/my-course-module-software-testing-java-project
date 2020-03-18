@@ -1,9 +1,6 @@
 package tdd.ef1.cmd;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
@@ -20,6 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SuppressWarnings({"PMD.MethodNamingConventions", "PMD.LongVariable"})
+@Disabled
 class GlobbingTest {
     private static final Path DIRECTORY = Paths.get("test", "tdd","util", "dummyTestFolder", "GlobbingTestFolder");
     private static final String RESOURCE_PATH = DIRECTORY.toString() + File.separator;
