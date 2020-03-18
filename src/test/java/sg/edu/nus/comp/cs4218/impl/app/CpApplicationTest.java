@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +29,7 @@ class CpApplicationTest {
     private static final String FILE_NAME_1 = "2.txt";
     private static final String FILE_CONTENT_1 = "Hello world";
     private static final String FILE_CONTENT_2 = "How are you";
+    private static final String DOS_READONLY = "dos:readonly";
 
     private CpApplication cpApplication;
 
@@ -140,7 +140,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(srcFile)); // check 1.txt exists
         assertTrue(Files.exists(destFile)); // check dest.txt exists
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", true);
+            Files.setAttribute(destFile, DOS_READONLY, true);
         } else {
             destFile.toFile().setReadOnly();
         }
@@ -151,7 +151,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check dest.txt exists.
         assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", false);
+            Files.setAttribute(destFile, DOS_READONLY, false);
         } else {
             destFile.toFile().setWritable(true); // reset permissions from read only.
         }
@@ -304,7 +304,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
         String[] fileNameList = {srcFile.toString()};
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", true);
+            Files.setAttribute(destFile, DOS_READONLY, true);
         } else {
             destFile.toFile().setReadOnly();
         }
@@ -315,7 +315,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check dest.txt exists.
         assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", false);
+            Files.setAttribute(destFile, DOS_READONLY, false);
         } else {
             destFile.toFile().setWritable(true); // reset permissions from read only.
         }
@@ -348,7 +348,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
         String[] fileNameList = {srcFile.toString(), srcFile2.toString()};
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", true);
+            Files.setAttribute(destFile, DOS_READONLY, true);
         } else {
             destFile.toFile().setReadOnly();
         }
@@ -359,7 +359,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check dest.txt exists.
         assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", false);
+            Files.setAttribute(destFile, DOS_READONLY, false);
         } else {
             destFile.toFile().setWritable(true); // reset permissions from read only.
         }
@@ -703,7 +703,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
         String[] argsList = {srcFile.toString(), destFile.toString()};
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", true);
+            Files.setAttribute(destFile, DOS_READONLY, true);
         } else {
             destFile.toFile().setReadOnly();
         }
@@ -714,7 +714,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check dest.txt exists.
         assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", false);
+            Files.setAttribute(destFile, DOS_READONLY, false);
         } else {
             destFile.toFile().setWritable(true); // reset permissions from read only.
         }
@@ -746,7 +746,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check 1.txt in dest directory exists
         String[] argsList = {srcFile.toString(), srcFile2.toString(), destFolder.toString()};
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", true);
+            Files.setAttribute(destFile, DOS_READONLY, true);
         } else {
             destFile.toFile().setReadOnly();
         }
@@ -757,7 +757,7 @@ class CpApplicationTest {
         assertTrue(Files.exists(destFile)); // check dest.txt exists.
         assertEquals(fileContents2, Files.readAllLines(destFile)); // check that dest.txt contents is not overwritten by 1.txt contents.
         if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
-            Files.setAttribute(destFile, "dos:readonly", false);
+            Files.setAttribute(destFile, DOS_READONLY, false);
         } else {
             destFile.toFile().setWritable(true); // reset permissions from read only.
         }

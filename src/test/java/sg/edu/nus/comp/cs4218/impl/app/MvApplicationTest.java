@@ -374,4 +374,66 @@ public class MvApplicationTest {
         assertEquals(new MvException(NO_DESTINATION_FOLDER).getMessage(), exception.getMessage());
     }
 
+    // Test mv app move two files into a non existent folder
+    @Test
+    void runMoveFilesIntoNonExistentDirectoryOverrideThrowNoDestinationException(@TempDir Path tempDir) throws Exception  {
+        // mv tempFileA.txt tempFileB.txt invalidDirectory
+        Path file1 = tempDir.resolve(TEST_FILE);
+        Path file2 = tempDir.resolve(TEST_DIFFERENT);
+        String[] args = {file1.toString(), file2.toString() , "nonExistentFolder"};
+
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1));
+        Files.createFile(file2);
+        assertTrue(Files.exists(file2));
+        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+            mvApplication.run(args,System.in,System.out);
+        });
+
+        assertEquals(new MvException(DESTINATION_FOLDER_NOT).getMessage(), exception.getMessage());
+
+    }
+
+    // Test mv app move same file into same folder
+    @Test
+    void runMoveSameFilesIntoNonExistentDirectoryOverrideThrowSameSourceDestException(@TempDir Path tempDir) throws Exception  {
+        // mv tempFileA.txt tempFileB.txt tempFileA.txt
+        Path file1 = tempDir.resolve(TEST_FILE);
+        Path folder2 = tempDir.resolve(TEST_FOLDER);
+        String[] args = { folder2.toString() ,file1.toString(), folder2.toString()};
+
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1));
+        Files.createDirectory(folder2);
+        assertTrue(Files.exists(folder2));
+        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+            mvApplication.run(args,System.in,System.out);
+        });
+
+        assertEquals(new MvException(SRC_DEST_SAME).getMessage(), exception.getMessage());
+
+    }
+
+    // Test mv app to move two files into a file that is not a folder
+    @Test
+    void runMoveFilesIntoInvalidDirectoryOverrideThrowNoDestFolderException(@TempDir Path tempDir) throws Exception  {
+        // mv tempFileA.txt tempFileB.txt tempFileA.txt
+        Path file1 = tempDir.resolve(TEST_FILE);
+        Path file2 = tempDir.resolve(TEST_DIFFERENT);
+        Path folder2 = tempDir.resolve(TEST_FOLDER);
+        String[] args = { file1.toString(), file2.toString(), folder2.toString()};
+
+        Files.createFile(file1);
+        assertTrue(Files.exists(file1));
+        Files.createFile(file2);
+        assertTrue(Files.exists(file2));
+        assertFalse(Files.exists(folder2));
+        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+            mvApplication.run(args,System.in,System.out);
+        });
+
+        assertEquals(new MvException(DESTINATION_FOLDER_NOT).getMessage(), exception.getMessage());
+    }
+
+
 }

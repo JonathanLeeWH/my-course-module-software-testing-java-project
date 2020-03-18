@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app.args;
 import java.util.ArrayList;
 import java.util.List;
 
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_FLAG;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_ARGS;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 
@@ -47,7 +48,7 @@ public class SortArguments {
                         if (c == CHAR_FLAG_PREFIX || c == CHAR_FIRST_W_NUM || c == CHAR_REV_ORDER || c == CHAR_CASE_IGNORE) {
                             continue;
                         }
-                        throw new Exception(ILLEGAL_FLAG_MSG + c);
+                        throw new Exception(ERR_INVALID_FLAG);
                     }
 
                     for (char c : arg.toCharArray()) {

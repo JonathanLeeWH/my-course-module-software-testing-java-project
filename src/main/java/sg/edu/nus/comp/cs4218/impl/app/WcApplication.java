@@ -37,9 +37,14 @@ public class WcApplication implements WcInterface {
         if (stdout == null) {
             throw new WcException(ERR_NULL_STREAMS);
         }
-        WcArguments wcArgs = new WcArguments();
-        wcArgs.parse(args);
         String result;
+        WcArguments wcArgs = new WcArguments();
+
+        try {
+            wcArgs.parse(args);
+        } catch (Exception e) {
+            throw new WcException(e.getMessage()); //NOPMD
+        }
         try {
             if (wcArgs.getFiles().isEmpty()) {
                 result = countFromStdin(wcArgs.isBytes(), wcArgs.isLines(), wcArgs.isWords(), stdin);
@@ -113,7 +118,13 @@ public class WcApplication implements WcInterface {
             if (isBytes) {
                 sb.append(String.format(NUMBER_FORMAT, count[2]));
             }
-            sb.append(String.format(" %s", file));
+            if ((isLines) || (isWords) || (isBytes)) {
+                sb.append(String.format(" %s", file));
+            }
+            else {
+                sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT + " %s",
+                        count[0], count[1], count[2], file));
+            }
             result.add(sb.toString());
         }
 
@@ -129,7 +140,13 @@ public class WcApplication implements WcInterface {
             if (isBytes) {
                 sb.append(String.format(NUMBER_FORMAT, totalBytes));
             }
-            sb.append(" total");
+            if ((isLines) || (isWords) || (isBytes)) {
+                sb.append(" total");
+            }
+            else {
+                sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT + " total",
+                        totalLines, totalWords, totalBytes));
+            }
             result.add(sb.toString());
         }
         return String.join(STRING_NEWLINE, result);
@@ -153,16 +170,22 @@ public class WcApplication implements WcInterface {
         long[] count = getCountReport(stdin); // lines words bytes;
 
         StringBuilder sb = new StringBuilder(); //NOPMD
-        if (isLines) {
-            sb.append(String.format(NUMBER_FORMAT, count[0]));
-        }
-        if (isWords) {
-            sb.append(String.format(NUMBER_FORMAT, count[1]));
-        }
-        if (isBytes) {
-            sb.append(String.format(NUMBER_FORMAT, count[2]));
-        }
 
+        if ((isLines) || (isWords) || (isBytes)) {
+            if (isLines) {
+                sb.append(String.format(NUMBER_FORMAT, count[0]));
+            }
+            if (isWords) {
+                sb.append(String.format(NUMBER_FORMAT, count[1]));
+            }
+            if (isBytes) {
+                sb.append(String.format(NUMBER_FORMAT, count[2]));
+            }
+        }
+        else {
+            sb.append(String.format(NUMBER_FORMAT + NUMBER_FORMAT + NUMBER_FORMAT,
+                    count[0], count[1], count[2]));
+        }
         return sb.toString();
     }
 
