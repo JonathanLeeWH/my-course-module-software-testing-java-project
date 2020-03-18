@@ -20,8 +20,7 @@ public class WcApplicationTest {
     private WcApplication wcApplication;
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
-    private static final String TEST_STDIN_MSG_1 = "11"+  System.lineSeparator() +
-            "1 test 1 2" +  System.lineSeparator() + "5" + System.lineSeparator() + "+" + System.lineSeparator();
+    private static final String TEST_STDIN_MSG_1 = "11\r\n1 test 1 2\r\n5\r\n+\r\n";
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");

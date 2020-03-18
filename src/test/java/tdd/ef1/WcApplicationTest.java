@@ -154,7 +154,8 @@ class WcApplicationTest {
         @DisplayName("should display nothing with no args")
         void countFromStdin_noArgs() throws AbstractApplicationException {
             String expected = "0       0       0";
-            wcApplication.run(null, new ByteArrayInputStream("".getBytes()), outputStream);
+            // Our wcApplication will never accept null arguments but only empty array of arguments.
+            wcApplication.run(new String[0], new ByteArrayInputStream("".getBytes()), outputStream);
             assertEquals(expected, outputStream.toString().trim());
         }
 
