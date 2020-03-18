@@ -1,7 +1,10 @@
 package sg.edu.nus.comp.cs4218.impl.app.args;
 
 import org.junit.jupiter.api.Test;
+import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,6 +12,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 class GrepArgumentsTest {
     private GrepArguments grepArguments = new GrepArguments();
+    private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
 
     @Test
     void testValidateMethodWithNullPatterns() {
@@ -58,15 +62,14 @@ class GrepArgumentsTest {
     @Test
     void testParseWithValidArgsWithFlags() throws Exception {
         grepArguments.parse("-i", "-c", "hunting the shark",
-                "C:\\Users\\joel2\\Documents\\cs4218-project-ay1920-s2-2020-team22" +
-                        "\\src\\test\\java\\sg\\edu\\nus\\comp\\cs4218\\testdata\\test1.txt");
+                testFile1.toString());
     }
 
     @Test
     void testParseWithValidArgsWithInvalidFlag() throws Exception {
         grepArguments.parse("-u",
                 "C:\\Users\\joel2\\Documents\\cs4218-project-ay1920-s2-2020-team22" +
-                        "\\src\\test\\java\\sg\\edu\\nus\\comp\\cs4218\\testdata\\test1.txt");
+                        testFile1.toString());
     }
 
     @Test
