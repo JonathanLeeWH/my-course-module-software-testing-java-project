@@ -67,16 +67,13 @@ class GrepArgumentsTest {
 
     @Test
     void testParseWithValidArgsWithInvalidFlag() throws Exception {
-        grepArguments.parse("-u",
-                "C:\\Users\\joel2\\Documents\\cs4218-project-ay1920-s2-2020-team22" +
-                        testFile1.toString());
+        grepArguments.parse("-u", testFile1.toString());
     }
 
     @Test
     void testParseWithValidArgs() throws Exception {
         grepArguments.parse("“hunting the shark",
-                "C:\\Users\\joel2\\Documents\\cs4218-project-ay1920-s2-2020-team22" +
-                        "\\src\\test\\java\\sg\\edu\\nus\\comp\\cs4218\\testdata\\test1.txt");
+                testFile1.toString());
     }
 
     @Test

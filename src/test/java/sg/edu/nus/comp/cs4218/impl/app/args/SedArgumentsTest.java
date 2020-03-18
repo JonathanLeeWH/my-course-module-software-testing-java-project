@@ -1,7 +1,10 @@
 package sg.edu.nus.comp.cs4218.impl.app.args;
 
 import org.junit.jupiter.api.Test;
+import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,6 +12,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 class SedArgumentsTest {
     private SedArguments sedArguments = new SedArguments();
+    private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
 
     @Test
     void testSedArgumentsValidateWithNullRegexp() {
@@ -94,8 +98,7 @@ class SedArgumentsTest {
     @Test
     void testParseWithFiles() throws Exception {
         String[] args = {"s/r/replacement/1",
-                "C:\\Users\\joel2\\Documents\\cs4218-project-ay1920-s2-2020-team22" +
-                        "\\src\\test\\java\\sg\\edu\\nus\\comp\\cs4218\\testdata\\test1.txt"};
+                testFile1.toString()};
         sedArguments.parse(args);
     }
 
