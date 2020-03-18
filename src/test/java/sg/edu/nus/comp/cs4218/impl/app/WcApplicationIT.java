@@ -61,7 +61,7 @@ public class WcApplicationIT {
     @Test
     void testWcApplicationAndWcArgumentUsingNoArgsWithNoFilesAndInputStreamWithValidValuesShouldRunSuccessfully() throws WcException, IOException {
         wcApplication.run(new String[0], ourTestStdin, ourTestStdout);
-        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 18) + System.lineSeparator();
+        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 22) + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
@@ -130,7 +130,7 @@ public class WcApplicationIT {
     @Test
     void testWcApplicationAndWcArgumentUsingAllArgsWithFlagArgsTogetherAndNoFilesAndInputStreamWithValidValuesShouldRunSuccessfully() throws WcException, IOException {
         wcApplication.run(Collections.singletonList("-wcl").toArray(new String[1]), ourTestStdin, ourTestStdout);
-        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 18) + System.lineSeparator();
+        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 22) + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 

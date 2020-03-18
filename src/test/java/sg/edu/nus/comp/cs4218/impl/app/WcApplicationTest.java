@@ -400,7 +400,7 @@ public class WcApplicationTest {
                 false, false, false,
                 ourTestStdin
         );
-        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 18);
+        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 22);
         assertEquals(expectedResult, actualResult);
     }
 
@@ -410,7 +410,7 @@ public class WcApplicationTest {
                 true, false, false,
                 ourTestStdin
         );
-        String expectedResult = String.format(" %7d", 18);
+        String expectedResult = String.format(" %7d", 22);
         assertEquals(expectedResult, actualResult);
     }
 
@@ -440,7 +440,7 @@ public class WcApplicationTest {
                 true, true, false,
                 ourTestStdin
         );
-        String expectedResult = String.format(" %7d %7d", 4, 18);
+        String expectedResult = String.format(" %7d %7d", 4, 22);
         assertEquals(expectedResult, actualResult);
     }
 
@@ -450,7 +450,7 @@ public class WcApplicationTest {
                 true, false, true,
                 ourTestStdin
         );
-        String expectedResult = String.format(" %7d %7d", 7, 18);
+        String expectedResult = String.format(" %7d %7d", 7, 22);
         assertEquals(expectedResult, actualResult);
     }
 
@@ -470,7 +470,7 @@ public class WcApplicationTest {
                 true, true, true,
                 ourTestStdin
         );
-        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 18);
+        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 22);
         assertEquals(expectedResult, actualResult);
     }
 
