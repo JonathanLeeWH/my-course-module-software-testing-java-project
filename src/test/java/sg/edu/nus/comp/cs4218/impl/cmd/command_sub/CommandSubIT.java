@@ -85,7 +85,7 @@ public class CommandSubIT {
         List<String> expectedResult = Arrays.asList("echo", "single", "quote", "is", "not" ,"interpreted", "as", "special" ,"character");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
-    
+
     @Test
     void testEchoCommandAndEchoAsSubCommandWithNumerousNonBackQuotesShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("echo", "`echo \"\'quote is not interpreted as special character\'\"`");
