@@ -88,7 +88,7 @@ class CutApplicationTest {
         Throwable thrown = assertThrows(Exception.class, () -> cutApplication.cutFromFiles(
                 false, true, false, 1, 2, (String[]) null)
         );
-        assertEquals(thrown.getMessage(), ERR_GENERAL);
+        assertEquals(thrown.getMessage(), ERR_NULL_ARGS);
     }
 
     @Test
