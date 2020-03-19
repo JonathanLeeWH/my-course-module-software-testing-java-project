@@ -18,7 +18,7 @@ class CutApplicationTest {
 
     private static final String ERR_OUT_RANGE = "out of range error";
     private static final String ERR_INVALID_RANGE = "invalid range error";
-    private static String folderName = "tdd/util/dummyTestFolder/CutTestFolder";
+    private static String folderName = "src/test/java/tdd/util/dummyTestFolder/CutTestFolder";
     private static String fileNameTest = "test.txt";
     private static String fileNameNames = "course.txt";
     private static String subDirName = "subDir";
