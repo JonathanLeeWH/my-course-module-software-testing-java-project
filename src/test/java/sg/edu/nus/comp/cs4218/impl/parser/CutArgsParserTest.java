@@ -31,6 +31,7 @@ public class CutArgsParserTest {
         Throwable thrown2 = assertThrows(Exception.class, () -> cutArgsParser.getPositions());
         assertEquals(thrown1.getMessage(), ERR_MISSING_ARG);
         assertEquals(thrown2.getMessage(), ERR_MISSING_ARG);
+        assertNull(cutArgsParser.getFileNames());
     }
 
     // Positive test cases
