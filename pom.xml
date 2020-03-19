@@ -82,6 +82,49 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.4.9</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>0.11</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <threads>4</threads>
+                    <failWhenNoMutations>false</failWhenNoMutations>
+                    <targetClasses>
+                        <param>sg.edu.nus.comp.cs4218.impl.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>sg.edu.nus.comp.cs4218.impl.*</param>
+                    </targetTests>
+                    <excludedTestClasses>
+                        <!-- These classes are excluded as there are failing test cases. PIT require a green test suite.-->
+                        <param>sg.edu.nus.comp.cs4218.impl.app.FindApplicationTest**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.MvApplicationTest**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.DiffApplicationIT**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.DiffApplicationTest**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.cmd.GrepApplicationTest**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.cmd.GlobbingTest**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.util.ArgumentResolverTest**</param>
+                        <param>**/tdd/**</param>
+                    </excludedTestClasses>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pit-report</id>
+                        <!-- optional, this example attached the goal into mvn test phase -->
+                        <phase>test</phase>
+                        <goals>
+                            <goal>mutationCoverage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -161,6 +204,14 @@
                         </reports>
                     </reportSet>
                 </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.4.9</version>
+                <configuration>
+                    <threads>4</threads>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>

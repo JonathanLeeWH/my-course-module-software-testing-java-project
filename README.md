@@ -6,6 +6,7 @@
   * [Instructions to setup project](#instructions-to-setup-project)
   * [Instructions to run the Shell program](#instructions-to-run-the-shell-program)
   * [Instructions to run all our test cases](#instructions-to-run-all-our-test-cases)
+  * [Instructions to generate automated project report](#Instructions-to-generate-automated-project-report)
   * [External libraries / plugins / tools / technologies used](#external-libraries-/-plugins-/-tools-/-technologies-used)
   * [Acknowledges / References](#acknowledges-/-references)
 
@@ -119,7 +120,10 @@ You will just need to run `mvn test` (Not recommended for Windows as Windows usu
 
 ## Instructions to generate automated project report
 
-* Run `mvn clean compile jxr:jxr jxr:test-jxr site:attach-descriptor site:run`
+Step 1: Run `mvn clean compile jxr:jxr jxr:test-jxr site:attach-descriptor site`
+
+Step 2: Run `open -na "Google Chrome" --args --new-window http://localhost:63342/cs4218-project-ay1920-s2-2020-team22/target/site/index.html`
+
 * Go to [http://localhost:8080](http://localhost:8080) to access the generated automated project report.
 
 * Note that you are not suppose to remove anything inside the `src/site` folder.
@@ -141,6 +145,7 @@ For bug report:
 - SpotBugs Plugin: Look for various bugs in our program.
 - Maven Fluido Skins: Skins to help in beautify the HTML-generated report
 - Jacoco Maven Plugin: Code coverage runner tool.
+- Maven PIT: Plugin to facilitate mutation testing to increase our confidence on our tests.
 
 ## Acknowledges / References
 [TBC]
