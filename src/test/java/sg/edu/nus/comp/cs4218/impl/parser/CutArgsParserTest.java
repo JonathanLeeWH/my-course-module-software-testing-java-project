@@ -42,7 +42,7 @@ public class CutArgsParserTest {
         assertTrue(cutArgsParser.isRange());
         assertEquals(5, cutArgsParser.getPositions().getKey());
         assertEquals(8, cutArgsParser.getPositions().getValue());
-        assertTrue(Arrays.asList(cutArgsParser.getFileNames()).isEmpty());
+        assertNull(cutArgsParser.getFileNames());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class CutArgsParserTest {
         assertFalse(cutArgsParser.isRange());
         assertEquals(6, cutArgsParser.getPositions().getKey());
         assertEquals(6, cutArgsParser.getPositions().getValue());
-        assertTrue(Arrays.asList(cutArgsParser.getFileNames()).isEmpty());
+        assertNull(cutArgsParser.getFileNames());
     }
 
 
@@ -65,7 +65,7 @@ public class CutArgsParserTest {
         assertFalse(cutArgsParser.isRange());
         assertEquals(11, cutArgsParser.getPositions().getKey());
         assertEquals(15, cutArgsParser.getPositions().getValue());
-        assertTrue(Arrays.asList(cutArgsParser.getFileNames()).isEmpty());
+        assertNull(cutArgsParser.getFileNames());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class CutArgsParserTest {
         assertTrue(cutArgsParser.isRange());
         assertEquals(3, cutArgsParser.getPositions().getKey());
         assertEquals(4, cutArgsParser.getPositions().getValue());
-        assertTrue(Arrays.asList(cutArgsParser.getFileNames()).isEmpty());
+        assertNull(cutArgsParser.getFileNames());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class CutArgsParserTest {
         assertFalse(cutArgsParser.isRange());
         assertEquals(16, cutArgsParser.getPositions().getKey());
         assertEquals(16, cutArgsParser.getPositions().getValue());
-        assertTrue(Arrays.asList(cutArgsParser.getFileNames()).isEmpty());
+        assertNull(cutArgsParser.getFileNames());
     }
 
 
@@ -99,7 +99,7 @@ public class CutArgsParserTest {
         assertFalse(cutArgsParser.isRange());
         assertEquals(15, cutArgsParser.getPositions().getKey());
         assertEquals(11, cutArgsParser.getPositions().getValue());
-        assertTrue(Arrays.asList(cutArgsParser.getFileNames()).isEmpty());
+        assertNull(cutArgsParser.getFileNames());
     }
 
     @Test
