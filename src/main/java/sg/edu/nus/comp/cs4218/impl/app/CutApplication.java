@@ -26,7 +26,6 @@ public class CutApplication implements CutInterface {
         if (stdout == null) {
             throw new CutException(ERR_NO_OSTREAM);
         }
-
         CutArgsParser parser = new CutArgsParser();
         StringBuilder output = new StringBuilder();
         try {

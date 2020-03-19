@@ -1,7 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.parser;
 
 import com.sun.tools.javac.util.List;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.junit.jupiter.api.*;
 import sg.edu.nus.comp.cs4218.exception.InvalidArgsException;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
