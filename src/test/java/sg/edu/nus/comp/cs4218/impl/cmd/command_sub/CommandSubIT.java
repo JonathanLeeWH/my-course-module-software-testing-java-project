@@ -1,5 +1,6 @@
-package sg.edu.nus.comp.cs4218.impl.cmd;
+package sg.edu.nus.comp.cs4218.impl.cmd.command_sub;
 
+import jdk.nashorn.internal.codegen.CompilerConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,9 @@ import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.app.CutApplication;
 import sg.edu.nus.comp.cs4218.impl.app.EchoApplication;
+import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.parser.ArgsParser;
+import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
@@ -23,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
 public class CommandSubIT {
+    private ApplicationRunner applicationRunner;
     private ArgumentResolver argumentResolver;
-    private EchoApplication echoApplication;
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
     private static final String TEST_STDIN_MSG_1 = "drüberspringen";
@@ -34,8 +37,8 @@ public class CommandSubIT {
 
     @BeforeEach
     public void setUp() {
+        applicationRunner = new ApplicationRunner();
         argumentResolver = new ArgumentResolver();
-        echoApplication = new EchoApplication();
         ourTestStdin = new ByteArrayInputStream(TEST_STDIN_MSG_1.getBytes());
         ourTestStdout = new ByteArrayOutputStream();
     }
@@ -77,14 +80,24 @@ public class CommandSubIT {
     }
 
     @Test
-    void testEchoCommandAndEchoAsSubCommandWithADoubleQuoteShouldParseArgumentsAndRunSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("echo", "`echo \"Welcome to CS4218: Software Testing\"`");
-        List<String> expectedArgsResult = Arrays.asList("echo", "Welcome", "to", "CS4218:", "Software" , "Testing");
-        assertEquals(expectedArgsResult, argumentResolver.parseArguments(args));
-        
-        echoApplication.run(expectedArgsResult.toArray(new String[2]), ourTestStdin, ourTestStdout);
-        String expectedResult = "echo Welcome to CS4218: Software Testing";
-        assertEquals(expectedResult, ourTestStdout.toString());
+    void testEchoCommandAndEchoAsSubCommandWithASingleQuoteShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "`echo \'single quote is not interpreted as special character\'`");
+        List<String> expectedResult = Arrays.asList("echo", "single", "quote", "is", "not" ,"interpreted", "as", "special" ,"character");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+    
+    @Test
+    void testEchoCommandAndEchoAsSubCommandWithNumerousNonBackQuotesShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "`echo \"\'quote is not interpreted as special character\'\"`");
+        List<String> expectedResult = Arrays.asList("echo", "'quote", "is", "not" ,"interpreted", "as", "special" ,"character'");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
+    void testWcCommandAndEchoAndCutAsSubCommandUsingOnePipeOperatorShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("wc", "-c", "`echo \"quote is not interpreted as special character\" | cut -c 5-15`");
+        List<String> expectedResult = Arrays.asList("wc", "-c", "e", "is", "not" ,"in");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
 
     @Test
