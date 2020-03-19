@@ -16,7 +16,6 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.*;
 public class ArgumentResolver {
 
     private final ApplicationRunner applicationRunner;
-    public static final String ERR_UNMATCHED_QUOTES = "Unmatched quotes in input";
 
     public ArgumentResolver() {
         applicationRunner = new ApplicationRunner();
@@ -154,10 +153,6 @@ public class ArgumentResolver {
 
         if (!parsedArg.isEmpty()) {
             appendParsedArgIntoSegment(parsedArgsSegment, parsedArg);
-        }
-
-        if (!unmatchedQuotes.isEmpty()) {
-            throw new ShellException(ERR_UNMATCHED_QUOTES);
         }
 
         // perform globing
