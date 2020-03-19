@@ -16,6 +16,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.*;
 public class ArgumentResolver {
 
     private final ApplicationRunner applicationRunner;
+    public static final String ERR_UNMATCHED_QUOTES = "Unmatched quotes in input";
 
     public ArgumentResolver() {
         applicationRunner = new ApplicationRunner();
@@ -155,6 +156,10 @@ public class ArgumentResolver {
             appendParsedArgIntoSegment(parsedArgsSegment, parsedArg);
         }
 
+        if (!unmatchedQuotes.isEmpty()) {
+            throw new ShellException(ERR_UNMATCHED_QUOTES);
+        }
+
         // perform globing
         return parsedArgsSegment.stream()
                 .flatMap(regexArgument -> regexArgument.globFiles().stream())
@@ -178,8 +183,12 @@ public class ArgumentResolver {
         Command command = CommandBuilder.parseCommand(commandString, getAppRunner());
         command.evaluate(System.in, outputStream);
 
+        String tempResult = outputStream.toString().replaceAll(StringUtils.STRING_NEWLINE, "\n");
+        if (!tempResult.isEmpty()) {
+            tempResult = tempResult.substring(0, tempResult.length()-1);
+        }
         // replace newlines with spaces
-        return outputStream.toString().replace(STRING_NEWLINE, String.valueOf(CHAR_SPACE));
+        return tempResult.replace(STRING_NEWLINE, String.valueOf(CHAR_SPACE));
     }
 
     /**
