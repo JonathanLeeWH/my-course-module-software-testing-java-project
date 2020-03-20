@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class EchoCommandSubIT {
     private ApplicationRunner applicationRunner;
@@ -55,17 +54,29 @@ public class EchoCommandSubIT {
 
     @Test
     void testEchoCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("echo", "`sed \"s/^/> /\" " + testFile3.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "> 1.0, 5.0 > 2, 3 > 51, 15 > 21, 4 > 22, 41 > 551, 1200 > 001, 010" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
     void testEchoCommandAndDiffAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("echo", "`diff " + testFile1.toFile().getPath() + " " + testFile3.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
     void testEchoCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("echo", "`grep \"1\" " + testFile3.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "1.0, 5.0 51, 15 21, 4 22, 41 551, 1200 001, 010" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -88,11 +99,10 @@ public class EchoCommandSubIT {
 
     @Test
     void testEchoCommandAndLsAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("echo", "`ls`");
+        List<String> args = Arrays.asList("echo", "`ls " + TestFileUtils.TESTDATA_DIR + "*`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = "Assumptions.pdf CS4218_Architecture.png Milestone1.pdf" +
-                " README.md SingleLineFile.txt fileOne.txt lib pmd pom.xml scripts src target" + System.lineSeparator();
+        String expectedResult = "test1.txt test2.txt test3.csv" + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 

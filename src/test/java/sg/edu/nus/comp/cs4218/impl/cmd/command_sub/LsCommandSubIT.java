@@ -97,10 +97,10 @@ public class LsCommandSubIT {
 
     @Test
     void testLsCommandAndLsAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("ls", "`ls " + TestFileUtils.TESTDATA_DIR + "`");
+        List<String> args = Arrays.asList("ls", "`ls *.md`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = "" + System.lineSeparator();
+        String expectedResult = "README.md" + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
