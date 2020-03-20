@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
@@ -12,7 +13,10 @@ import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class SedCommandSubIT {
@@ -42,7 +46,13 @@ public class SedCommandSubIT {
     // Positive test cases
     @Test
     void testSedCommandAndEchoAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("sed", "s/^/> /", "`echo " + testFile3.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "> 1.0, 5.0" + System.lineSeparator() + "> 2, 3" + System.lineSeparator() +
+                "> 51, 15" + System.lineSeparator() + "> 21, 4" + System.lineSeparator() + "> 22, 41" + System.lineSeparator() +
+                "> 551, 1200" + System.lineSeparator() + "> 001, 010" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test

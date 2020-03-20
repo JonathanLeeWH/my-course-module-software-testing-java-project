@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
@@ -12,7 +13,10 @@ import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class FindCommandSubIT {
@@ -42,7 +46,11 @@ public class FindCommandSubIT {
     // Positive test cases
     @Test
     void testFindCommandAndEchoAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`echo " + testFile2.toFile().getName() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = testFile2.toFile().getPath() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -72,7 +80,11 @@ public class FindCommandSubIT {
 
     @Test
     void testFindCommandAndLsAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`ls " + testFile1.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = testFile1.toFile().getPath() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -82,6 +94,11 @@ public class FindCommandSubIT {
 
     @Test
     void testFindCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`find " + TestFileUtils.TESTDATA_DIR +
+                " -name " + testFile1.toFile().getName() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "";
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 }

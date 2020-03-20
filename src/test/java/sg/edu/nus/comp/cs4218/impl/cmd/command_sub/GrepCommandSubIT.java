@@ -45,11 +45,6 @@ public class GrepCommandSubIT {
 
     // Positive test cases
     @Test
-    void testGrepCommandAndRmAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testGrepCommandAndEchoAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("grep", "`echo assignments`", testFile1.toFile().getPath());
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
@@ -83,25 +78,8 @@ public class GrepCommandSubIT {
     }
 
     @Test
-    void testGrepCommandAndCdAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
-    void testGrepCommandAndCpAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testGrepCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("grep", "\"`cut -c 1 " + testFile3.toFile().getPath() + "`\"", testFile3.toFile().getPath());
-        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
-        callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = "1.0, 5.0" + System.lineSeparator() + "2, 3" + System.lineSeparator() +
-                "51, 15" + System.lineSeparator() + "21, 4" + System.lineSeparator() +
-                "22, 41" + System.lineSeparator() + "551, 1200" + System.lineSeparator() +
-                "001, 010" + System.lineSeparator();
-        assertEquals(expectedResult, ourTestStdout.toString());
+        fail();
     }
 
     @Test
@@ -111,16 +89,20 @@ public class GrepCommandSubIT {
 
     @Test
     void testGrepCommandAndSortAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("grep", "\"`sort -f " + testFile1.toFile().getPath() + "`\"", testFile1.toFile().getPath());
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "CS4218: Software Testing" + System.lineSeparator() +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing," + System.lineSeparator() +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the" + System.lineSeparator() +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for" + System.lineSeparator() +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire" + System.lineSeparator() +
+                "crucial skills on testing and debugging through hands-on assignments." + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
     void testGrepCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
-    void testGrepCommandAndMvAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         fail();
     }
 }

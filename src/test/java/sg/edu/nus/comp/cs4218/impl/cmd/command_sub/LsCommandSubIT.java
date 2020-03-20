@@ -46,11 +46,6 @@ public class LsCommandSubIT {
 
     // Positive test cases
     @Test
-    void testLsCommandAndRmAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testLsCommandAndEchoAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("ls", "`echo " + TestFileUtils.TESTDATA_DIR + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
@@ -81,16 +76,6 @@ public class LsCommandSubIT {
     }
 
     @Test
-    void testLsCommandAndCdAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
-    void testLsCommandAndCpAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testLsCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         fail();
     }
@@ -111,11 +96,6 @@ public class LsCommandSubIT {
 
     @Test
     void testLsCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
-    void testLsCommandAndMvAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         fail();
     }
 }

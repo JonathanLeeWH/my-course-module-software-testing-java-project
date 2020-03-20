@@ -68,7 +68,14 @@ public class CutCommandSubIT {
 
     @Test
     void testCutCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("cut", "-b", "4", "`ls -d " + TestFileUtils.TESTDATA_DIR + "`" +
+                testFile1.toFile().getName());
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "2" + System.lineSeparator() +
+                "ì" + System.lineSeparator() + " " + System.lineSeparator() +
+                "t" + System.lineSeparator() + "f" + System.lineSeparator() + "c" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -83,7 +90,8 @@ public class CutCommandSubIT {
 
     @Test
     void testCutCommandAndLsAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("cut", "-b", "4", "`ls " + TestFileUtils.TESTDATA_DIR + "t*1*`");
+        List<String> args = Arrays.asList("cut", "-b", "4", "`ls -d " + TestFileUtils.TESTDATA_DIR + "`" +
+                testFile1.toFile().getPath());
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = "2" + System.lineSeparator() +
