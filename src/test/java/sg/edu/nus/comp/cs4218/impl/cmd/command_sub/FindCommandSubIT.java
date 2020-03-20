@@ -41,11 +41,6 @@ public class FindCommandSubIT {
 
     // Positive test cases
     @Test
-    void testFindCommandAndRmAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testFindCommandAndEchoAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         fail();
     }
@@ -76,16 +71,6 @@ public class FindCommandSubIT {
     }
 
     @Test
-    void testFindCommandAndCdAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
-    void testFindCommandAndCpAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testFindCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         fail();
     }
@@ -102,11 +87,6 @@ public class FindCommandSubIT {
 
     @Test
     void testFindCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
-    void testFindCommandAndMvAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         fail();
     }
 }

@@ -45,11 +45,6 @@ public class EchoCommandSubIT {
 
     // Positive test cases
     @Test
-    void testEchoCommandAndRmAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testEchoCommandAndEchoAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("echo", "`echo \"Welcome to CS4218: Software Testing\"`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
@@ -85,16 +80,6 @@ public class EchoCommandSubIT {
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = "320 2081 " + testFile2.toFile().getPath() + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
-    }
-
-    @Test
-    void testEchoCommandAndCdAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
-    void testEchoCommandAndCpAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
     }
 
     @Test
@@ -145,11 +130,10 @@ public class EchoCommandSubIT {
 
     @Test
     void testEchoCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
-    void testEchoCommandAndMvAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("echo", "`find " + TestFileUtils.TESTDATA_DIR + " -name \"test*.txt\"`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = String.format("%s %s", testFile1.toFile().getPath(), testFile2.toFile().getPath()) + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 }

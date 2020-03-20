@@ -39,7 +39,7 @@
                                 <exclude>**/**CommandSubIT.java</exclude>
                                 <exclude>**/DiffApplicationIT.java</exclude>
                                 <exclude>**/DiffApplicationTest.java</exclude>
-                                <exclude>**/GrepApplicationTest.java</exclude>
+                                <!--<exclude>**/GrepApplicationTest.java</exclude>-->
                                 <exclude>**/ArgumentResolverTest.java</exclude>
                                 <exclude>**/tdd/**</exclude>
                             </excludes>
