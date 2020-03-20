@@ -8,6 +8,7 @@ import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 import tdd.util.TestUtil;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -211,7 +212,7 @@ class LsApplicationTest {
         assertTrue(result.contains("folderRecursive:" + StringUtils.STRING_NEWLINE
                 + "firstFile.txt" + StringUtils.STRING_NEWLINE + "innerFolder"));
 
-        assertTrue(result.contains("folderRecursive/innerFolder:" + StringUtils.STRING_NEWLINE + "innerFile.txt"));
+        assertTrue(result.contains("folderRecursive" + File.separator + "innerFolder:" + StringUtils.STRING_NEWLINE + "innerFile.txt"));
     }
 
 
