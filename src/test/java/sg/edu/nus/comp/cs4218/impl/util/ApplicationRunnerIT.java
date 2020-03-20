@@ -1,9 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.util;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
@@ -86,13 +83,16 @@ public class ApplicationRunnerIT {
     }
 
     @AfterAll
-    static void tearDown() {
+    static void tearDown() throws IOException {
+        fileOutputStream.close();
+
         FileIOHelper.deleteFiles(FILENAME1, FILENAME2, FILENAME3, MOCK_ROOT_FILE1,
                 MOCK_ROOT_FOLDER1, MOCK_ROOT_DIR, FOLDER1);
     }
 
     @AfterEach
-    void tearDownAfterEach() {
+    void tearDownAfterEach() throws IOException {
+        fileOutputStream.close();
         FileIOHelper.deleteFiles(MOCK_ROOT_DIR + File.separator + OUTPUT_FILE_1, OUTPUT_FILE_1,
                 OUTPUT_FILE_2);
     }
@@ -193,7 +193,7 @@ public class ApplicationRunnerIT {
         fileOutputStream = new FileOutputStream(OUTPUT_FILE_1);
         appRunner.runApp("find", args, null, fileOutputStream);
 
-        String expectedOutput = "." + File.separator +FILENAME1;
+        String expectedOutput = "." + File.separator + FILENAME1;
         String actualOutput = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
         assertEquals(expectedOutput, actualOutput);
     }
