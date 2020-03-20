@@ -91,7 +91,7 @@ public class IORedirectionIT {
     static void tearDown() throws IOException {
         mockInputStream.close();
         mockBos.close();
-        FileIOHelper.deleteFiles(FILENAME1, FILENAME2, FILENAME3, MOCK_ROOT_FILE1,
+        FileIOHelper.deleteTestFiles(FILENAME1, FILENAME2, FILENAME3, MOCK_ROOT_FILE1,
                 MOCK_ROOT_FOLDER1, MOCK_ROOT_DIR, FOLDER1);
     }
 
@@ -99,7 +99,7 @@ public class IORedirectionIT {
     void tearDownAfterEach() throws IOException {
         mockInputStream.close();
         mockBos.close();
-        FileIOHelper.deleteFiles(MOCK_ROOT_DIR + File.separator + OUTPUT_FILE_1, OUTPUT_FILE_1,
+        FileIOHelper.deleteTestFiles(MOCK_ROOT_DIR + File.separator + OUTPUT_FILE_1, OUTPUT_FILE_1,
                 OUTPUT_FILE_2);
     }
 

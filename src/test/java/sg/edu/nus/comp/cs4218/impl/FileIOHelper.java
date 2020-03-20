@@ -23,11 +23,22 @@ public final class FileIOHelper {
         }
     }
 
+    public static void deleteTestFiles(String...filesToClose) {
+        for (String fileName : filesToClose) {
+            File file = new File(fileName);
+            if (file.exists()) {
+                file.delete();
+                file.deleteOnExit();
+            }
+        }
+    }
+
     public static void deleteFiles(String...filesToClose) {
         for (String fileName : filesToClose) {
             File file = new File(fileName);
             if (file.exists()) {
                 file.delete();
+                file.deleteOnExit();
             }
         }
     }

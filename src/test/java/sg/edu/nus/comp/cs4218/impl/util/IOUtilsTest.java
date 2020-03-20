@@ -70,7 +70,7 @@ public class IOUtilsTest {
     @AfterAll
     static void tearDown() {
         for (String filePath : createdFiles) {
-            FileIOHelper.deleteFiles(filePath);
+            FileIOHelper.deleteTestFiles(filePath);
         }
         createdFiles.clear();
     }
