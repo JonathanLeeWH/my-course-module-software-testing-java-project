@@ -15,6 +15,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -22,6 +24,8 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class ApplicationRunnerIT {
 
+    private static final String FILE_NAME_1 = "1.txt";
+    private static final String FILE_NAME_2 = "2.txt";
     private static final String MOCK_ROOT_DIR = "ROOT";
     private static final String MOCK_FILE_NAME = "File1.txt";
     private static final String MOCK_FOLDER = "Folder1";
@@ -86,7 +90,9 @@ public class ApplicationRunnerIT {
 
     @AfterAll
     static void tearDown() throws IOException {
-        fileOutputStream.close();
+        if (fileOutputStream != null) {
+            fileOutputStream.close();
+        }
 
         FileIOHelper.deleteTestFiles(FILENAME1, FILENAME2, FILENAME3, MOCK_ROOT_FILE1,
                 MOCK_ROOT_FOLDER1, MOCK_ROOT_DIR, FOLDER1);
@@ -94,10 +100,14 @@ public class ApplicationRunnerIT {
 
     @AfterEach
     void tearDownAfterEach() throws IOException {
-        fileOutputStream.close();
+        if (fileOutputStream != null) {
+            fileOutputStream.close();
+        }
         FileIOHelper.deleteTestFiles(MOCK_ROOT_DIR + File.separator + OUTPUT_FILE_1, OUTPUT_FILE_1,
                 OUTPUT_FILE_2);
     }
+
+    // Mainly to test that the proper application is executed.
 
     /**
      * Tests runApp method when input app is rm, execute RmApplication.
@@ -107,7 +117,7 @@ public class ApplicationRunnerIT {
      */
     @Test
     void testRunAppWhenInputRmAppShouldExecuteRmApplication(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
-        Path file1 = tempDir.resolve("1.txt");
+        Path file1 = tempDir.resolve(FILE_NAME_1);
         String[] argsList = {file1.toString()};
         Files.createFile(file1);
         assertTrue(Files.exists(file1)); // check 1.txt exists.
@@ -184,6 +194,32 @@ public class ApplicationRunnerIT {
         String newPath = EnvironmentHelper.currentDirectory;
 
         assertEquals(parentAbsPath, newPath);
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir"); // reset environment directory to default
+    }
+
+    /**
+     * Tests runApp method when input app is cp, execute CpApplication.
+     * For example: cp 1.txt 2.txt
+     * Where 1.txt exists and 2.txt does not exist
+     * Expected: Copies the contents of the source file 1.txt to destination file 2.txt
+     */
+    @Test
+    void testRunAppWhenInputCpAppShouldExecuteCpApplication(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+        Path file1 = tempDir.resolve(FILE_NAME_1);
+        Path file2 = tempDir.resolve(FILE_NAME_2);
+        List<String> content = Arrays.asList("Hello World", "How are you");
+        Files.createFile(file1);
+        Files.write(file1, content);
+        assertTrue(Files.exists(file1)); // check 1.txt exist
+        assertFalse(Files.exists(file2)); // check 2.txt does not exist
+        assertEquals(content, Files.readAllLines(file1));
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        String[] argsList = {file1.toString(), file2.toString()};
+        appRunner.runApp("cp", argsList, mock(InputStream.class), mock(OutputStream.class));
+
+        assertTrue(Files.exists(file1)); // check 1.txt exists
+        assertTrue(Files.exists(file2)); // check 2.txt exists
+        assertEquals(content, Files.readAllLines(file2));
         EnvironmentHelper.currentDirectory = System.getProperty("user.dir"); // reset environment directory to default
     }
 
