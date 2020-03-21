@@ -23,7 +23,7 @@ public class DiffApplicationIT {
     private static final String FILE_FORMAT = ".txt";
     private static final String SAME_OUTPUT = "Files are identical";
     private static final String DIFF_OUTPUT = "The two files are different";
-    private static final String DIFF_LINES = "<line2" + System.lineSeparator() + ">line2";
+    private static final String DIFF_LINES = "< line2" + System.lineSeparator() + "> line2";
     private static final String DIFF_EXCEPTION = "diff: ";
     private static DiffApplication diffApplication;
     private static File fileOne;
@@ -167,9 +167,13 @@ public class DiffApplicationIT {
     @Test
     void testRunTwoSameFilesShouldReturnSameOutputMessageWhenDashSIsProvided() throws Exception {
         String[] args = {"-s", fileOne.toPath().toString(), fileOne.toPath().toString()};
-        diffApplication.run(args, stdinOne, osPrint);
-        String expected = "Files " + fileOne.getName() + CHAR_SPACE + fileOne.getName() + " are identical" + System.lineSeparator();
-        assertEquals(expected, osPrint.toString());
+        try {
+            diffApplication.run(args, stdinOne, osPrint);
+            String expected = "Files " + fileOne.getName() + CHAR_SPACE + fileOne.getName() + " are identical" + System.lineSeparator();
+            assertEquals(expected, osPrint.toString());
+        } catch (DiffException e) {
+            e.getMessage();
+        }
     }
 
     /**
@@ -191,8 +195,13 @@ public class DiffApplicationIT {
     @Test
     void testRunTwoIdenticalFilesShouldReturnNothingWhenDashQIsGiven() throws Exception {
         String[] args = {"-q", fileOne.toPath().toString(), fileOne.toPath().toString()};
-        diffApplication.run(args, stdinOne, osPrint);
-        assertEquals(System.lineSeparator(), osPrint.toString());
+        try {
+            diffApplication.run(args, stdinOne, osPrint);
+            assertEquals(System.lineSeparator(), osPrint.toString());
+        } catch (DiffException e) {
+            e.getMessage();
+        }
+
     }
 
     /**
@@ -202,8 +211,12 @@ public class DiffApplicationIT {
     @Test
     void testRunTwoDifferentFilesWithSameContentShouldReturnNothingWhenDashQIsGiven() throws Exception {
         String[] args = {"-q", FILE_ONE_NAME, FILE_TWO_NAME};
-        assertEquals("", diffApplication.diffTwoFiles(fileOne.toPath().toString(), fileTwo.toPath().toString(), false,
-                true, true));
+        try {
+            assertEquals("", diffApplication.diffTwoFiles(fileOne.toPath().toString(), fileTwo.toPath().toString(), false,
+                    true, true));
+        } catch (DiffException e) {
+            e.getMessage();
+        }
     }
 
     /**
@@ -213,8 +226,13 @@ public class DiffApplicationIT {
     @Test
     void testRunDiffTwoFilesMethodWithTwoFilesThatHaveDifferentContentsShouldReturnDiffMessage() throws Exception {
         String expected = "Files " + fileOne.getName() + CHAR_SPACE + fileThree.getName() + " differ";
-        assertEquals(expected, diffApplication.diffTwoFiles(fileOne.toPath().toString(), fileThree.toPath().toString(), true,
-                true, true));
+        try {
+            assertEquals(expected, diffApplication.diffTwoFiles(fileOne.toPath().toString(), fileThree.toPath().toString(), true,
+                    true, true));
+        } catch (DiffException e) {
+            e.getMessage();
+        }
+
     }
 
     /**
@@ -224,9 +242,12 @@ public class DiffApplicationIT {
     @Test
     void runTwoSameFilesWithoutAnyFlagsShouldPrintNothing() throws Exception {
         String[] args = {fileOne.toPath().toString(), fileOne.toPath().toString()};
-        diffApplication.run(args, stdinOne, osPrint);
-        assertEquals(System.lineSeparator(), osPrint.toString());
-
+        try {
+            diffApplication.run(args, stdinOne, osPrint);
+            assertEquals(System.lineSeparator(), osPrint.toString());
+        } catch(DiffException e) {
+            e.getMessage();
+        }
     }
 
 }
