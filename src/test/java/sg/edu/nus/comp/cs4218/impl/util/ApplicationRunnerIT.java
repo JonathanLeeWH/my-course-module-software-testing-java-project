@@ -162,7 +162,7 @@ public class ApplicationRunnerIT {
         OutputStream outputStream = new ByteArrayOutputStream();
         appRunner.runApp("wc", args, mock(InputStream.class), outputStream);
 
-        String expectedOutput = String.format(" %7d %7d %7d", 3, 20, 115) + " " + FILENAME1 + System.lineSeparator();
+        String expectedOutput = String.format(" %7d %7d %7d", 3, 20, 112) + " " + FILENAME1 + System.lineSeparator();
         assertEquals(expectedOutput, outputStream.toString());
     }
 
