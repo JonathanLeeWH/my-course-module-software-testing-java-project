@@ -178,8 +178,12 @@ public class ArgumentResolver {
         Command command = CommandBuilder.parseCommand(commandString, getAppRunner());
         command.evaluate(System.in, outputStream);
 
+        String tempResult = outputStream.toString().replaceAll(StringUtils.STRING_NEWLINE, "\n");
+        if (!tempResult.isEmpty()) {
+            tempResult = tempResult.substring(0, tempResult.length()-1);
+        }
         // replace newlines with spaces
-        return outputStream.toString().replace(STRING_NEWLINE, String.valueOf(CHAR_SPACE));
+        return tempResult.replace(STRING_NEWLINE, String.valueOf(CHAR_SPACE));
     }
 
     /**

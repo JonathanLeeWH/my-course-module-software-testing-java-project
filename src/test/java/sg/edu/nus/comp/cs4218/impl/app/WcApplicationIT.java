@@ -21,8 +21,7 @@ public class WcApplicationIT {
     private String[] defaultWcArgs;
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
-    private static final String TEST_STDIN_MSG_1 = "11"+  System.lineSeparator() +
-            "1 test 1 2" +  System.lineSeparator() + "5" + System.lineSeparator() + "+" + System.lineSeparator();
+    private static final String TEST_STDIN_MSG_1 = "11\r\n1 test 1 2\r\n5\r\n+\r\n";
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
 
@@ -61,7 +60,7 @@ public class WcApplicationIT {
     @Test
     void testWcApplicationAndWcArgumentUsingNoArgsWithNoFilesAndInputStreamWithValidValuesShouldRunSuccessfully() throws WcException, IOException {
         wcApplication.run(new String[0], ourTestStdin, ourTestStdout);
-        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 18) + System.lineSeparator();
+        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 22) + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
@@ -130,7 +129,7 @@ public class WcApplicationIT {
     @Test
     void testWcApplicationAndWcArgumentUsingAllArgsWithFlagArgsTogetherAndNoFilesAndInputStreamWithValidValuesShouldRunSuccessfully() throws WcException, IOException {
         wcApplication.run(Collections.singletonList("-wcl").toArray(new String[1]), ourTestStdin, ourTestStdout);
-        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 18) + System.lineSeparator();
+        String expectedResult = String.format(" %7d %7d %7d", 4, 7, 22) + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 

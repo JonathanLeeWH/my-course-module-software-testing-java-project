@@ -43,6 +43,8 @@ public class IORedirectionHandler {
         noRedirArgsList = new LinkedList<>();
         InputStream prevInputStream = origInputStream;
         OutputStream prevOutputStream = origOutputStream;
+        int inputStreamCount = 0;
+        int outputStreamCount = 0;
         // extract redirection operators (with their corresponding files) from argsList
         ListIterator<String> argsIterator = argsList.listIterator();
         while (argsIterator.hasNext()) {
@@ -67,18 +69,20 @@ public class IORedirectionHandler {
             // replace existing inputStream / outputStream
             if (arg.equals(String.valueOf(CHAR_REDIR_INPUT))) {
                 IOUtils.closeInputStream(inputStream);
-                if (!inputStream.equals(prevInputStream)) { // Already have a stream
+                if (!inputStream.equals(prevInputStream) || inputStreamCount > 0) { // Already have a stream
                     throw new ShellException(ERR_MULTIPLE_STREAMS);
                 }
                 File currFile = new File(file);
                 inputStream = IOUtils.openInputStream(file);
+                inputStreamCount++;
                 prevInputStream = inputStream;
             } else if (arg.equals(String.valueOf(CHAR_REDIR_OUTPUT))) {
                 IOUtils.closeOutputStream(outputStream);
-                if (!outputStream.equals(prevOutputStream)) { // Already have a stream
+                if (!outputStream.equals(prevOutputStream) || outputStreamCount > 0) { // Already have a stream
                     throw new ShellException(ERR_MULTIPLE_STREAMS);
                 }
                 outputStream = IOUtils.openOutputStream(file);
+                outputStreamCount++;
                 prevOutputStream = outputStream;
             }
         }

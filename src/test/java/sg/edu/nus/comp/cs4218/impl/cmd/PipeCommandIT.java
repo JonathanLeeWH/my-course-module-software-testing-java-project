@@ -49,6 +49,7 @@ class PipeCommandIT {
     private static final String LS_APP = "ls";
     private static final String PASTE_APP = "paste";
     private static final String SED_APP = "sed";
+    private static final String RM_APP = "rm";
     private static final String INVALID_APP = "lsa";
     private static final String B_FLAG = "-b";
     private static final String C_FLAG = "-c";
@@ -97,7 +98,7 @@ class PipeCommandIT {
      * Expected: Throws GrepException, a subclass of AbstractApplicationException, ERR_SYNTAX
      */
     @Test
-    void testEvaluatePipeCommandWithACommandThrowingASubClassOfApplicationCdExceptionShouldThrowGrepException(@TempDir Path tempDir) {
+    void testEvaluatePipeCommandWithACommandThrowingASubClassOfAbstractApplicationExceptionShouldThrowGrepException(@TempDir Path tempDir) {
         Path folder = tempDir.resolve(FOLDER_NAME_1);
         EnvironmentHelper.currentDirectory = tempDir.toString();
         assertFalse(Files.isDirectory(folder)); // check that the folder does not exist.
@@ -108,6 +109,31 @@ class PipeCommandIT {
             pipeCommand.evaluate(System.in, outputStream);
         });
         assertEquals(new GrepException(ERR_SYNTAX).getMessage(), exception.getMessage());
+    }
+
+    /**
+     * Tests evaluate method ls command and rm command interaction.
+     * This is to test interactions with commands that do not involve input streams and/or output streams.
+     * For example: ls | rm 1.txt 2.txt
+     * Where 1.txt and 2.txt are existing files..
+     * Expected: Removes 1.txt and 2.txt
+     */
+    @Test
+    void testEvaluatePipeCommandWithLsCommandAndRmCommandInteractionShouldRemoveFiles(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        assertTrue(Files.exists(file1)); // checks 1.txt exists
+        assertTrue(Files.exists(file2)); // checks 2.txt exists
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        callCommands.add(new CallCommand(Collections.singletonList(LS_APP), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(RM_APP, file1.toString(), file2.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(file1)); // checks 1.txt is deleted.
+        assertFalse(Files.exists(file2)); // checks 2.txt is deleted.
     }
 
     /**
@@ -301,6 +327,32 @@ class PipeCommandIT {
     }
 
     // At least two pipes test case
+
+    /**
+     * Tests evaluate method ls command and sort command and rm command interaction.
+     * This is to test interactions with commands that do not involve input streams and/or output streams.
+     * For example: ls | sort | rm 1.txt 2.txt
+     * Where 1.txt and 2.txt are existing files..
+     * Expected: Removes 1.txt and 2.txt
+     */
+    @Test
+    void testEvaluatePipeCommandWithLsCommandAndSortCommandAndRmCommandInteractionShouldRemoveFiles(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        assertTrue(Files.exists(file1)); // checks 1.txt exists
+        assertTrue(Files.exists(file2)); // checks 2.txt exists
+
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        callCommands.add(new CallCommand(Collections.singletonList(LS_APP), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Collections.singletonList(SORT_APP), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(RM_APP, file1.toString(), file2.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertFalse(Files.exists(file1)); // checks 1.txt is deleted.
+        assertFalse(Files.exists(file2)); // checks 2.txt is deleted.
+    }
 
     /**
      * Tests evaluate method with at least 2 pipes when there is an exception in one part
