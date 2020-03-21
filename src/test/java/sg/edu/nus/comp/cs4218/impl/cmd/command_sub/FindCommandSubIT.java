@@ -57,6 +57,15 @@ public class FindCommandSubIT {
     }
 
     @Test
+    void testFindCommandAndPasteAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`paste " + testFile5.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = testFile2.toFile().getPath() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
+    }
+
+    @Test
     void testFindCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`sed \"s|" + testFile2.toFile().getPath() +
                 "|" + testFile2.getFileName() + "|\" " + testFile4.toFile().getPath() + "`");

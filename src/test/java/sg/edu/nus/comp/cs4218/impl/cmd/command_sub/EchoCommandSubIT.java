@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class EchoCommandSubIT {
     private ApplicationRunner applicationRunner;
@@ -51,6 +52,16 @@ public class EchoCommandSubIT {
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = "Welcome to CS4218: Software Testing" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
+    }
+
+    @Test
+    void testEchoCommandAndPasteAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "`paste " + testFile4.toFile().getPath()
+                + " " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = testFile2.toFile().getPath() + " " + testFile2.toFile().getPath() + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 

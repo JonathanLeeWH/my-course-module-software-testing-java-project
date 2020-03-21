@@ -59,6 +59,16 @@ public class CutCommandSubIT {
     }
 
     @Test
+    void testCutCommandAndPasteAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("cut", "-c", "2", "`paste " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "o" + System.lineSeparator() + System.lineSeparator() + "u" + System.lineSeparator() +
+                System.lineSeparator() + "u" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
+    }
+
+    @Test
     void testCutCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("cut", "-b", "4", "`sed \"s|" + testFile2.getFileName() +
                 "|" + testFile2.toFile().getPath() + "|\" " + testFile5.toFile().getPath() + "`");

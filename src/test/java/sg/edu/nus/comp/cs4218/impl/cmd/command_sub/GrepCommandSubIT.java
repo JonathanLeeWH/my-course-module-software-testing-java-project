@@ -54,6 +54,11 @@ public class GrepCommandSubIT {
     }
 
     @Test
+    void testGrepCommandAndPasteAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
+        fail();
+    }
+
+    @Test
     void testGrepCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         fail();
     }

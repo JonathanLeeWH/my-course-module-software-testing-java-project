@@ -57,6 +57,19 @@ public class WcCommandSubIT {
     }
 
     @Test
+    void testWcCommandAndPasteAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("wc", "`paste " + testFile4.toFile().getPath() + " " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = String.format(" %7d %7d %7d", 5, 320, 2081) + " " +
+                testFile2.toFile().getPath() + System.lineSeparator() +
+                String.format(" %7d %7d %7d", 5, 320, 2081) + " " +
+                testFile2.toFile().getPath() + System.lineSeparator() +
+                String.format(" %7d %7d %7d", 10, 640, 4162) + " total" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
+    }
+
+    @Test
     void testWcCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("wc", "-clw", "`sed \"s|" + testFile2.getFileName() +
                 "|" + testFile2.toFile().getPath() + "|\" " + testFile5.toFile().getPath() + "`");
