@@ -183,9 +183,13 @@ public class DiffApplicationIT {
     @Test
     void testRunTwoFilesWithIdenticalContentShouldReturnSameOutputMessageWhenDashSIsProvided() throws Exception {
         String[] args = {"-s", fileOne.toPath().toString(), fileTwo.toPath().toString()};
-        diffApplication.run(args, stdinOne, osPrint);
-        String expected = "Files " + fileOne.getName() + CHAR_SPACE + fileTwo.getName() + " are identical";
-        assertEquals(expected + System.lineSeparator(), osPrint.toString());
+        try {
+            diffApplication.run(args, stdinOne, osPrint);
+            String expected = "Files " + fileOne.getName() + CHAR_SPACE + fileTwo.getName() + " are identical";
+            assertEquals(expected + System.lineSeparator(), osPrint.toString());
+        } catch (DiffException e) {
+            e.getMessage();
+        }
     }
 
     /**
