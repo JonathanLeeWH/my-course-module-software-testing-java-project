@@ -23,28 +23,6 @@ class ArgumentResolverTest {
     }
 
     @Test
-    void resolveOneArgumentOneSingleQuoteOneTestThrowException() throws Exception {
-        assertThrows(Exception.class, () -> {
-            ARGUMENT_RESOLVER.resolveOneArgument("'");
-        });
-    }
-
-    @Test
-    void resolveOneArgumentOneBackQuoteTestThrowException() throws Exception {
-        assertThrows(Exception.class, () -> {
-            ARGUMENT_RESOLVER.resolveOneArgument("`");
-        });
-    }
-
-    @Test
-    void resolveOneArgumentOneDoubleQuoteOneTestThrowShellException() throws Exception {
-        String expected = "shell: Unmatched quotes in input"; // can be other messages
-        assertThrows(Exception.class, () -> {
-            ARGUMENT_RESOLVER.resolveOneArgument("\"");
-        });
-    }
-
-    @Test
     void resolveOneArgumentStartEndWithSingleQuoteTestSuccess() throws Exception {
         List<String> actualOutput = ARGUMENT_RESOLVER.resolveOneArgument("'echo'");
         List<String> expectedOutput = Arrays.asList("echo");

@@ -89,10 +89,6 @@ public class GrepApplicationTest {
             + StringUtils.CHAR_FILE_SEP
             + "file_uppercase_multiplelines.txt";
 
-
-
-
-
     @BeforeEach
     public void setUp() throws IOException {
         app = new GrepApplication();
@@ -265,7 +261,6 @@ public class GrepApplicationTest {
         assertEquals(NO_SUCH_FILE_OR_DIR, results);
     }
 
-    @Test
     public void testGrepFromFiles_noReadPermission_shouldDisplayNoPermission() throws Exception {
         String[] fileName = {fileTwoPath.toString()};
         String pattern = "j";
