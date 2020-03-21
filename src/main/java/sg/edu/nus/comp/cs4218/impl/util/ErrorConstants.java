@@ -75,7 +75,7 @@ public class ErrorConstants {
 
     // `Paste` related
     public static final String INVALID_DASH = "Dash should only appear in the first argument";
-    public static final String FILE_NOT_FOUND = "Invalid filename provided";
+    public static final String FILE_NOT_FOUND = "No such file or directory";
 
     //`ls` related
 

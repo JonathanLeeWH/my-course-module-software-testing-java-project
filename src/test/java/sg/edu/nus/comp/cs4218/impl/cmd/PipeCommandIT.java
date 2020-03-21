@@ -108,7 +108,7 @@ class PipeCommandIT {
         AbstractApplicationException exception = assertThrows(AbstractApplicationException.class, () -> {
             pipeCommand.evaluate(System.in, outputStream);
         });
-        assertEquals(new GrepException(ERR_SYNTAX).getMessage(), exception.getMessage());
+        assertEquals(new GrepException(ERR_EMPTY_REGEX).getMessage(), exception.getMessage());
     }
 
     /**
