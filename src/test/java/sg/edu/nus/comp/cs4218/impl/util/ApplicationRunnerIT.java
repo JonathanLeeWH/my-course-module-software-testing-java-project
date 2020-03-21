@@ -139,6 +139,17 @@ public class ApplicationRunnerIT {
         assertEquals("hello world" + STRING_NEWLINE, outputStream.toString());
     }
 
+    @Test
+    void testRunAppWhenInputWcAppShouldExecuteWcApplication() throws Exception {
+        String[] args = {FILENAME1 };
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        appRunner.runApp("wc", args, mock(InputStream.class), outputStream);
+
+        String expectedOutput = String.format(" %7d %7d %7d", 3, 20, 112) + " " + FILENAME1 + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
     /**
      * Tests runApp method when input app is cd, execute CdApplication.
      * For example: cd ..
@@ -160,6 +171,18 @@ public class ApplicationRunnerIT {
         EnvironmentHelper.currentDirectory = System.getProperty("user.dir"); // reset environment directory to default
     }
 
+    @Test
+    void testRunAppWhenInputCutAppShouldExecuteCutApplication() throws Exception {
+        String[] args = {"-b", "2-3", FILENAME1 };
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        appRunner.runApp("cut", args, mock(InputStream.class), outputStream);
+
+        String expectedOutput = "hi" + System.lineSeparator() + "he" + System.lineSeparator() +
+                "om" + System.lineSeparator() + "om" + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
     /**
      * Tests runApp method when input app is ls, execute lsApplication.
      * For example: ls
@@ -178,6 +201,20 @@ public class ApplicationRunnerIT {
         String actualOutput = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
         assertEquals(expectedOutput, actualOutput);
         EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
+    }
+
+    @Test
+    void testRunAppWhenInputSortAppShouldExecuteSortApplication() throws Exception {
+        String[] args = {"-rf", FILENAME1 };
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        appRunner.runApp("sort", args, mock(InputStream.class), outputStream);
+
+        String expectedOutput = "This is the content for file 1." + System.lineSeparator() +
+                "There are some content here." + System.lineSeparator() +
+                "Some whitespace      ?><*&^%." + System.lineSeparator() +
+                "Some numbers: 50 1 2." + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
     }
 
     /**
