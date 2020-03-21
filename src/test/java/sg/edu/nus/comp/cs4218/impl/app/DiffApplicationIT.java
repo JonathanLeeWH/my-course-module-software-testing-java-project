@@ -10,6 +10,7 @@ import java.io.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_STREAMS;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_SPACE;
 
 public class DiffApplicationIT {
     private static final String SAME_LINE = "Same line";
@@ -107,20 +108,6 @@ public class DiffApplicationIT {
     }
 
     /**
-     * Test run method with args that has dash that comes after filename.
-     * The underlying assumption is that stdin should come before any filenames.
-     * Exception: Throw DiffException
-     */
-    @Test
-    void testRunStdinInSecondArgumentShouldThrowDiffException() {
-        String[] args = {fileOne.toPath().toString(), "-"};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
-    }
-
-    /**
      * Test run method with only one filename supplied in arg.
      * Expected: Throw DiffException
      */
@@ -181,7 +168,8 @@ public class DiffApplicationIT {
     void testRunTwoSameFilesShouldReturnSameOutputMessageWhenDashSIsProvided() throws Exception {
         String[] args = {"-s", fileOne.toPath().toString(), fileOne.toPath().toString()};
         diffApplication.run(args, stdinOne, osPrint);
-        assertEquals(SAME_OUTPUT, osPrint.toString());
+        String expected = "Files " + fileOne.getName() + CHAR_SPACE + fileOne.getName() + " are identical" + System.lineSeparator();
+        assertEquals(expected, osPrint.toString());
     }
 
     /**
@@ -192,7 +180,8 @@ public class DiffApplicationIT {
     void testRunTwoFilesWithIdenticalContentShouldReturnSameOutputMessageWhenDashSIsProvided() throws Exception {
         String[] args = {"-s", fileOne.toPath().toString(), fileTwo.toPath().toString()};
         diffApplication.run(args, stdinOne, osPrint);
-        assertEquals(SAME_OUTPUT, osPrint.toString());
+        String expected = "Files " + fileOne.getName() + CHAR_SPACE + fileTwo.getName() + " are identical";
+        assertEquals(expected + System.lineSeparator(), osPrint.toString());
     }
 
     /**
@@ -203,7 +192,7 @@ public class DiffApplicationIT {
     void testRunTwoIdenticalFilesShouldReturnNothingWhenDashQIsGiven() throws Exception {
         String[] args = {"-q", fileOne.toPath().toString(), fileOne.toPath().toString()};
         diffApplication.run(args, stdinOne, osPrint);
-        assertEquals("", stdinOne.toString());
+        assertEquals(System.lineSeparator(), osPrint.toString());
     }
 
     /**
@@ -213,8 +202,7 @@ public class DiffApplicationIT {
     @Test
     void testRunTwoDifferentFilesWithSameContentShouldReturnNothingWhenDashQIsGiven() throws Exception {
         String[] args = {"-q", FILE_ONE_NAME, FILE_TWO_NAME};
-        diffApplication.run(args, stdinOne, osPrint);
-        assertEquals("", diffApplication.diffTwoFiles(FILE_ONE_NAME, FILE_TWO_NAME, false,
+        assertEquals("", diffApplication.diffTwoFiles(fileOne.toPath().toString(), fileTwo.toPath().toString(), false,
                 true, true));
     }
 
@@ -224,7 +212,8 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunDiffTwoFilesMethodWithTwoFilesThatHaveDifferentContentsShouldReturnDiffMessage() throws Exception {
-        assertEquals(DIFF_OUTPUT, diffApplication.diffTwoFiles(FILE_ONE_NAME, FILE_THREE_NAME, true,
+        String expected = "Files " + fileOne.getName() + CHAR_SPACE + fileThree.getName() + " differ";
+        assertEquals(expected, diffApplication.diffTwoFiles(fileOne.toPath().toString(), fileThree.toPath().toString(), true,
                 true, true));
     }
 
@@ -236,7 +225,7 @@ public class DiffApplicationIT {
     void runTwoSameFilesWithoutAnyFlagsShouldPrintNothing() throws Exception {
         String[] args = {fileOne.toPath().toString(), fileOne.toPath().toString()};
         diffApplication.run(args, stdinOne, osPrint);
-        assertEquals("", osPrint.toString());
+        assertEquals(System.lineSeparator(), osPrint.toString());
 
     }
 
