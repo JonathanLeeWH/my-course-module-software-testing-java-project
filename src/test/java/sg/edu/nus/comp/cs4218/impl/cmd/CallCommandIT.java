@@ -194,8 +194,8 @@ class CallCommandIT {
     }
 
     /**
-     * Test call command with invalid echo command using a capital O at the back.
-     * Expected: throw Shell Exception with ERR_INVALID_APP message.
+     * Test call command with different quotation marks
+     * Expected: return string normally.
      */
     @Test
     void testRunDifferentQuotationsShouldReturnStringNormally() throws AbstractApplicationException, ShellException {
