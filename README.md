@@ -122,9 +122,7 @@ You will just need to run `mvn test` (Not recommended for Windows as Windows usu
 
 Step 1: Run `mvn clean compile jxr:jxr jxr:test-jxr site:attach-descriptor site`
 
-Step 2: Run `open -na "Google Chrome" --args --new-window http://localhost:63342/cs4218-project-ay1920-s2-2020-team22/target/site/index.html`
-
-* Go to [http://localhost:8080](http://localhost:8080) to access the generated automated project report.
+Step 2: Run `open -na "Google Chrome" --args --new-window http://localhost:63342/cs4218-project-ay1920-s2-2020-team22/target/site/index.html` to view the automated report.
 
 * Note that you are not suppose to remove anything inside the `src/site` folder.
 
