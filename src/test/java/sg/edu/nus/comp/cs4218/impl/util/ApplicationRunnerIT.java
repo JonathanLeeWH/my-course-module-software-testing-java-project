@@ -1,9 +1,8 @@
 package sg.edu.nus.comp.cs4218.impl.util;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
@@ -16,6 +15,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -23,6 +24,8 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class ApplicationRunnerIT {
 
+    private static final String FILE_NAME_1 = "1.txt";
+    private static final String FILE_NAME_2 = "2.txt";
     private static final String MOCK_ROOT_DIR = "ROOT";
     private static final String MOCK_FILE_NAME = "File1.txt";
     private static final String MOCK_FOLDER = "Folder1";
@@ -86,16 +89,25 @@ public class ApplicationRunnerIT {
     }
 
     @AfterAll
-    static void tearDown() {
-        FileIOHelper.deleteFiles(FILENAME1, FILENAME2, FILENAME3, MOCK_ROOT_FILE1,
+    static void tearDown() throws IOException {
+        if (fileOutputStream != null) {
+            fileOutputStream.close();
+        }
+
+        FileIOHelper.deleteTestFiles(FILENAME1, FILENAME2, FILENAME3, MOCK_ROOT_FILE1,
                 MOCK_ROOT_FOLDER1, MOCK_ROOT_DIR, FOLDER1);
     }
 
     @AfterEach
-    void tearDownAfterEach() {
-        FileIOHelper.deleteFiles(MOCK_ROOT_DIR + File.separator + OUTPUT_FILE_1, OUTPUT_FILE_1,
+    void tearDownAfterEach() throws IOException {
+        if (fileOutputStream != null) {
+            fileOutputStream.close();
+        }
+        FileIOHelper.deleteTestFiles(MOCK_ROOT_DIR + File.separator + OUTPUT_FILE_1, OUTPUT_FILE_1,
                 OUTPUT_FILE_2);
     }
+
+    // Mainly to test that the proper application is executed.
 
     /**
      * Tests runApp method when input app is rm, execute RmApplication.
@@ -105,7 +117,7 @@ public class ApplicationRunnerIT {
      */
     @Test
     void testRunAppWhenInputRmAppShouldExecuteRmApplication(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
-        Path file1 = tempDir.resolve("1.txt");
+        Path file1 = tempDir.resolve(FILE_NAME_1);
         String[] argsList = {file1.toString()};
         Files.createFile(file1);
         assertTrue(Files.exists(file1)); // check 1.txt exists.
@@ -139,6 +151,31 @@ public class ApplicationRunnerIT {
         assertEquals("hello world" + STRING_NEWLINE, outputStream.toString());
     }
 
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testRunAppWhenInputWcAppOnWindowsShouldExecuteWcApplication() throws Exception {
+        String[] args = {FILENAME1 };
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        appRunner.runApp("wc", args, mock(InputStream.class), outputStream);
+
+        String expectedOutput = String.format(" %7d %7d %7d", 3, 20, 115) + " " + FILENAME1 + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+
+    @Test
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void testRunAppWhenInputWcAppOnMacAndLinuxOShouldExecuteWcApplication() throws Exception {
+        String[] args = {FILENAME1 };
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        appRunner.runApp("wc", args, mock(InputStream.class), outputStream);
+
+        String expectedOutput = String.format(" %7d %7d %7d", 3, 20, 112) + " " + FILENAME1 + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
     /**
      * Tests runApp method when input app is cd, execute CdApplication.
      * For example: cd ..
@@ -161,6 +198,44 @@ public class ApplicationRunnerIT {
     }
 
     /**
+     * Tests runApp method when input app is cp, execute CpApplication.
+     * For example: cp 1.txt 2.txt
+     * Where 1.txt exists and 2.txt does not exist
+     * Expected: Copies the contents of the source file 1.txt to destination file 2.txt
+     */
+    @Test
+    void testRunAppWhenInputCpAppShouldExecuteCpApplication(@TempDir Path tempDir) throws AbstractApplicationException, ShellException, IOException {
+        Path file1 = tempDir.resolve(FILE_NAME_1);
+        Path file2 = tempDir.resolve(FILE_NAME_2);
+        List<String> content = Arrays.asList("Hello World", "How are you");
+        Files.createFile(file1);
+        Files.write(file1, content);
+        assertTrue(Files.exists(file1)); // check 1.txt exist
+        assertFalse(Files.exists(file2)); // check 2.txt does not exist
+        assertEquals(content, Files.readAllLines(file1));
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        String[] argsList = {file1.toString(), file2.toString()};
+        appRunner.runApp("cp", argsList, mock(InputStream.class), mock(OutputStream.class));
+
+        assertTrue(Files.exists(file1)); // check 1.txt exists
+        assertTrue(Files.exists(file2)); // check 2.txt exists
+        assertEquals(content, Files.readAllLines(file2));
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir"); // reset environment directory to default
+    }
+
+    @Test
+    void testRunAppWhenInputCutAppShouldExecuteCutApplication() throws Exception {
+        String[] args = {"-b", "2-3", FILENAME1 };
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        appRunner.runApp("cut", args, mock(InputStream.class), outputStream);
+
+        String expectedOutput = "hi" + System.lineSeparator() + "he" + System.lineSeparator() +
+                "om" + System.lineSeparator() + "om" + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+    /**
      * Tests runApp method when input app is ls, execute lsApplication.
      * For example: ls
      * Expected: List files in current directory set by the test folders
@@ -180,6 +255,20 @@ public class ApplicationRunnerIT {
         EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
     }
 
+    @Test
+    void testRunAppWhenInputSortAppShouldExecuteSortApplication() throws Exception {
+        String[] args = {"-rf", FILENAME1 };
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        appRunner.runApp("sort", args, mock(InputStream.class), outputStream);
+
+        String expectedOutput = "This is the content for file 1." + System.lineSeparator() +
+                "There are some content here." + System.lineSeparator() +
+                "Some whitespace      ?><*&^%." + System.lineSeparator() +
+                "Some numbers: 50 1 2." + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
     /**
      * Tests runApp method when input app is ls, execute lsApplication.
      * For example: Find
@@ -193,7 +282,7 @@ public class ApplicationRunnerIT {
         fileOutputStream = new FileOutputStream(OUTPUT_FILE_1);
         appRunner.runApp("find", args, null, fileOutputStream);
 
-        String expectedOutput = "." + File.separator +FILENAME1;
+        String expectedOutput = "." + File.separator + FILENAME1;
         String actualOutput = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
         assertEquals(expectedOutput, actualOutput);
     }

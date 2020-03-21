@@ -4,6 +4,7 @@ import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.impl.util.MyPair;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_LESS_THAN_ZERO;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_MISSING_ARG;
 
 public class CutArgsParser extends ArgsParser{
 
@@ -28,13 +29,21 @@ public class CutArgsParser extends ArgsParser{
         return flags.contains(FLAG_BYTE_POS);
     }
 
-    public Boolean isRange() {  return nonFlagArgs.get(INDEX_LIST).contains("-"); }
+    public Boolean isRange() throws Exception {
+        if (nonFlagArgs.isEmpty()) {
+            throw new Exception(ERR_MISSING_ARG);
+        }
+        return nonFlagArgs.get(INDEX_LIST).contains("-");
+    }
 
     /**
      *
      * @return A pair of integers with the start and end position
      */
-    public MyPair<Integer, Integer> getPositions() {
+    public MyPair<Integer, Integer> getPositions() throws Exception {
+        if (nonFlagArgs.isEmpty()) {
+            throw new Exception(ERR_MISSING_ARG);
+        }
         String list = nonFlagArgs.get(INDEX_LIST);
         int startPos = 0;
         int endPos;
