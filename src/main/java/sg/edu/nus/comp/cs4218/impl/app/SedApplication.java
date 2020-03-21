@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class SedApplication implements SedInterface {
@@ -90,8 +91,8 @@ public class SedApplication implements SedInterface {
         if (!node.canRead()) {
             throw new Exception(ERR_NO_PERM);
         }
-
         String[] fileContents = getFileContents(node);
+
         return replacementHandler(fileContents, regexp, replacement, replacementIndex);
     }
 
@@ -118,6 +119,7 @@ public class SedApplication implements SedInterface {
         for (int i = 0; i < stdinContents.size(); i++) {
             contentArray[i] = stdinContents.get(i);
         }
+
         return replacementHandler(contentArray, regexp, replacement, replacementIndex);
     }
 
@@ -131,9 +133,17 @@ public class SedApplication implements SedInterface {
             } else if (replacementIndex <= input.length){
                 builder.append(replaceString(line, regexp, replacement, replacementIndex));
                 output.append(builder.toString()).append(STRING_NEWLINE);
-            } else {
-                String returnString = Arrays.toString(input);
-                return returnString.substring(1,returnString.length()-1) + System.lineSeparator();
+            }
+            if (regexp.isEmpty() || replacementIndex > input.length) {
+                StringBuilder sb = new StringBuilder();
+                for(int i = 0; i < input.length; i++) {
+                    if (i != 0) {
+                        sb.append(STRING_NEWLINE);
+                    }
+                    sb.append(input[i]);
+                }
+                String returnString = sb.toString();
+                return returnString + STRING_NEWLINE;
             }
         }
         return output.toString();
@@ -147,7 +157,7 @@ public class SedApplication implements SedInterface {
             if (words[i].contains(regexp)) {
                 index++;
                 if(index == replacementIndex) {
-                    words[i] = replacement;
+                    words[i] = words[i].replace(regexp, replacement);
                 }
             }
             stringBuilder.append(words[i]);

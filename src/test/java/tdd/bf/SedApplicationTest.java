@@ -249,7 +249,7 @@ class SedApplicationTest {
             String[] args = {};
             sedApplication.run(args, null, stdout);
         }catch (SedException expected){
-            assertEquals("sed: "+String.format(ERR_NO_REP_RULE), expected.getMessage());
+            assertEquals("sed: "+String.format(ERR_NO_ARGS), expected.getMessage());
         }
     }
 
