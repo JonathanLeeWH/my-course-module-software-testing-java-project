@@ -1,6 +1,8 @@
 package sg.edu.nus.comp.cs4218.impl.util;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
@@ -140,7 +142,21 @@ public class ApplicationRunnerIT {
     }
 
     @Test
-    void testRunAppWhenInputWcAppShouldExecuteWcApplication() throws Exception {
+    @EnabledOnOs(OS.WINDOWS)
+    void testRunAppWhenInputWcAppOnWindowsShouldExecuteWcApplication() throws Exception {
+        String[] args = {FILENAME1 };
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+        appRunner.runApp("wc", args, mock(InputStream.class), outputStream);
+
+        String expectedOutput = String.format(" %7d %7d %7d", 3, 20, 115) + " " + FILENAME1 + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+
+    @Test
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void testRunAppWhenInputWcAppOnMacAndLinuxOShouldExecuteWcApplication() throws Exception {
         String[] args = {FILENAME1 };
 
         OutputStream outputStream = new ByteArrayOutputStream();
