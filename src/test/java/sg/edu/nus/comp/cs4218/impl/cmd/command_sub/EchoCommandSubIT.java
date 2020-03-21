@@ -27,6 +27,8 @@ public class EchoCommandSubIT {
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
+    private final Path testFile4 = Paths.get(TestFileUtils.TESTDATA_DIR + "testFileWithTestDataAbsoluteFilePath.txt");
+    private final Path testFile5 = Paths.get(TestFileUtils.TESTDATA_DIR + "testFileWithTestDataFileName.txt");
 
     @BeforeEach
     public void setUp() {
@@ -102,7 +104,8 @@ public class EchoCommandSubIT {
         List<String> args = Arrays.asList("echo", "`ls " + TestFileUtils.TESTDATA_DIR + "*`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = "test1.txt test2.txt test3.csv" + System.lineSeparator();
+        String expectedResult = String.format("%s %s %s %s %s", testFile1.getFileName(), testFile2.getFileName(),
+                testFile3.getFileName(), testFile4.getFileName(), testFile5.getFileName()) + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
@@ -138,7 +141,8 @@ public class EchoCommandSubIT {
         List<String> args = Arrays.asList("echo", "`find " + TestFileUtils.TESTDATA_DIR + " -name \"test*.txt\"`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = String.format("%s %s", testFile1.toFile().getPath(), testFile2.toFile().getPath()) + System.lineSeparator();
+        String expectedResult = String.format("%s %s %s %s", testFile1.toFile().getPath(),
+                testFile2.toFile().getPath(), testFile4.toFile().getPath(), testFile5.toFile().getPath()) + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 }

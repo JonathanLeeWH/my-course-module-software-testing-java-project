@@ -60,7 +60,13 @@ public class CutCommandSubIT {
 
     @Test
     void testCutCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("cut", "-b", "4", "`sed \"s|" + testFile2.getFileName() +
+                "|" + testFile2.toFile().getPath() + "|\" " + testFile5.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "e" + System.lineSeparator() + System.lineSeparator() +
+                "s" + System.lineSeparator() + System.lineSeparator() + "p" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -70,14 +76,7 @@ public class CutCommandSubIT {
 
     @Test
     void testCutCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("cut", "-b", "4", "`ls -d " + TestFileUtils.TESTDATA_DIR + "`" +
-                testFile1.toFile().getName());
-        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
-        callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = "2" + System.lineSeparator() +
-                "ì" + System.lineSeparator() + " " + System.lineSeparator() +
-                "t" + System.lineSeparator() + "f" + System.lineSeparator() + "c" + System.lineSeparator();
-        assertEquals(expectedResult, ourTestStdout.toString());
+        fail();
     }
 
     @Test
@@ -87,12 +86,21 @@ public class CutCommandSubIT {
 
     @Test
     void testCutCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("cut", "-b", "4", "`cut -c 1-55 " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "e" + System.lineSeparator() + System.lineSeparator() +
+                "s" + System.lineSeparator() + System.lineSeparator() + "p" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
     void testCutCommandAndLsAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("cut", "-b", "4", "`ls -d " + TestFileUtils.TESTDATA_DIR + "`*Name*");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "t" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test

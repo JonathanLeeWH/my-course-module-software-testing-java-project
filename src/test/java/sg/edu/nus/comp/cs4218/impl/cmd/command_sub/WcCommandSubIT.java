@@ -58,7 +58,13 @@ public class WcCommandSubIT {
 
     @Test
     void testWcCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("wc", "-clw", "`sed \"s|" + testFile2.getFileName() +
+                "|" + testFile2.toFile().getPath() + "|\" " + testFile5.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = String.format(" %7d %7d %7d", 5, 320, 2081) + " " +
+                testFile2.toFile().getPath() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -78,7 +84,12 @@ public class WcCommandSubIT {
 
     @Test
     void testWcCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("wc", "-clw", "`cut -c 1-123 " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = String.format(" %7d %7d %7d", 5, 320, 2081) + " " +
+                testFile2.toFile().getPath() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -94,7 +105,12 @@ public class WcCommandSubIT {
 
     @Test
     void testWcCommandAndSortAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("wc", "-w", "`sort -f " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = String.format(" %7d", 320) + " " +
+                testFile2.toFile().getPath() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test

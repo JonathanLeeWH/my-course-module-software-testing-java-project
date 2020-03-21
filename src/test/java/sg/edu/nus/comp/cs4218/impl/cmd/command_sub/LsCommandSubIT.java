@@ -29,6 +29,8 @@ public class LsCommandSubIT {
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
+    private final Path testFile4 = Paths.get(TestFileUtils.TESTDATA_DIR + "testFileWithTestDataAbsoluteFilePath.txt");
+    private final Path testFile5 = Paths.get(TestFileUtils.TESTDATA_DIR + "testFileWithTestDataFileName.txt");
 
     @BeforeEach
     public void setUp() {
@@ -50,14 +52,19 @@ public class LsCommandSubIT {
         List<String> args = Arrays.asList("ls", "`echo " + TestFileUtils.TESTDATA_DIR + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = "test1.txt" + System.lineSeparator() + "test2.txt" + System.lineSeparator() +
-                "test3.csv" + System.lineSeparator() + "testFileWithTestDataAbsoluteFilePath.txt" + System.lineSeparator();
+        String expectedResult = testFile1.getFileName() + System.lineSeparator() + testFile2.getFileName() + System.lineSeparator() +
+                testFile3.getFileName() + System.lineSeparator() + testFile4.getFileName() + System.lineSeparator() +
+                testFile5.getFileName() + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
     void testLsCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("ls", "`sed \"s|" + testFile2.toFile().getPath() + "|src/test/|\" " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "java" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -77,7 +84,11 @@ public class LsCommandSubIT {
 
     @Test
     void testLsCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("ls", "`cut -c 1-60 " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = testFile2.toFile().getName() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -91,7 +102,11 @@ public class LsCommandSubIT {
 
     @Test
     void testLsCommandAndSortAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("ls", "`sort " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = testFile2.toFile().getName() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
