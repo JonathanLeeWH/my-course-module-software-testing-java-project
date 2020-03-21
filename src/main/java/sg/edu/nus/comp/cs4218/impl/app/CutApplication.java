@@ -26,7 +26,6 @@ public class CutApplication implements CutInterface {
         if (stdout == null) {
             throw new CutException(ERR_NO_OSTREAM);
         }
-
         CutArgsParser parser = new CutArgsParser();
         StringBuilder output = new StringBuilder();
         try {
@@ -34,13 +33,14 @@ public class CutApplication implements CutInterface {
         } catch (InvalidArgsException e) {
             throw (CutException) new CutException(e.getMessage()).initCause(e);
         }
-        Boolean isCharPos = parser.isCharPos();
-        Boolean isBytePos = parser.isBytePos();
-        Boolean isRange = parser.isRange();
-        MyPair<Integer, Integer> position = parser.getPositions();
-        String[] files = parser.getFileNames();
 
         try {
+            Boolean isCharPos = parser.isCharPos();
+            Boolean isBytePos = parser.isBytePos();
+            Boolean isRange = parser.isRange();
+            MyPair<Integer, Integer> position = parser.getPositions();
+            String[] files = parser.getFileNames();
+
             if ((isCharPos) && (isBytePos)) {
                 throw new Exception(ERR_TOO_MANY_ARGS);
             }
@@ -73,7 +73,7 @@ public class CutApplication implements CutInterface {
     @Override
     public String cutFromFiles(Boolean isCharPo, Boolean isBytePo, Boolean isRange, int startIdx, int endIdx, String... fileName) throws Exception {
         if (fileName == null) {
-            throw new Exception(ERR_GENERAL);
+            throw new Exception(ERR_NULL_ARGS);
         }
         if ((startIdx <= 0) || (endIdx <= 0)) {
             throw new Exception(ERR_LESS_THAN_ZERO);
