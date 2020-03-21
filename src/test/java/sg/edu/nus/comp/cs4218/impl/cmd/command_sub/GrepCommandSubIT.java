@@ -103,6 +103,11 @@ public class GrepCommandSubIT {
 
     @Test
     void testGrepCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("grep", "CS4218", "`find " + TestFileUtils.TESTDATA_DIR +
+                " -name \"" + testFile1.toFile().getName() + "\"`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "CS4218: Software Testing" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 }

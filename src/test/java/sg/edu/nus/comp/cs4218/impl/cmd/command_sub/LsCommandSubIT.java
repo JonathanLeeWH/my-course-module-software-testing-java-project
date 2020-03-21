@@ -51,7 +51,7 @@ public class LsCommandSubIT {
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = "test1.txt" + System.lineSeparator() + "test2.txt" + System.lineSeparator() +
-                "test3.csv" + System.lineSeparator() + "test4.txt" + System.lineSeparator();
+                "test3.csv" + System.lineSeparator() + "testFileWithTestDataAbsoluteFilePath.txt" + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
@@ -96,6 +96,10 @@ public class LsCommandSubIT {
 
     @Test
     void testLsCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("ls", "`find " + TestFileUtils.TESTDATA_DIR + " -name \"*.csv\"`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = testFile3.toFile().getName() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 }

@@ -28,6 +28,9 @@ public class FindCommandSubIT {
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
+    private final Path testFile4 = Paths.get(TestFileUtils.TESTDATA_DIR + "testFileWithTestDataAbsoluteFilePath.txt");
+    private final Path testFile5 = Paths.get(TestFileUtils.TESTDATA_DIR + "testFileWithTestDataFileName.txt");
+
 
     @BeforeEach
     public void setUp() {
@@ -55,7 +58,12 @@ public class FindCommandSubIT {
 
     @Test
     void testFindCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`grep \"test\" " + TestFileUtils.TESTDATA_DIR +
+                "*Name*`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "src/test/java/sg/edu/nus/comp/cs4218/testdata//test2.txt" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -75,7 +83,11 @@ public class FindCommandSubIT {
 
     @Test
     void testFindCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`cut -c 1-100 " + testFile5.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "src/test/java/sg/edu/nus/comp/cs4218/testdata/test2.txt" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -89,7 +101,11 @@ public class FindCommandSubIT {
 
     @Test
     void testFindCommandAndSortAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`sort " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "";
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test

@@ -28,6 +28,8 @@ public class WcCommandSubIT {
     private final Path testFile1 = Paths.get(TestFileUtils.TESTDATA_DIR + "test1.txt");
     private final Path testFile2 = Paths.get(TestFileUtils.TESTDATA_DIR + "test2.txt");
     private final Path testFile3 = Paths.get(TestFileUtils.TESTDATA_DIR + "test3.csv");
+    private final Path testFile4 = Paths.get(TestFileUtils.TESTDATA_DIR + "testFileWithTestDataAbsoluteFilePath.txt");
+    private final Path testFile5 = Paths.get(TestFileUtils.TESTDATA_DIR + "testFileWithTestDataFileName.txt");
 
     @BeforeEach
     public void setUp() {
@@ -102,7 +104,9 @@ public class WcCommandSubIT {
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = String.format(" %7d %7d", 73, 553) + " " + testFile1.toFile().getPath() + System.lineSeparator() +
                 String.format(" %7d %7d", 320, 2081) + " " + testFile2.toFile().getPath() + System.lineSeparator() +
-                String.format(" %7d %7d", 393, 2634) + " total" + System.lineSeparator();
+                String.format(" %7d %7d", 1, 55) + " " + testFile4.toFile().getPath() + System.lineSeparator() +
+                String.format(" %7d %7d", 1, 9) + " " + testFile5.toFile().getPath() + System.lineSeparator() +
+                String.format(" %7d %7d", 395, 2698) + " total" + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 }

@@ -95,6 +95,16 @@ public class SortCommandSubIT {
 
     @Test
     void testSortCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("sort", "`find " + TestFileUtils.TESTDATA_DIR +
+                " -name \"" + testFile1.toFile().getName() + "\"`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "CS4218: Software Testing" + System.lineSeparator() +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing," + System.lineSeparator() +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the" + System.lineSeparator() +
+                "crucial skills on testing and debugging through hands-on assignments." + System.lineSeparator() +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire" + System.lineSeparator() +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for" + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 }
