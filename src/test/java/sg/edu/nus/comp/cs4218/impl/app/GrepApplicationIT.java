@@ -169,6 +169,6 @@ public class GrepApplicationIT {
         String[] args = {"LinE", FILE_ONE_NAME + FILE_FORMAT};
         InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
         grepApplication.run(args, inputStream, outputStream);
-        assertEquals(System.lineSeparator(), outputStream.toString());
+        assertEquals("", outputStream.toString());
     }
 }
