@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.Shell;
+import sg.edu.nus.comp.cs4218.exception.ExitException;
 import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
@@ -129,10 +130,23 @@ public class ShellSystemTest {
     }
 
     @Test
-    void testParseAndEvaluateUsingComplexVariousCommandsWithSemiColonAndPipeAndBackQuoteShouldRunSuccessfully() throws Exception {
+    void testParseAndEvaluateUsingComplexVariousCommandsWithSemiColonAndPipeAndDoubleQuoteShouldRunSuccessfully() throws Exception {
         String input = "cd " + TestFileUtils.TESTDATA_DIR + "; paste test1.txt | grep \"CS4218\" | cut -c 1-7";
         shell.parseAndEvaluate(input,outputStream);
         String expectedOutput = "CS4218:" + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+    @Test
+    void testParseAndEvaluateUsingComplexVariousCommandsWithSemiColonAndIORedirOperatorShouldRunSuccessfully() throws Exception {
+        String input = "cd " + TestFileUtils.TESTDATA_DIR + "; paste test1.txt; wc -c < test1.txt";
+        shell.parseAndEvaluate(input,outputStream);
+        String expectedOutput = "CS4218: Software Testing" + System.lineSeparator() +
+                "Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing," + System.lineSeparator() +
+                "and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the" + System.lineSeparator() +
+                "root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for" + System.lineSeparator() +
+                "performance prediction, performance clustering and performance debugging will be studied. Students will acquire" + System.lineSeparator() +
+                "crucial skills on testing and debugging through hands-on assignments." + System.lineSeparator() + String.format(" %7d", 553) + System.lineSeparator();
         assertEquals(expectedOutput, outputStream.toString());
     }
 
