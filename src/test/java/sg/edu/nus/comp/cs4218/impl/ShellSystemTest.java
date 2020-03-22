@@ -5,12 +5,15 @@ import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.ExitException;
+import sg.edu.nus.comp.cs4218.exception.LsException;
 import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_FILE_NOT_FOUND;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.NO_FILE_OR_FOLDER;
 
 import java.io.*;
 
@@ -119,9 +122,19 @@ public class ShellSystemTest {
         shell = new ShellImpl();
         outputStream = new ByteArrayOutputStream();
     }
-
+    // Error test cases
     @Test
-    void testParseAndEvaluateUsingComplexLsAndEchoCommandWithSemiColonShouldRunSuccessfully() throws Exception {
+    void testParseAndEvaluateUsingComplexLsAndRmCommandWithSemiColonShouldPrintVariousExceptionsSuccessfully() throws Exception {
+        String input = "ls src/java;rm rd.txt";
+        shell.parseAndEvaluate(input,outputStream);
+        String expectedResult = "ls: " + NO_FILE_OR_FOLDER + System.lineSeparator() +
+                "rm: " + ERR_FILE_NOT_FOUND + System.lineSeparator();
+        assertEquals(expectedResult, outputStream.toString());
+    }
+
+    // Positive test cases
+    @Test
+    void testParseAndEvaluateUsingComplexLsAndEchoCommandWithSemiColonShouldThrowRunSuccessfully() throws Exception {
         String input = "ls ROOT;echo hello";
 
         shell.parseAndEvaluate(input,outputStream);
