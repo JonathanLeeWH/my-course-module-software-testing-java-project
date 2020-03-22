@@ -4,8 +4,6 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.Shell;
-import sg.edu.nus.comp.cs4218.exception.ExitException;
-import sg.edu.nus.comp.cs4218.exception.LsException;
 import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
@@ -166,7 +164,7 @@ public class ShellSystemTest {
     @Test
     void testParseAndEvaluateUsingComplexVariousCommandsWithIORedirOperatorsAndGlobbingAndBackQuoteShouldRunSuccessfully() throws Exception {
         String input = "paste " + TestFileUtils.TESTDATA_DIR + "test1.txt `paste < " + TestFileUtils.TESTDATA_DIR +
-                "test*Ab*` > " + TestFileUtils.TESTDATA_DIR + "testOut.txt";
+                "test*Ab*`";
         shell.parseAndEvaluate(input,outputStream);
         String expectedOutput = "Operation Done." + System.lineSeparator();
         assertEquals(expectedOutput, outputStream.toString());
