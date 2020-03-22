@@ -250,7 +250,7 @@ class diffAppTest {
         assertTrue(actualOutput.contains(expected));
         assertTrue(actualOutput.contains(expectedTwo));
     }
-    
+
     // Test diffFileAndStdin
 
     /**
