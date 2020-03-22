@@ -49,12 +49,10 @@ public class LsCommandSubIT {
     // Positive test cases
     @Test
     void testLsCommandAndEchoAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("ls", "`echo " + TestFileUtils.TESTDATA_DIR + "`");
+        List<String> args = Arrays.asList("ls", "`echo " + TestFileUtils.TESTDATA_DIR + "test1.txt`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = testFile1.getFileName() + System.lineSeparator() + testFile2.getFileName() + System.lineSeparator() +
-                testFile3.getFileName() + System.lineSeparator() + testFile4.getFileName() + System.lineSeparator() +
-                testFile5.getFileName() + System.lineSeparator();
+        String expectedResult = testFile1.getFileName() + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
@@ -83,7 +81,11 @@ public class LsCommandSubIT {
 
     @Test
     void testLsCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("ls", "`grep \"src/test/\" " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = testFile2.getFileName() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test

@@ -86,7 +86,13 @@ public class CutCommandSubIT {
 
     @Test
     void testCutCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("cut", "-b", "4-13", "`grep \"cs4218\" " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = "em ipsum d" + System.lineSeparator() + System.lineSeparator() +
+                "smod quis " + System.lineSeparator() + System.lineSeparator() +
+                "pis massa " + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test

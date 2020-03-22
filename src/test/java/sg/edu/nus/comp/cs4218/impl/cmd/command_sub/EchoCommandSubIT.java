@@ -79,7 +79,7 @@ public class EchoCommandSubIT {
         List<String> args = Arrays.asList("echo", "`diff " + testFile1.toFile().getPath() + " " + testFile3.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = "" + System.lineSeparator();
+        String expectedResult = "< CS4218: Software Testing < Thìš mödülè cövèrs thè concepts and prãctīće of software testing including unït testing, integration testing, < and regression testing. Various testing coverage criteria will be discussed. Debugging methods for finding the < root-cause of errors in failing test cases will also be investigated. The use öf testing and analysis for < performance prediction, performance clustering and performance debugging will be studied. Students will acquire < crucial skills on testing and debugging through hands-on assignments. > 1.0, 5.0 > 2, 3 > 51, 15 > 21, 4 > 22, 41 > 551, 1200 > 001, 010" + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
@@ -112,7 +112,7 @@ public class EchoCommandSubIT {
 
     @Test
     void testEchoCommandAndLsAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("echo", "`ls " + TestFileUtils.TESTDATA_DIR + "*`");
+        List<String> args = Arrays.asList("echo", "`ls " + TestFileUtils.TESTDATA_DIR + "*test*`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = String.format("%s %s %s %s %s", testFile1.getFileName(), testFile2.getFileName(),

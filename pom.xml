@@ -39,7 +39,6 @@
                                 <exclude>**/**CommandSubIT.java</exclude>
                                 <exclude>**/DiffApplicationIT.java</exclude>
                                 <exclude>**/DiffApplicationTest.java</exclude>
-                                <!--<exclude>**/GrepApplicationTest.java</exclude>-->
                                 <exclude>**/ArgumentResolverTest.java</exclude>
                                 <exclude>**/tdd/**</exclude>
                             </excludes>
@@ -109,7 +108,6 @@
                         <param>sg.edu.nus.comp.cs4218.impl.app.MvApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.DiffApplicationIT**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.DiffApplicationTest**</param>
-                        <param>sg.edu.nus.comp.cs4218.impl.app.GrepApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.SedApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.cmd.GlobbingTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.util.ArgumentResolverTest**</param>

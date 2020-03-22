@@ -87,7 +87,12 @@ public class WcCommandSubIT {
 
     @Test
     void testWcCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
+        List<String> args = Arrays.asList("wc", "-l", "`grep \"test\" " + testFile4.toFile().getPath() + "`");
+        CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
+        callCommand.evaluate(ourTestStdin, ourTestStdout);
+        String expectedResult = String.format(" %7d", 5) + " " +
+                testFile2.toFile().getPath() + System.lineSeparator();
+        assertEquals(expectedResult, ourTestStdout.toString());
     }
 
     @Test
@@ -128,7 +133,7 @@ public class WcCommandSubIT {
 
     @Test
     void testWcCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("wc", "-cw", "`find " + TestFileUtils.TESTDATA_DIR + " -name \"*.txt\"`");
+        List<String> args = Arrays.asList("wc", "-cw", "`find " + TestFileUtils.TESTDATA_DIR + " -name \"*test*.txt\"`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = String.format(" %7d %7d", 73, 553) + " " + testFile1.toFile().getPath() + System.lineSeparator() +
