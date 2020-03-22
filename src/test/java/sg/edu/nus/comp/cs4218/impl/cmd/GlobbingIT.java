@@ -1,10 +1,15 @@
 package sg.edu.nus.comp.cs4218.impl.cmd;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
+import sg.edu.nus.comp.cs4218.exception.CutException;
+import sg.edu.nus.comp.cs4218.exception.LsException;
+import sg.edu.nus.comp.cs4218.exception.RmException;
+import sg.edu.nus.comp.cs4218.exception.SortException;
+import sg.edu.nus.comp.cs4218.impl.util.ErrorConstants;
+import sg.edu.nus.comp.cs4218.impl.FileIOHelper;
 import sg.edu.nus.comp.cs4218.impl.StringsArgListHelper;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
@@ -13,9 +18,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GlobbingIT {
 
@@ -50,20 +56,98 @@ public class GlobbingIT {
     private static final String REGEX_EXPR_1 = "s/^/> /";
     private static final String REGEX_EXPR_2 = "s/^/1/";
 
-    private OutputStream outputStream;
-    private InputStream inputStream;
-    private CallCommand callCommand;
+    private static final String MOCK_ROOT_DIR = "ROOT";
+    private static final String MOCK_FILE_NAME = "File1.txt";
+    private static final String MOCK_FOLDER = "Folder1";
+    private static final String MOCK_ROOT_FILE1 = MOCK_ROOT_DIR + File.separator + MOCK_FILE_NAME;
+    private static final String MOCK_ROOT_FOLDER1 = MOCK_ROOT_DIR + File.separator + MOCK_FOLDER;
+    private static final String LS_OUTPUT = MOCK_FILE_NAME + System.lineSeparator() + "" + MOCK_FOLDER;
 
-    @BeforeEach
-    void setUp() {
-        EnvironmentHelper.currentDirectory = System.getProperty("user.dir"); // reset current directory
-        outputStream = new ByteArrayOutputStream();
+    private static final String ECHO_COMMAND = "echo";
+
+    private static final String OUTPUT_FILE_1 = "outputFile1.txt";
+    private static final String OUTPUT_FILE_2 = "outputFile2.txt";
+
+    private static final String FILE_1_CONTENT = "This is the content for file 1."
+            + System.lineSeparator() + "There are some content here."
+            + System.lineSeparator() + "Some numbers: 50 1 2."
+            + System.lineSeparator() + "Some whitespace    ><*&^%.?";
+    private static final String F1_CONTENT_SED = "helloThis is the content for file 1."
+            + System.lineSeparator() + "helloThere are some content here."
+            + System.lineSeparator() + "helloSome numbers: 50 1 2."
+            + System.lineSeparator() + "helloSome whitespace    ><*&^%.?";
+    private static final String F1_CONTENT_SORT = "Some numbers: 50 1 2." + System.lineSeparator() +
+            "Some whitespace    ><*&^%.?" + System.lineSeparator() +
+            "There are some content here." + System.lineSeparator() +
+            "This is the content for file 1.";
+    private static final String F1_CONTENT_CUT = "i"
+            + System.lineSeparator() + "e" +
+            System.lineSeparator() + "m" +
+            System.lineSeparator() + "m" + System.lineSeparator();
+
+    private static final String INPUT_REDIR_CHAR = "<";
+    private static final String OUTPUT_REDIR_CHAR = ">";
+    private static final String FILE_NOT_EXIST = "testFileNotExist.txt";
+    private static final String FILENAME1 = "TestFile1.txt";
+    private static final String FILENAME2 = "TestFile2.txt";
+    private static final String FILENAME3 = "TestFile3.txt";
+    private static final String FOLDER1 = "TestFolder1";
+    private static final String SPACE = " ";
+
+    private static final String EMPTY_STRING = "";
+
+    private static ApplicationRunner appRunner;
+    private static InputStream inputStream;
+    private static ByteArrayOutputStream outputStream;
+    private static CallCommand callCommand;
+    private static ArgumentResolver argumentResolver = new ArgumentResolver();
+    private static String currDir;
+
+    @BeforeAll
+    static void setUp() throws IOException {
+
+        appRunner = new ApplicationRunner();
+        inputStream = Mockito.mock(InputStream.class);
+
+        currDir = EnvironmentHelper.currentDirectory;
+        File rootDirectory = new File(MOCK_ROOT_DIR);
+        rootDirectory.mkdir();
+        File mockFile = new File(MOCK_ROOT_FILE1);
+        mockFile.createNewFile();
+        File mockDirectory = new File(MOCK_ROOT_FOLDER1);
+        mockDirectory.mkdir();
+
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+        File file = new File(FOLDER1);
+        file.mkdir();
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException {
+        inputStream.close();
+        outputStream.close();
+        FileIOHelper.deleteTestFiles(FILENAME1, FILENAME2, FILENAME3, MOCK_ROOT_FILE1,
+                MOCK_ROOT_FOLDER1, MOCK_ROOT_DIR, FOLDER1);
     }
 
     @AfterEach
-    void tearDown() {
-        EnvironmentHelper.currentDirectory = System.getProperty("user.dir"); // reset current directory
+    void tearDownAfterEach() throws IOException {
+        inputStream.close();
+        outputStream.close();
+        FileIOHelper.deleteTestFiles(MOCK_ROOT_DIR + File.separator + OUTPUT_FILE_1, OUTPUT_FILE_1,
+                OUTPUT_FILE_2,FILENAME2, FILENAME3);
+        EnvironmentHelper.currentDirectory = currDir;
     }
+
+    @BeforeEach
+    void setUpBeforeEach() {
+        outputStream = new ByteArrayOutputStream();
+    }
+
 
     /**
      * Tests evaluate method ls and glob interaction
@@ -82,6 +166,308 @@ public class GlobbingIT {
         assertEquals(FILE_NAME_2 + System.lineSeparator() + FILE_NAME_3 + System.lineSeparator() + FILE_NAME_1 + System.lineSeparator(), outputStream.toString());
     }
 
+    /**
+     * Tests evaluate method ls and glob interaction
+     * For example: ls Test*
+     * Expected: Outputs correctly in lexographical order
+     */
+    @Test
+    void testEvaluateLsCommandWithGlobInteractionCurrFolderShouldOutputCorrectly() throws Exception {
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(LS_APP , "Test*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(System.in, outputStream);
+        assertEquals(FILENAME1  + System.lineSeparator() + System.lineSeparator() + FOLDER1+ ":" + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method ls and glob interaction
+     * For example: ls TestFolder2*
+     * Expected: Throws No such file or folder Error
+     */
+    @Test
+    void testEvaluateLsCommandWithGlobInteractionNoFilesGLobShouldOutputCorrectly() throws Exception {
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(LS_APP , "TestFolder2*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+
+        assertThrows(LsException.class, () -> callCommand.evaluate(System.in, outputStream));
+    }
+
+    /**
+     * Tests evaluate method find and glob interaction
+     * For example: find A -name A*
+     * Expected: Finds all file with A in the "A" folder
+     */
+    @Test
+    void testEvaluateFindCommandWithGlobInteractionFilesExistGlobShouldOutputCorrectly() throws Exception {
+        Path DIRECTORY = Paths.get(currDir,"src","test","java", "tdd",
+                "util", "dummyTestFolder", "FindTestFolder", "sampleFiles" , "globbingTest");
+
+        EnvironmentHelper.currentDirectory = DIRECTORY.toString();
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(FIND_APP ,"A", "-name","\"A*\"");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   "A" + File.separator + "A1.txt"  + System.lineSeparator()
+                + "A" + File.separator + "A2.txt" + System.lineSeparator()
+                + "A" + File.separator + "A3.json" + System.lineSeparator(), outputStream.toString());
+        EnvironmentHelper.currentDirectory = currDir;
+    }
+
+    /**
+     * Tests evaluate method find and glob interaction
+     * For example: find A -name B*
+     * Expected: Returns Empty string as B not found in "A" folder
+     */
+    @Test
+    void testEvaluateFindCommandWithGlobInteractionNoFilesGlobShouldOutputCorrectly() throws Exception {
+        Path DIRECTORY = Paths.get(currDir,"src","test","java", "tdd",
+                "util", "dummyTestFolder", "FindTestFolder", "sampleFiles" , "globbingTest");
+
+        EnvironmentHelper.currentDirectory = DIRECTORY.toString();
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(FIND_APP ,"A", "-name","\"B*\"");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   "" , outputStream.toString());
+        EnvironmentHelper.currentDirectory = currDir;
+    }
+
+    /**
+     * Tests evaluate method sort and glob interaction
+     * For example: sort TestFile*
+     * Expected: sort both contents of TextFile1 and TextFile2
+     */
+    @Test
+    void testEvaluateSortCommandWithGlobInteractionShouldOutputCorrectly() throws Exception {
+
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME2));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(SORT_APP ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   "Some numbers: 50 1 2." + System.lineSeparator()
+                + "Some numbers: 50 1 2." + System.lineSeparator()
+                + "Some whitespace    ><*&^%.?" + System.lineSeparator()
+                + "Some whitespace    ><*&^%.?" + System.lineSeparator()
+                + "There are some content here." + System.lineSeparator()
+                + "There are some content here." + System.lineSeparator()
+                + "This is the content for file 1." + System.lineSeparator()
+                + "This is the content for file 1." + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method sort and glob interaction
+     * For example: sort TestFile*
+     * Expected: sort content of textFile as only 1 file
+     */
+    @Test
+    void testEvaluateSortCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(SORT_APP ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   F1_CONTENT_SORT + System.lineSeparator() , outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method sort and glob interaction
+     * For example: sort TextFile*
+     * Expected: Error would be thrown as no such file exist in folder
+     */
+    @Test
+    void testEvaluateSortCommandWithGlobInteractionNoFileShouldThrowNoFile() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(SORT_APP ,"TextFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        assertThrows(SortException.class, () -> callCommand.evaluate(System.in, outputStream));
+    }
+
+    /**
+     * Tests evaluate method cut and glob interaction
+     * For example: cut -c 3 TestFile*
+     * Expected: Cut third char TestFile as only 1 file inside current folder
+     */
+    @Test
+    void testEvaluateCutCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(CUT_APP ,"-c","3", "TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   F1_CONTENT_CUT  , outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method cut and glob interaction
+     * For example: cut -c 3 TestFile*
+     * Expected: Cut third char for both TestFiles  inside current folder
+     */
+    @Test
+    void testEvaluateCutCommandWithGlobInteractionMultipleFileShouldOutputCorrectly() throws Exception {
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME2));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(CUT_APP ,"-c","3", "TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   F1_CONTENT_CUT +  F1_CONTENT_CUT , outputStream.toString());
+    }
+
+
+    /**
+     * Tests evaluate method cut and glob interaction
+     * For example: cut -c 3 TextFile*
+     * Expected: Throw Error cause no such file
+     */
+    @Test
+    void testEvaluateCutCommandWithGlobInteractionNoFileShouldThrowNoFileFound() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(CUT_APP ,"-c","3", "TextFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        assertThrows( CutException.class , () -> callCommand.evaluate(System.in, outputStream));
+    }
+
+    /**
+     * Tests evaluate method rm and glob interaction
+     * For example: rm TestFile*
+     * Expected: Rm TestFile1.txt
+     */
+    @Test
+    void testEvaluateRmCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
+
+        File file = new File(FILENAME1);
+        assertTrue(file.exists());
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("rm" ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertFalse(file.exists());
+
+        //put back TestFile1.txt
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+    }
+
+    /**
+     * Tests evaluate method rm and glob interaction
+     * For example: rm TestFile*
+     * Expected: Rm TestFile1.txt TestFile2.txt TestFile3.txt
+     */
+    @Test
+    void testEvaluateRmCommandWithGlobInteraction3FilesShouldOutputCorrectly() throws Exception {
+
+        File file2 = new File(FILENAME2);
+        file2.createNewFile();
+        File file3 = new File(FILENAME3);
+        file3.createNewFile();
+
+        File file = new File(FILENAME1);
+        assertTrue(file.exists());
+        assertTrue(file2.exists());
+        assertTrue(file3.exists());
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("rm" ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertFalse(file.exists());
+        assertFalse(file2.exists());
+        assertFalse(file3.exists());
+
+        //put back TestFile1.txt
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+    }
+
+    /**
+     * Tests evaluate method rm and glob interaction
+     * For example: rm TestFile3*
+     * Expected: Rm TestFile1.txt TestFile2.txt TestFile3.txt
+     */
+    @Test
+    void testEvaluateRmCommandWithGlobInteractionNoFileShouldThrowErrorFileNotFound() throws Exception {
+
+        File file = new File("TestFile3");
+        assertFalse(file.exists());
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("rm" ,"TestFile3*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        assertThrows(RmException.class, ()-> callCommand.evaluate(inputStream,outputStream));
+    }
+
+    /**
+     * Tests evaluate method echo and glob interaction
+     * For example: echo TestFile*
+     * Expected: Only output file name of TestFile1.txt
+     */
+    @Test
+    void testEvaluateEchoCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(ECHO_APP ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   FILENAME1 + System.lineSeparator() , outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method echo and glob interaction
+     * For example: echo TestFile*
+     * Expected: Outputs filenames of TestFile1.txt TestFile2.txt and TestFile3.txt
+     */
+    @Test
+    void testEvaluateEchoCommandWithGlobInteractionMultipleFileShouldOutputCorrectly() throws Exception {
+
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME2));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+        BufferedWriter writer2 = new BufferedWriter(new PrintWriter(FILENAME3));
+        writer2.write(FILE_1_CONTENT);
+        writer2.flush();
+        writer2.close();
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(ECHO_APP ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   FILENAME1 + " "
+                + FILENAME2 + " "
+                + FILENAME3 + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method echo and glob interaction
+     * For example: echo TextFile*
+     * Expected: Only Echo TextFile* as no file found
+     */
+    @Test
+    void testEvaluateEchoCommandWithGlobInteractionNoFileShouldOutputCorrectly() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(ECHO_APP ,"TextFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   "TextFile*" + System.lineSeparator() , outputStream.toString());
+    }
+
+//    /**
+//     * Tests evaluate method grep and glob interaction
+//     * For example: grep "some content" TestFile*
+//     * Expected: Output 1 line in TestFile1.txt
+//     */
+//    @Test
+//    void testEvaluateGrepCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
+//
+//        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TestFile*");
+//        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+//        callCommand.evaluate(inputStream,outputStream);
+//        assertEquals(   "There are some content here." + System.lineSeparator() , outputStream.toString());
+//    }
 
 
 
