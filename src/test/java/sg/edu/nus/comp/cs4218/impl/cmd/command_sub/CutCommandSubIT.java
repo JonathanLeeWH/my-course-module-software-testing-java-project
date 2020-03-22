@@ -80,11 +80,6 @@ public class CutCommandSubIT {
     }
 
     @Test
-    void testCutCommandAndDiffAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testCutCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("cut", "-b", "4-13", "`grep \"cs4218\" " + testFile4.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);

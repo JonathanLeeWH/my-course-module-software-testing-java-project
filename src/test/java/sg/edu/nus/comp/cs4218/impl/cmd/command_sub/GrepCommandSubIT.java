@@ -77,11 +77,6 @@ public class GrepCommandSubIT {
     }
 
     @Test
-    void testGrepCommandAndDiffAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testGrepCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("grep", "\"`grep 'CS4218' " + testFile1.toFile().getPath() + "`\"", testFile1.toFile().getPath());
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);

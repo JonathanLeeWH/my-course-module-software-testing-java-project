@@ -86,11 +86,6 @@ public class SortCommandSubIT {
     }
 
     @Test
-    void testSortCommandAndDiffAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testSortCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("sort", "-f", "`grep \"test\" " + testFile4.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);

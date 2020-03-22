@@ -85,11 +85,6 @@ public class SedCommandSubIT {
     }
 
     @Test
-    void testSedCommandAndDiffAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testSedCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("sed", "s/^/> /", "`grep \"src\" " + testFile4.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);

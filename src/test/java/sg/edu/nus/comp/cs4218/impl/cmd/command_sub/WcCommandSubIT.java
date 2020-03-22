@@ -81,11 +81,6 @@ public class WcCommandSubIT {
     }
 
     @Test
-    void testWcCommandAndDiffAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testWcCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("wc", "-l", "`grep \"test\" " + testFile4.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);

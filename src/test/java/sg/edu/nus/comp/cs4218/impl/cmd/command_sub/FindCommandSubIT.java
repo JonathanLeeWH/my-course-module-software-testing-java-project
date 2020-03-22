@@ -76,11 +76,6 @@ public class FindCommandSubIT {
     }
 
     @Test
-    void testFindCommandAndDiffAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testFindCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`grep \"test2.txt\" " + testFile5.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
