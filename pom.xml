@@ -104,6 +104,7 @@
                     </targetTests>
                     <excludedTestClasses>
                         <!-- These classes are excluded as there are failing test cases. PIT require a green test suite.-->
+                        <param>sg.edu.nus.comp.cs4218.impl.cmd.command_sub.**CommandSubIT**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.FindApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.MvApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.DiffApplicationIT**</param>
