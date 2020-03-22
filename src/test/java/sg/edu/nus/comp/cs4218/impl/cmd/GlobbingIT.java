@@ -424,10 +424,10 @@ public class GlobbingIT {
         File folder = new File("AnotherFolder");
         folder.delete();
 
-        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
-        writer1.write(FILE_1_CONTENT);
-        writer1.flush();
-        writer1.close();
+        BufferedWriter writer2 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer2.write(FILE_1_CONTENT);
+        writer2.flush();
+        writer2.close();
     }
 
     /**
@@ -465,10 +465,10 @@ public class GlobbingIT {
         File folder = new File("AnotherFolder");
         folder.delete();
 
-        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
-        writer1.write(FILE_1_CONTENT);
-        writer1.flush();
-        writer1.close();
+        BufferedWriter writer2 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer2.write(FILE_1_CONTENT);
+        writer2.flush();
+        writer2.close();
     }
 
     /**
