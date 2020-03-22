@@ -1,5 +1,7 @@
 package sg.edu.nus.comp.cs4218.impl.app.args;
 
+import sg.edu.nus.comp.cs4218.exception.GrepException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -58,6 +60,9 @@ public class GrepArguments {
             }
             // `parsingFlag` is to ensure all flags come first, followed by files.
             if (parsingFlag && arg.charAt(0) == CHAR_FLAG_PREFIX) {
+                if (arg.length() > 2) {
+                    throw new GrepException(ERR_INVALID_FLAG);
+                }
                 if (arg.equals(CHAR_FLAG_PREFIX + "" + CHAR_CASE_IGNORE)) {
                     this.caseInsensitive = true;
                 } else if (arg.equals(CHAR_FLAG_PREFIX + "" + CHAR_COUNT_LINES)) {

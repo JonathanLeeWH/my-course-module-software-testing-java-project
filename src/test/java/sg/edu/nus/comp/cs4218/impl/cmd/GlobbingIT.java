@@ -4,8 +4,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
-import sg.edu.nus.comp.cs4218.exception.*;
-import sg.edu.nus.comp.cs4218.impl.util.ErrorConstants;
 import sg.edu.nus.comp.cs4218.impl.FileIOHelper;
 import sg.edu.nus.comp.cs4218.impl.StringsArgListHelper;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
@@ -25,17 +23,7 @@ public class GlobbingIT {
     private static final String FILE_NAME_1 = "CS4218A.txt";
     private static final String FILE_NAME_2 = "A4218A.txt";
     private static final String FILE_NAME_3 = "CS3203A.txt";
-    private static final String FILE_NAME_4 = "1.txt";
-    private static final String FILE_NAME_5 = "2.txt";
-    private static final String FOLDER_NAME_1 = "folder1";
-    private static final String FILE_CONTENT_1 = "Hello world";
-    private static final String FILE_CONTENT_2 = "How are you";
-    private static final String FILE_CONTENT_3 = "1";
-    private static final String FILE_CONTENT_4 = "2";
-    private static final String FILE_CONTENT_5 = "3";
-    private static final String FILE_CONTENT_6 = "A";
-    private static final String FILE_CONTENT_7 = "B";
-    private static final String FILE_CONTENT_8 = "AA";
+
     private static final String WC_APP = "wc";
     private static final String ECHO_APP = "echo";
     private static final String GREP_APP = "grep";
@@ -44,14 +32,6 @@ public class GlobbingIT {
     private static final String FIND_APP = "find";
     private static final String LS_APP = "ls";
     private static final String PASTE_APP = "paste";
-    private static final String SED_APP = "sed";
-    private static final String INVALID_APP = "lsa";
-    private static final String B_FLAG = "-b";
-    private static final String C_FLAG = "-c";
-    private static final String NAME_FLAG = "-name";
-    private static final String RELATIVE_CURR = ".";
-    private static final String REGEX_EXPR_1 = "s/^/> /";
-    private static final String REGEX_EXPR_2 = "s/^/1/";
 
     private static final String MOCK_ROOT_DIR = "ROOT";
     private static final String MOCK_FILE_NAME = "File1.txt";
@@ -59,8 +39,6 @@ public class GlobbingIT {
     private static final String MOCK_ROOT_FILE1 = MOCK_ROOT_DIR + File.separator + MOCK_FILE_NAME;
     private static final String MOCK_ROOT_FOLDER1 = MOCK_ROOT_DIR + File.separator + MOCK_FOLDER;
     private static final String LS_OUTPUT = MOCK_FILE_NAME + System.lineSeparator() + "" + MOCK_FOLDER;
-
-    private static final String ECHO_COMMAND = "echo";
 
     private static final String OUTPUT_FILE_1 = "outputFile1.txt";
     private static final String OUTPUT_FILE_2 = "outputFile2.txt";
@@ -751,20 +729,57 @@ public class GlobbingIT {
     }
 
 
-//    /**
-//     * Tests evaluate method grep and glob interaction
-//     * For example: grep "some content" TestFile*
-//     * Expected: Output 1 line in TestFile1.txt
-//     */
-//    @Test
-//    void testEvaluateGrepCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
-//
-//        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TestFile*");
-//        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-//        callCommand.evaluate(inputStream,outputStream);
-//        assertEquals(   "There are some content here." + System.lineSeparator() , outputStream.toString());
-//    }
+    /**
+     * Tests evaluate method grep and glob interaction
+     * For example: grep "some content" TestFile*
+     * Expected: Output 1 line in TestFile1.txt
+     */
+    @Test
+    void testEvaluateGrepCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
 
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   "There are some content here." + System.lineSeparator() , outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method grep and glob interaction
+     * For example: grep "some content" TestFile*
+     * Expected: Output 3 line in TestFile1.txt TestFile2.txt TestFile3.txt
+     */
+    @Test
+    void testEvaluateGrepCommandWithGlobInteractionMultipleFileShouldOutputCorrectly() throws Exception {
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME2));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+        BufferedWriter writer2 = new BufferedWriter(new PrintWriter(FILENAME3));
+        writer2.write(FILE_1_CONTENT);
+        writer2.flush();
+        writer2.close();
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   FILENAME1 + ":" + " There are some content here." + System.lineSeparator() +
+                FILENAME2 + ":" + " There are some content here." + System.lineSeparator() +
+                FILENAME3 + ":" + " There are some content here." + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method grep and glob interaction
+     * For example: grep "some content" TextFile*
+     * Expected: REturn empty as no file found
+     */
+    @Test
+    void testEvaluateGrepCommandWithGlobInteractionNoFileShouldThrowFileNotFound() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TextFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        assertEquals(   "", outputStream.toString());
+    }
 
 
 }

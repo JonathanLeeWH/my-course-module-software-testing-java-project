@@ -10,6 +10,7 @@ import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +23,8 @@ public class GrepApplicationTest {
     private OutputStream outputStream;
 
     private String results;
-
+    private static final Path DIRECTORY = Paths.get("src", "test", "java", "tdd", "util", "dummyTestFolder", "GrepTestFolder");
+    private static final String ABSOLUTE_PATH = DIRECTORY.toFile().getAbsolutePath();
     private static Path fileOnePath;
     private static final String FILE_ONE_CONTENT = "FirstLine"
             + StringUtils.STRING_NEWLINE
@@ -65,28 +67,16 @@ public class GrepApplicationTest {
     private static final String NO_INPUTSTREAM_NO_FILENAMES = "grep: No InputStream and no filenames";
     private static final String REGEX_CANNOT_BE_EMPTY = "grep: Regular expression cannot be empty";
     private Path fileTwoPath;
-    private static final String FILE_TWO_PATH_STRING = "util" + StringUtils.CHAR_FILE_SEP + "dummyTestFolder"
-            + StringUtils.CHAR_FILE_SEP
-            + "GrepTestFolder"
-            + StringUtils.CHAR_FILE_SEP
+    private static final String FILE_TWO_PATH_STRING = StringUtils.CHAR_FILE_SEP
             + "file_noread_permission.txt";
 
-    private static final String FILE_ABCABC = "util" + StringUtils.CHAR_FILE_SEP + "dummyTestFolder"
-            + StringUtils.CHAR_FILE_SEP
-            + "GrepTestFolder"
-            + StringUtils.CHAR_FILE_SEP
+    private static final String FILE_ABCABC = StringUtils.CHAR_FILE_SEP
             + "file_abcabc.txt";
 
-    private static final String FILE_JINYING_MULTIPLELINES = "util" + StringUtils.CHAR_FILE_SEP + "dummyTestFolder"
-            + StringUtils.CHAR_FILE_SEP
-            + "GrepTestFolder"
-            + StringUtils.CHAR_FILE_SEP
+    private static final String FILE_JINYING_MULTIPLELINES = StringUtils.CHAR_FILE_SEP
             + "file_jinying_multiplelines.txt";
 
-    private static final String FILE_UPPERCASE_MULTIPLELINES =  "util" + StringUtils.CHAR_FILE_SEP + "dummyTestFolder"
-            + StringUtils.CHAR_FILE_SEP
-            + "GrepTestFolder"
-            + StringUtils.CHAR_FILE_SEP
+    private static final String FILE_UPPERCASE_MULTIPLELINES =  StringUtils.CHAR_FILE_SEP
             + "file_uppercase_multiplelines.txt";
 
     @BeforeEach
@@ -123,7 +113,7 @@ public class GrepApplicationTest {
 
     @Test
     public void testGrepFromFiles_emptyStringPattern_shouldGrep() throws Exception {
-        String[] fileName = {FILE_ABCABC};
+        String[] fileName = {ABSOLUTE_PATH + FILE_ABCABC};
         String pattern = "";
         Boolean isCaseInsensitive = false;
         Boolean isCountLines = false;
@@ -133,7 +123,7 @@ public class GrepApplicationTest {
 
     @Test
     public void testGrepFromFiles_invalidPattern_shouldThrowException() {
-        String[] fileName = {FILE_ABCABC};
+        String[] fileName = {ABSOLUTE_PATH + FILE_ABCABC};
         Exception exception = assertThrows(Exception.class, () -> {
             app.grepFromFiles("[", false, false,  fileName);
         });
@@ -142,7 +132,7 @@ public class GrepApplicationTest {
 
     @Test
     public void testGrepFromFiles_validPattern_noMatches_shouldGrepNothing() throws Exception {
-        String[] fileName = {FILE_ABCABC};
+        String[] fileName = {ABSOLUTE_PATH + FILE_ABCABC};
         String pattern = "efg";
         Boolean isCaseInsensitive = false;
         Boolean isCountLines = false;
@@ -152,7 +142,7 @@ public class GrepApplicationTest {
 
     @Test
     public void testGrepFromFiles_validPattern_multipleMatches_shouldGrepMultiple() throws Exception {
-        String[] fileName = {FILE_JINYING_MULTIPLELINES};
+        String[] fileName = {ABSOLUTE_PATH + FILE_JINYING_MULTIPLELINES};
         String pattern = "j";
         Boolean isCaseInsensitive = false;
         Boolean isCountLines = false;
@@ -162,7 +152,7 @@ public class GrepApplicationTest {
 
     @Test
     public void testGrepFromFiles_isCaseInsensitive_true_shouldGrep() throws Exception {
-        String[] fileName = {FILE_UPPERCASE_MULTIPLELINES};
+        String[] fileName = {ABSOLUTE_PATH + FILE_UPPERCASE_MULTIPLELINES};
         String pattern = "j";
         Boolean isCaseInsensitive = true;
         Boolean isCountLines = false;
@@ -172,7 +162,7 @@ public class GrepApplicationTest {
 
     @Test
     public void testGrepFromFiles_isCaseInsensitive_false_shouldGrep() throws Exception {
-        String[] fileName = {FILE_UPPERCASE_MULTIPLELINES};
+        String[] fileName = {ABSOLUTE_PATH + FILE_UPPERCASE_MULTIPLELINES};
         String pattern = "j";
         Boolean isCaseInsensitive = false;
         Boolean isCountLines = false;
@@ -195,7 +185,7 @@ public class GrepApplicationTest {
 
     @Test
     public void testGrepFromFiles_isCountLines_true_shouldShowMatchingLineCount() throws Exception {
-        String[] fileName = {FILE_JINYING_MULTIPLELINES};
+        String[] fileName = {ABSOLUTE_PATH + FILE_JINYING_MULTIPLELINES};
         String pattern = "j";
         Boolean isCaseInsensitive = false;
         Boolean isCountLines = true;
@@ -229,11 +219,10 @@ public class GrepApplicationTest {
         assertEquals(NULL_POINTER_EXCEPTION, exception.getMessage());
     }
 
-    @Test
     public void testGrepFromFiles_multipleFileNames_shouldGrep() throws Exception {
         String[] fileName = {
-                FILE_UPPERCASE_MULTIPLELINES,
-                FILE_JINYING_MULTIPLELINES};
+                ABSOLUTE_PATH + FILE_UPPERCASE_MULTIPLELINES,
+                ABSOLUTE_PATH + FILE_JINYING_MULTIPLELINES};
         String pattern = "j";
         Boolean isCaseInsensitive = true;
         Boolean isCountLines = true;
