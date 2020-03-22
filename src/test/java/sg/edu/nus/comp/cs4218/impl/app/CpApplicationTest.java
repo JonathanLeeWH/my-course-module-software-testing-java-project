@@ -284,7 +284,7 @@ class CpApplicationTest {
     /**
      * Tests cpFilesToFolder method when the input destination file to be overwritten has read only permission.
      * For example: cp 1.txt dest
-     * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file.
+     * Where 1.txt is an existing file to be copied and dest is an existing folder containing another 1.txt file which has read only permissions.
      * Expected: Throws CpException with ERR_NO_PERM
      */
     @Test
