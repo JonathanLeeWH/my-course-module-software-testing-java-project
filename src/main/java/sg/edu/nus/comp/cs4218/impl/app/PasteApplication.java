@@ -5,11 +5,13 @@ import sg.edu.nus.comp.cs4218.exception.PasteException;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.*;
 
 public class PasteApplication implements PasteInterface {
     /**
@@ -23,8 +25,11 @@ public class PasteApplication implements PasteInterface {
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws PasteException {
         int hasFile = 0, hasStdin = 0, sum = 0; // Let hasStdin be 0 when there is no stdin, and 1 when there is stdin. Let hasFile be 0 when there is no file name, and 2 when there is at least one file name.
-        if (stdout == null) { // if stdout is empty
+        if (stdout == null || stdin == null) { // if stdout is empty
             throw new PasteException(ERR_NULL_STREAMS);
+        }
+        if (args == null) {
+            throw new PasteException(ERR_NULL_ARGS);
         }
         if (args.length == 0) { // When there are no filenames provided (i.e. stdin provided)
             if (stdin == null) { // if stdin is empty
@@ -62,7 +67,7 @@ public class PasteApplication implements PasteInterface {
                     stdout.write(mergeFileAndStdin(stdin, allFileNames).getBytes());
                 }
             } catch (Exception e) {
-                throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
+                throw (PasteException) new PasteException(ERR_WRITE_STREAM).initCause(e);
             }
         }
     }
@@ -78,8 +83,8 @@ public class PasteApplication implements PasteInterface {
             throw new PasteException(ERR_NULL_STREAMS);
         }
         List<String> stdinContent = IOUtils.getLinesFromInputStream(stdin);
-        String delimiter = System.lineSeparator();
-        return String.join(delimiter, stdinContent).concat(System.lineSeparator());
+        String delimiter = STRING_NEWLINE;
+        return String.join(delimiter, stdinContent).concat(STRING_NEWLINE);
     }
 
     /**
@@ -90,6 +95,16 @@ public class PasteApplication implements PasteInterface {
      * @throws PasteException FILE_NOT_FOUND
      */
     public String mergeFile(String... fileName) throws PasteException {
+        if (fileName == null) {
+            throw new PasteException(ERR_NULL_ARGS);
+        }
+        for (String s : fileName) {
+            Path path = IOUtils.resolveFilePath(s);
+            File file = new File(path.toString());
+            if (file.isDirectory()) {
+                throw new PasteException(ERR_IS_DIR);
+            }
+        }
         try {
             BufferedReader[] bufferedReaders = new BufferedReader[fileName.length];
             FileReader fileReader = null; //NOPMD
@@ -117,6 +132,15 @@ public class PasteApplication implements PasteInterface {
      * @throws PasteException ERR_NULL_STREAMS
      */
     public String mergeFileAndStdin(InputStream stdin, String... fileName) throws Exception {
+        if (stdin == null) {
+            throw new PasteException(ERR_NULL_STREAMS);
+        }
+        if (fileName == null) {
+            throw new PasteException(ERR_NULL_ARGS);
+        }
+        if (fileName.length == 1 && fileName[0].equals("-")) {
+            return mergeStdin(stdin);
+        }
         try {
             BufferedReader[] bufferedReaders = new BufferedReader[fileName.length + 1];
             bufferedReaders[0] = new BufferedReader(new InputStreamReader(stdin));
@@ -145,7 +169,6 @@ public class PasteApplication implements PasteInterface {
      * @return the merged string
      */
     private String paste(BufferedReader... bufferedReaders) throws IOException {
-        String tab = "\t", newLine = System.lineSeparator();
         StringBuilder stringBuilder = new StringBuilder();
         boolean hasMoreLines = true;
         while (hasMoreLines) {
@@ -155,14 +178,14 @@ public class PasteApplication implements PasteInterface {
                     if (currentLine != null && allLinesNull) {
                         allLinesNull = false;
                         if (stringBuilder.length() > 0) {
-                            stringBuilder.append(newLine);
+                            stringBuilder.append(STRING_NEWLINE);
                             stringBuilder.append(currentLine);
                         } else if (i == 0) {
                             stringBuilder.append(currentLine);
                         }
                     }
                     else if (currentLine != null) {
-                        stringBuilder.append(tab).append(currentLine);
+                        stringBuilder.append(CHAR_TAB).append(currentLine);
                     }
                 }
             if (allLinesNull) {
@@ -172,6 +195,6 @@ public class PasteApplication implements PasteInterface {
         for (BufferedReader br : bufferedReaders) { //NOPMD
             br.close();
         }
-        return stringBuilder.toString().concat(newLine);
+        return stringBuilder.toString().concat(STRING_NEWLINE);
     }
 }

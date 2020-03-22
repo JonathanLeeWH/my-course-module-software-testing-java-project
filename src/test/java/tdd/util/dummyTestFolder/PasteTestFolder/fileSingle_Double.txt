@@ -1,2 +1,2 @@
 Single	Double
-	double
+double
