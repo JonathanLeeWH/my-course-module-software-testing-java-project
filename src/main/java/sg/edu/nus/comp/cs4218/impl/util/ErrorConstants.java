@@ -38,6 +38,9 @@ public class ErrorConstants {
     // `cp` related
     public static final String ERR_SRC_DEST_SAME = "The source file and the destination file are the same file.";
 
+    // `diff` related
+    public static final String ERR_MORE_THAN_TWO_FILES = "Only 2 files allowed for Diff";
+
     // `date` related
     public static final String ERR_INVALID_FORMAT_PREFIX = "Invalid format. Date format must start with '+'";
     public static final String ERR_INVALID_FORMAT_FIELD = "Invalid format. Missing or unknown character after '%'";
