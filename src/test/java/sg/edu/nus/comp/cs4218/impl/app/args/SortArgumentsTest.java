@@ -49,6 +49,15 @@ public class SortArgumentsTest {
                 Arrays.asList(testFile2.toFile().getPath(), "-nf").toArray(new String[2]));
     }
 
+    @Test
+    public void testParseWithEmptyArgumentsShouldRunSuccessfully() throws Exception {
+        sortArguments.parse("");
+        assertFalse(sortArguments.isFirstWordNumber());
+        assertFalse(sortArguments.isReverseOrder());
+        assertFalse(sortArguments.isCaseIndependent());
+        assertTrue(sortArguments.getFiles().isEmpty());
+    }
+
     // Positive test cases
     @Test
     public void testParseWithNoFlagArgsAndNoFilesShouldRunSuccessfully() throws Exception {
@@ -68,7 +77,6 @@ public class SortArgumentsTest {
         assertArrayEquals(sortArguments.getFiles().toArray(new String[1]),
                 Collections.singletonList(testFile2.toFile().getPath()).toArray(new String[1]));
     }
-
 
     @Test
     public void testParseWithNoFlagArgsAndValidDistinctFilesShouldRunSuccessfully() throws Exception {
