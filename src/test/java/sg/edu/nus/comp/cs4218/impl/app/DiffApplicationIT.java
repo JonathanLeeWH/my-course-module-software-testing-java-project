@@ -202,7 +202,7 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_FILENAME + " are identical" + System.lineSeparator();
+            String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_FILENAME + " are identical";
             assertEquals(expected, stdout.toString());
         } catch (DiffException e) {
             fail("should not fail: " + e.getMessage());
@@ -220,7 +220,7 @@ public class DiffApplicationIT {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
             String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_IDENTICAL_FILENAME + " are identical";
-            assertEquals(expected + System.lineSeparator(), stdout.toString());
+            assertEquals(expected, stdout.toString());
         } catch (DiffException e) {
             fail("should not fail: " + e.getMessage());
         }
@@ -236,7 +236,7 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            assertEquals(System.lineSeparator(), stdout.toString());
+            assertEquals("", stdout.toString());
         } catch (DiffException e) {
             fail("should not fail: " + e.getMessage());;
         }
@@ -284,7 +284,7 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            assertEquals(System.lineSeparator(), stdout.toString());
+            assertEquals("", stdout.toString());
         } catch(DiffException e) {
             fail("should not fail: " + e.getMessage());
         }
@@ -296,7 +296,7 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            assertEquals(System.lineSeparator(), stdout.toString());
+            assertEquals("", stdout.toString());
         } catch(DiffException e) {
             fail("should not fail: " + e.getMessage());
         }
@@ -308,7 +308,7 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            assertEquals(System.lineSeparator(), stdout.toString());
+            assertEquals("", stdout.toString());
         } catch(DiffException e) {
             fail("should not fail: " + e.getMessage());
         }
@@ -325,7 +325,7 @@ public class DiffApplicationIT {
                     "< test C" + STRING_NEWLINE +
                     "> test D" + STRING_NEWLINE +
                     "> test E" + STRING_NEWLINE +
-                    "> test F" + STRING_NEWLINE;
+                    "> test F";
             assertEquals(expected, stdout.toString());
         } catch(DiffException e) {
             fail("should not fail: " + e.getMessage());
@@ -411,7 +411,7 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            assertEquals("", stdout.toString().trim());
+            assertEquals("", stdout.toString());
         } catch(Exception e) {
             fail("should not fail: " + e.getMessage());
         }

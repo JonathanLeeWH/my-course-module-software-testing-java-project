@@ -41,17 +41,18 @@ public class DiffApplication implements DiffInterface { //NOPMD
                     throw new DiffException(ERR_MORE_THAN_TWO_FILES);
                 }
                 output = diffTwoFiles(files.get(0), files.get(1), diffArguments.isShowIdenticalMessage(),
-                        diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
-                stdout.write(output.getBytes());
+                        diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage());
             } else if (!file.isDirectory() && diffArguments.isStdin()) { // Stdin and Files
                 output = diffFileAndStdin(files.get(0), stdin, diffArguments.isShowIdenticalMessage(),
-                            diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
-                stdout.write(output.getBytes());
+                            diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage());
             } else {
                 output = diffTwoDir(files.get(0), files.get(1), diffArguments.isShowIdenticalMessage(),
-                        diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
-                stdout.write(output.getBytes());
+                        diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage());
             }
+            if (!output.isEmpty()) {
+                output.concat(STRING_NEWLINE);
+            }
+            stdout.write(output.getBytes());
         } catch (Exception e) {
             throw (DiffException) new DiffException(ERR_INVALID_ARGS).initCause(e);
         }
