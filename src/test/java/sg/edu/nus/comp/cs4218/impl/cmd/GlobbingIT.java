@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
+import sg.edu.nus.comp.cs4218.exception.WcException;
 import sg.edu.nus.comp.cs4218.impl.FileIOHelper;
 import sg.edu.nus.comp.cs4218.impl.StringsArgListHelper;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
