@@ -178,8 +178,8 @@ public class ShellSystemTest {
     @Test
     void testParseAndEvaluateUsingComplexVariousCommandsWithIORedirOperatorsAndPipeOperatorAndGlobbingAndSemiColonAndSingleQuoteAndBackQuoteShouldRunSuccessfully() throws Exception {
         String input = "echo < " + TestFileUtils.TESTDATA_DIR + "test1.txt > " + TestFileUtils.TESTDATA_DIR +
-                "testOutput.txt | grep \"CS4218\" | rm " + TestFileUtils.TESTDATA_DIR +
-                "testOutput.txt; echo `echo \'Operation Done.\'`";
+                "testOutput.txt | rm " + TestFileUtils.TESTDATA_DIR +
+                "testOutput*; echo `echo \'Operation Done.\'`";
         shell.parseAndEvaluate(input,outputStream);
         String expectedOutput = "Operation Done." + System.lineSeparator();
         assertEquals(expectedOutput, outputStream.toString());
