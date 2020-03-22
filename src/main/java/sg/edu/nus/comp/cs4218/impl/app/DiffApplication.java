@@ -56,6 +56,9 @@ public class DiffApplication implements DiffInterface { //NOPMD
 
     public String diffTwoFiles(String fileNameA, String fileNameB, Boolean isShowSame,
                                Boolean isNoBlank, Boolean isSimple) throws DiffException {
+        if (fileNameA == null || fileNameB == null) {
+            throw new DiffException(ERR_NULL_STREAMS);
+        }
         String pathA = convertToAbsolutePath(fileNameA);
         String pathB = convertToAbsolutePath(fileNameB);
         File fileA = new File(pathA);
@@ -82,6 +85,9 @@ public class DiffApplication implements DiffInterface { //NOPMD
 
     public String diffTwoDir(String folderA, String folderB, Boolean isShowSame, Boolean isNoBlank,
                              Boolean isSimple) throws DiffException {
+        if (folderA == null || folderB == null) {
+            throw new DiffException(ERR_NULL_ARGS);
+        }
         String output = "";
         File tempA = new File(folderA);
         File tempB = new File(folderB);
@@ -205,7 +211,6 @@ public class DiffApplication implements DiffInterface { //NOPMD
                     }
                     firstDiff = firstDiff.concat(firstList.get(i));
                 }
-
             }
         }
         return firstDiff;
@@ -233,10 +238,12 @@ public class DiffApplication implements DiffInterface { //NOPMD
                 } else {
                     identicalDir = output.concat(identicalDir);
                 }
-                identicalDir = identicalDir.concat(folderA + "/");
+                File folderAFile = new File(convertToAbsolutePath(folderA));
+                File folderBFile = new File(convertToAbsolutePath(folderB));
+                identicalDir = identicalDir.concat(folderAFile.getName() + "/");
                 identicalDir = identicalDir.concat(subDirectoryA.getName());
                 identicalDir = identicalDir.concat(" and ");
-                identicalDir = identicalDir.concat(folderB + "/");
+                identicalDir = identicalDir.concat(folderBFile.getName() + "/");
                 identicalDir = identicalDir.concat(subDirectoryA.getName());
             }
         }
