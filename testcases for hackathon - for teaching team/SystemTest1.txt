@@ -1,4 +1,4 @@
-System Test 1
+System Test 1 (Mainly test cases that are likely to be used in hackthon and are likely to find bugs)
 
 // Sequence Command
 Purpose of test case: Test whether second part continue execution if first part encounters an error as indicated in project specification.
@@ -13,6 +13,16 @@ Expected Results: Removes 1.txt 2.txt and 3.txt (which was created after paste c
 Purpose of test case: Test IORedirection operator in this case the output redirection operator properly closes the stream
 Required Inputs: ls > 1.txt; rm 1.txt
 Expected Results: Removes 1.txt which is created after ls command execution.
+
+Purpose of test case: Test when one of the command throws an exception.
+Required Inputs: cd A.txt; cp A.txt B.txt AB.txt 1.txt folder1; rm folder1/A.txt folder1/B.txt
+Where A.txt and B.txt and AB.txt exist and 1.txt does not exist and folder1 is an existing directory.
+Expected Results: Outputs cd ERR_IS_NOT_DIR exception followed by a new line and cp ERR_FILE_NOT_FOUND exception followed by a new line. At the same time, A.txt, B.txt and AB.txt are copied to folder1 and then folder1/A.txt and folder1/B.txt folder1/AB.txt are removed.
+
+Purpose of test case: Tests at least 2 sequence commands
+Required Inputs: paste A.txt B.txt AB.txt; cp A.txt B.txt AB.txt folder1; rm folder1/A.txt folder1/B.txt folder1/AB.txt
+Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
+Expected Results: Removes folder1/A.txt, folder1/B.txt and folder1/AB.txt
 
 // Pipe Command
 Purpose of test case: check if terminate with exception if an exception occurred in pipe command
@@ -29,6 +39,7 @@ Required Inputs: ls | grep <a valid regex>
 Where <a valid regex> which would filter out some reasons and leave at least one result in the output.
 Expected Results: The filter results of the current files and folder in the current directory.
 
+Purpose of test case: Test with at least 2 pipes
 Required Inputs: sed "s/^/1/" 1.txt | cut -c 1-2 | sort
 Where 1.txt exists containing three lines:
 A
@@ -39,40 +50,49 @@ Expected Results: Outputs:
 1A
 1B
 
+Purpose of test case: Tests when at least 2 pipes when there is an exception in one part.
+Required Inputs: paste 1.txt 2.txt | sed "s" | sort
+Where 1.txt and 2.txt exists.
+In this case, sed has the wrong arguments and should throw sed exception with ERR_INVALID_REP_RULE as by our Assumption Report for PipeCommand, throws the exception once it is encountered and terminate the rest of the commands.
+Expected Results: Throws sed exception with ERR_INVALID_REP_RULE
 
 // RmApplication
 Purpose of test case: Test RmException is thrown when file is not found.
-Required Input: rm 1.txt
+Required Inputs: rm 1.txt
 Where 1.txt is a non existing file.
 Expected Results: Throws an RmException ERR_FILE_NOT_FOUND
 
 Purpose of test case: Test remove multiple files
-Required Input: rm 1.txt 2.txt
+Required Inputs: rm 1.txt 2.txt
 Where 1.txt and 2.txt are existing file.
 Expected Results: Removes 1.txt and 2.txt
 
+Purpose of test case: Test removal of current directory as it is likely to cause issues if allowed to be removed as the current directory would be a non existing directory so ls command or other file manipulation or directory manipulation commands would likely face issues due to non existing current directory.
+Required Inputs: rm <Absolute path to current directory>
+Expected Results: Throws RmException ERR_IS_CURR_DIR
+
 Purpose of test case: The rest of the input file that exists and valid are removed despite an exception is thrown for one of the input for example one of the input file does not exist.
-Required Input: rm 1.txt 2.txt 3.txt
+Required Inputs: rm 1.txt 2.txt 3.txt
 Where 1.txt and 3.txt are existing files and 2.txt does not exist.
 Expected Results: Removes 1.txt and 3.txt and throws an RmException ERR_FILE_NOT_FOUND
 
 Purpose of test case: check -r behaves the same as -r -d and -rd. It also removes directories.
-Required Input: rm -r hello
+Required Inputs: rm -r hello
 Where hello is a non empty directory and also contains empty directory within the hello directory
 Expected Results: All files and folders in the hello directory are remove including the hello directory itself.
 
 Purpose of test case: check rm with -d flag only removes files and empty directory
-Required Input: rm -d hello 1.txt
+Required Inputs: rm -d hello 1.txt
 Where 1.txt is an existing file and hello is an empty directory.
 Expected Results: Removes hello directory and 1.txt
 
 Purpose of test case: check rm with -d flag does not remove non empty directory
-Required Input: rm -d hello
+Required Inputs: rm -d hello
 Where hello is a non empty directory.
 Expected Results: Throws RmException as directory is non empty.
 
 Purpose of test case: check rm supports relative path.
-Required Input: rm ../1.txt
+Required Inputs: rm ../1.txt
 Where 1.txt is an existing file in the parent directory of the current directory.
 Expected Results: Removes 1.txt
 
@@ -86,12 +106,12 @@ Required Input: rm <full path of existing file to be deleted>
 Expected Results: Removes the existing file specified in the absolute path.
 
 Purpose of test case: checks rm does not allow removal of read only file // Only used when testing other team during hackathon as our assumption assumes file permissions are correct as we provided justification although minimum check is indeed added in our source code to check for these permissions.
-Required Input: rm 1.txt
+Required Inputs: rm 1.txt
 Where 1.txt has read only permissions
 Expected Results: Throws RmExpection ERR_NO_PERM
 
 Purpose of test case: checks rm does not allow removal of execute only file // only in unix platform when testing other team during hackathon as our assumption assumes file permissions are correct as we provided justification
-Required Input: rm 1.txt
+Required Inputs: rm 1.txt
 Where 1.txt has execute only permissions
 Expected Results: Throws RmExpection ERR_NO_PERM
 
@@ -99,5 +119,94 @@ Purpose of test case: Attempt to remove a directory part of the current director
 Required Input: rm -d <subpath of current directory or current path>
 Expected Results: Throws RmException
 
+Purpose of test case: Test whether exception is thrown when file is read only (This is just a system test for hackathon on other teams but our own Assumption Report we assume file permissions are correct though we did add minimum checks due to issues with file permissions on different platforms and filesystems)
+Required Inputs: rm 1.txt
+Where 1.txt is a read only file.
+Expected Results: Throws RmException ERR_NO_PERM
+
 // cdApplication
-Purpose of test case: 
+Purpose of test case: Tests whether if no argument it will throw an exception
+Required Input: cd
+Expected: Throws CdException with ERR_NO_ARGS
+
+Purpose of test case: Tests whether if more than one argument it will throw an exception
+Required Input: cd hello hello2
+Expected: Throws CdException with ERR_TOO_MANY_ARGS
+
+
+Purpose of test case: Tests whether if attempt to cd to directory it throws an exception
+Required Inputs: cd 1.txt
+Where 1.txt exists
+Expected Results: Throws CdException with ERR_IS_NOT_DIR
+
+Purpose of test case: Tests whether if cd input a non existing directory it throws an exception
+Required Inputs: cd hello
+Where hello directory does not exists
+Expected Results: Throws CdException with ERR_FILE_NOT_FOUND
+
+Purpose of test case: Test whether accepts relative path
+Required Inputs: cd ..
+Expected Results: Changes directory to up one directory from current directory.
+
+Purpose of test case: Test whether accepts absolute path
+Required Inputs: cd <Absolute path to an existing directory>
+Expected Results: Changes directory to the input absolute path of an existing directory
+
+Purpose of test case: Test whether backslash \ and forwardslash are handled correctly in Windows (Based on our assumption report as we assume testing on Windows platform but for hackathon we can test other platform for other teams depending on their assumption report)
+Required Inputs: cd <Absolute path with forward slash> (for Windows)
+Expected Results: Changes directory to the absolute path successfully by converting the forward slash to backslash (as Windows path separator is by backslash)
+
+Purpose of test case: Test whether invalid path name are allowed in Windows such as : (The exception to this rule is the drive letter in Windows like A:\)
+Required Inputs: cd <Absolute path with colon :>
+Expected Results: Outputs an error such as colon : is an invalid character in Windows.
+
+// CpApplication
+Purpose of test case: Test when destination directory does not exist.
+Required Inputs: cp 1.txt hello
+Where 1.txt is an existing file. hello is a non existing directory.
+Expected Results: Throws CpException ERR_FILE_NOT_FOUND
+
+Purpose of test case: Test when source file is same as destination file
+Required Inputs: cp 1.txt 1.txt
+Where 1.txt is an existing file.
+Expected Results: Throws CpException ERR_SRC_DEST_SAME (Behaviour similar to in unix which highlights that both files are the same)
+
+Purpose of test case: Tests when destination file already exists
+Required Inputs: cp 1.txt 2.txt
+Where 1.txt and 2.txt are existing files.
+Expected Results: Overwrite 2.txt contents with contents in 1.txt (Behaviour similar to in unix)
+
+Purpose of test case: Tests when both input source is a directory
+Required Inputs: cp hello hello2
+Where hello and hello2 are existing directories.
+Expected Results: Throws CpException ERR_IS_DIR (This behaviour differs from unix which supports copying of directory to another directory when used with -r flag. Our shell does not support -r flag based on project application specification hence, copying directory is not supported)
+
+Purpose of test case: Tests whether the rest of the input source files are copied if one input source files does not exist or is invalid
+Required Inputs: cp hello 1.txt 2.txt dest
+Where hello and dest are existing directories. 1.txt is a non existing file and 2.txt is an existing file.
+Expected Results: Throw the latest CpException in this case ERR_FILE_NOT_FOUND and at the same time copy 2.txt in the dest directory (similar to in unix)
+
+Purpose of test case: Tests whether the source file is copied to the destination directory if destination directory contains a file with the same file name as the file to be copied.
+Required Inputs: cp 1.txt dest
+Where 1.txt is an existing file and dest is an existing directory containing another existing 1.txt file.
+Expected Results: Overwrites the file in the directory with the file to be copied content, in this case, overwrites the 1.txt file in the dest directory with the contents of the 1.txt file to be copied.
+
+Purpose of test case: Tests when the input destination file to be overwritten has read only permission (Although in our Assumption report we assume file permissions are correct, we add minimum check for permissions. This is mainly just to test other teams in hackathon)
+Required Inputs: cp 1.txt dest
+Where 1.txt is an existing file to be copied and dest is an existing directory constianing another 1.txt file (the 1.txt file in dest directory has only read only permissions)
+Expected Results: Throws CpException with ERR_NO_PERM
+
+Purpose of test case: Copies multiple files to destination directory
+Required Inputs: cp 1.txt 2.txt dest
+Where 1.txt and 2.txt are existing files and dest is an existing directory.
+Expected Results: Copies 1.txt and 2.txt to dest directory (similar to in unix)
+
+// ExitApplication
+Purpose of test case: Tests whether the shell exist with status code 0
+Required Inputs: exit
+Expected Results: Shell terminates with exit code 0
+
+// EchoApplication
+Purpose of test case: Tests without any arguments
+Required Inputs: echo
+Expected Results: Outputs a new line according to our assumption report (This is similar to in unix)
