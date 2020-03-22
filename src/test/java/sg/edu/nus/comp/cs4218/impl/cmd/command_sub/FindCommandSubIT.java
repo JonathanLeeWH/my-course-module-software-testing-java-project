@@ -90,11 +90,6 @@ public class FindCommandSubIT {
     }
 
     @Test
-    void testFindCommandAndWcAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testFindCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("find", TestFileUtils.TESTDATA_DIR, "-name", "`cut -c 1-100 " + testFile5.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);

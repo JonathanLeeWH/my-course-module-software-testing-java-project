@@ -95,11 +95,6 @@ public class DiffCommandSubIT {
     }
 
     @Test
-    void testDiffCommandAndWcAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
-    @Test
     void testDiffCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("diff", "`cut -c 1-90 " + testFile4.toFile().getPath() + "`", testFile1.toFile().getPath());
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);

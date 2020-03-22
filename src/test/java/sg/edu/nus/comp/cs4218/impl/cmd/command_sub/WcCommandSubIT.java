@@ -94,12 +94,7 @@ public class WcCommandSubIT {
                 testFile2.toFile().getPath() + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
-
-    @Test
-    void testWcCommandAndWcAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        fail();
-    }
-
+    
     @Test
     void testWcCommandAndCutAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("wc", "-clw", "`cut -c 1-123 " + testFile4.toFile().getPath() + "`");
