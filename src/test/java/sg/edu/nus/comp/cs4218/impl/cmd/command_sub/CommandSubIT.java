@@ -1,6 +1,5 @@
 package sg.edu.nus.comp.cs4218.impl.cmd.command_sub;
 
-import jdk.nashorn.internal.codegen.CompilerConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,8 +7,6 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.app.CutApplication;
-import sg.edu.nus.comp.cs4218.impl.app.EchoApplication;
-import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.parser.ArgsParser;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
@@ -59,7 +56,7 @@ public class CommandSubIT {
 
     // Positive test cases
     @Test
-    void testLsCommandAndEchoAsSubCommandWithBlankOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+    void testEchoCommandAndCutAsSubCommandWithBlankOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("echo", "`cut -c 200 "+testFile1.toFile().getPath()+"`");
         List<String> expectedResult = Arrays.asList("echo");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
@@ -73,7 +70,7 @@ public class CommandSubIT {
     }
 
     @Test
-    void testWcCommandAndCutAsSubCommandWithMultipleLineOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+    void testWcCommandAndEchoAsSubCommandWithMultipleLineOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("wc", "`echo " + testFile1.toFile().getPath()  + " " + testFile2.toFile().getPath() + "`");
         List<String> expectedResult = Arrays.asList("wc", testFile1.toFile().getPath(), testFile2.toFile().getPath());
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
@@ -104,6 +101,13 @@ public class CommandSubIT {
     void testWcCommandAndLsAndGrepAndCutAsSubCommandUsingMultiplePipeOperatorShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("wc", "-c", "`ls | grep s* | cut -c 1-3`");
         List<String> expectedResult = Arrays.asList("wc", "-c", "src");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
+    void testEchoCommandAndEchoCommandsAsSubCommandWithMultipleSubCommandShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "`echo abc`123`echo abc`123`echo abc`123");
+        List<String> expectedResult = Arrays.asList("echo", "abc123", "abc123", "abc123");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
 }
