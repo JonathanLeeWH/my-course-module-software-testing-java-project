@@ -6,10 +6,12 @@ import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.DiffException;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_STREAMS;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_SPACE;
 
 public class DiffApplicationIT {
@@ -21,14 +23,13 @@ public class DiffApplicationIT {
     private static final String FILE_TWO_NAME = "fileTwo";
     private static final String FILE_THREE_NAME = "fileThree";
     private static final String FILE_FORMAT = ".txt";
-    private static final String SAME_OUTPUT = "Files are identical";
-    private static final String DIFF_OUTPUT = "The two files are different";
+    private static final String DIFFDIR1 = "diffDir1";
+    private static final String DIFFDIR2 = "diffDir2";
     private static final String DIFF_LINES = "< line2" + System.lineSeparator() + "> line2";
     private static final String DIFF_EXCEPTION = "diff: ";
     private static DiffApplication diffApplication;
-    private static File fileOne;
-    private static File fileTwo;
-    private static File fileThree;
+    private static File fileOne, fileTwo, fileThree;
+    private static Path dirOne, dirTwo;
     private static InputStream stdinOne;
     private static OutputStream stdoutOne, stdoutTwo, stdoutThree, osPrint;
     private static boolean isShowSame, isNoBlank, isSimple;
@@ -39,6 +40,8 @@ public class DiffApplicationIT {
         fileOne = File.createTempFile(FILE_ONE_NAME, FILE_FORMAT);
         fileTwo = File.createTempFile(FILE_TWO_NAME, FILE_FORMAT);
         fileThree = File.createTempFile(FILE_THREE_NAME, FILE_FORMAT);
+        dirOne = Files.createTempDirectory(DIFFDIR1);
+        dirTwo = Files.createTempDirectory(DIFFDIR2);
         stdinOne = new FileInputStream(fileOne);
         stdoutOne = new FileOutputStream(fileOne);
         stdoutTwo = new FileOutputStream(fileTwo);
@@ -54,6 +57,8 @@ public class DiffApplicationIT {
         fileOne.deleteOnExit();
         fileTwo.deleteOnExit();
         fileThree.deleteOnExit();
+        dirOne.toFile().deleteOnExit();
+        dirTwo.toFile().deleteOnExit();
         stdinOne.close();
         stdoutOne.close();
         stdoutTwo.close();
@@ -254,4 +259,57 @@ public class DiffApplicationIT {
         }
     }
 
+    @Test
+    void testRunWithValidStdinInSecondArgAndValidFilenameShouldReturnString() throws Exception {
+        String[] args = {fileOne.toPath().toString(), "-"};
+        try {
+            diffApplication.run(args, stdinOne, osPrint);
+            assertEquals(System.lineSeparator(), osPrint.toString());
+        } catch(DiffException e) {
+            e.getMessage();
+        }
+    }
+
+    @Test
+    void testRunWithValidStdinInFirstArgAndValidFilenameShouldReturnString() throws Exception {
+        String[] args = {"-", fileOne.toPath().toString()};
+        try {
+            diffApplication.run(args, stdinOne, osPrint);
+            assertEquals(System.lineSeparator(), osPrint.toString());
+        } catch(DiffException e) {
+            e.getMessage();
+        }
+    }
+
+    @Test
+    void testRunWithValidIdenticalDirectoriesShouldReturnString() {
+        String[] args = {dirOne.toString(), dirOne.toString()};
+        try {
+            diffApplication.run(args, stdinOne, osPrint);
+            assertEquals("", osPrint.toString().trim());
+        } catch(DiffException e) {
+            e.getMessage();
+        }
+    }
+
+    @Test
+    void testRunWithValidDifferentDirectoriesShouldReturnString() {
+        String[] args = {dirOne.toString(), dirTwo.toString()};
+        try {
+            diffApplication.run(args, stdinOne, osPrint);
+            assertEquals("", osPrint.toString().trim());
+        } catch(DiffException e) {
+            e.getMessage();
+        }
+    }
+
+    @Test
+    void testRunWithOneInvalidFileAndOneValidFile() {
+        String[] args = {"invalid file", fileTwo.toPath().toString()};
+        Exception thrown = assertThrows(DiffException.class, () -> {
+            diffApplication.run(args, stdinOne, osPrint);
+        });
+        String expected =  DIFF_EXCEPTION + ERR_INVALID_ARGS;
+        assertEquals(expected, thrown.getMessage());
+    }
 }

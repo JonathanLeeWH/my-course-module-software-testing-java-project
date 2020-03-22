@@ -5,6 +5,7 @@ import sg.edu.nus.comp.cs4218.app.DiffInterface;
 import sg.edu.nus.comp.cs4218.exception.DiffException;
 import sg.edu.nus.comp.cs4218.impl.app.args.DiffArguments;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
+import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.*;
 
 // Skeleton Code for DiffApplication since we are not allocated EF1
-public class DiffApplication implements DiffInterface {
+public class DiffApplication implements DiffInterface { //NOPMD
+    private static final String FILES = "Files ";
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws DiffException {
         if (stdin == null || stdout == null) {
             throw new DiffException(ERR_NULL_STREAMS);
@@ -25,6 +27,9 @@ public class DiffApplication implements DiffInterface {
             diffArguments.parse(args);
             List<String> files = diffArguments.getFiles();
             File file = new File((files.get(0)));
+            if (!file.exists()) {
+                throw new DiffException(ERR_FILE_NOT_FOUND);
+            }
             if (!file.isDirectory() && !diffArguments.isStdin()) { // Directories
                 output = diffTwoFiles(files.get(0), files.get(1), diffArguments.isShowIdenticalMessage(),
                         diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
@@ -39,7 +44,7 @@ public class DiffApplication implements DiffInterface {
                 stdout.write(output.getBytes());
             }
         } catch (Exception e) {
-            throw (DiffException) new DiffException(ERR_NULL_ARGS).initCause(e);
+            throw (DiffException) new DiffException(ERR_INVALID_ARGS).initCause(e);
         }
     }
 
@@ -58,34 +63,37 @@ public class DiffApplication implements DiffInterface {
         try {
             String difference = generateDiffOutput(fileNameA, fileNameB, isNoBlank).trim();
             if (difference.length() == 0 && isShowSame) {
-                return "Files " + fileA.getName() + CHAR_SPACE + fileB.getName() + " are identical";
+                return FILES + fileA.getName() + CHAR_SPACE + fileB.getName() + " are identical";
             } else if (difference.length() > 0 && isSimple) {
-                return "Files " + fileA.getName() + CHAR_SPACE + fileB.getName() + " differ";
+                return FILES + fileA.getName() + CHAR_SPACE + fileB.getName() + " differ";
             }
             return difference;
         } catch (IOException e) {
-            throw new DiffException(ERR_FILE_NOT_FOUND);
+            throw (DiffException) new DiffException(ERR_FILE_NOT_FOUND).initCause(e);
         }
     }
 
     public String diffTwoDir(String folderA, String folderB, Boolean isShowSame, Boolean isNoBlank,
                              Boolean isSimple) throws DiffException {
         String output = "";
-        String commonSubDirectories = findCommonSubDirectories(folderA, folderB);
+        File tempA = new File(folderA);
+        File tempB = new File(folderB);
+        if (!tempA.exists() || !tempB.exists()) {
+            throw new DiffException(ERR_IS_NOT_DIR);
+        }
+        String commonSubDir = findCommonSubDirectories(folderA, folderB);
         File[] folderAFiles = new File(convertToAbsolutePath(folderA)).listFiles();
         File[] folderBFiles = new File(convertToAbsolutePath(folderB)).listFiles();
-        assert folderAFiles != null;
         output = output.concat(getDiffFilesAndFolders(folderAFiles, folderBFiles, folderA));
-        assert folderBFiles != null;
         output = output.concat(STRING_NEWLINE);
         output = output.concat(getDiffFilesAndFolders(folderBFiles, folderAFiles, folderB));
         output = output.concat(STRING_NEWLINE);
         try {
             output = output.concat(findSameFilesDiff(folderA, folderB, folderAFiles, folderBFiles, isShowSame,
                     isNoBlank, isSimple));
-            return output.concat(STRING_NEWLINE).concat(commonSubDirectories);
+            return output.concat(STRING_NEWLINE).concat(commonSubDir);
         } catch (IOException e) {
-            throw new DiffException(ERR_READING_FILE);
+            throw (DiffException) new DiffException(ERR_READING_FILE).initCause(e);
         }
 
     }
@@ -98,26 +106,26 @@ public class DiffApplication implements DiffInterface {
             String pathA = convertToAbsolutePath(fileName);
             File file = new File(pathA);
             fileLines = readFileContentsIntoList(file);
-            String difference = compareLists(stdinContents, fileLines, isNoBlank).trim();
+            String difference = compareLists(fileLines, stdinContents, isNoBlank).trim();
             if (difference.length() == 0 && isShowSame) {
-                return "Files " + file.getName() + CHAR_SPACE + "-" + " are identical";
+                return FILES + file.getName() + CHAR_SPACE + "-" + " are identical";
             } else if (difference.length() > 0 && isSimple) {
-                return "Files " + file.getName() + CHAR_SPACE + "-" + " differ";
+                return FILES + file.getName() + CHAR_SPACE + "-" + " differ";
             }
             return difference;
         } catch (Exception e) {
-            throw new DiffException(ERR_NULL_STREAMS);
+            throw (DiffException) new DiffException(ERR_NULL_STREAMS).initCause(e);
         }
     }
 
     private String generateDiffOutput(String pathA, String pathB, boolean isNoBlank) throws DiffException, IOException {
-        BufferedReader readerA;
-        BufferedReader readerB;
-        List<String> fileALines = new ArrayList<>();
-        List<String> fileBLines = new ArrayList<>();
         try {
-            readerA = new BufferedReader(new FileReader(pathA));
-            readerB = new BufferedReader(new FileReader(pathB));
+            List<String> fileALines = new ArrayList<>();
+            List<String> fileBLines = new ArrayList<>();
+            FileReader frA = new FileReader(pathA); //NOPMD
+            FileReader frB = new FileReader(pathB); //NOPMD
+            BufferedReader readerA = new BufferedReader(frA); //NOPMD
+            BufferedReader readerB = new BufferedReader(frB); //NOPMD
             String tempA = readerA.readLine(), tempB = readerB.readLine();
             while (tempA != null) {
                 fileALines.add(tempA);
@@ -127,9 +135,18 @@ public class DiffApplication implements DiffInterface {
                 fileBLines.add(tempB);
                 tempB = readerB.readLine();
             }
+            boolean isListAEmpty = checkIfListIsEmpty(fileALines);
+            boolean isListBEmpty = checkIfListIsEmpty(fileBLines);
+            if (isListAEmpty || isListBEmpty) {
+                return "";
+            }
+            frA.close();
+            frB.close();
+            readerA.close();
+            readerB.close();
             return compareLists(fileALines, fileBLines, isNoBlank);
         } catch (FileNotFoundException e) {
-            throw new DiffException(ERR_FILE_NOT_FOUND);
+            throw (DiffException) new DiffException(ERR_FILE_NOT_FOUND).initCause(e);
         }
     }
 
@@ -164,16 +181,21 @@ public class DiffApplication implements DiffInterface {
                 if (firstDiff.length() != 0) {
                     firstDiff = firstDiff.concat(STRING_NEWLINE);
                 }
-                if (isInput) {
-                    firstDiff = firstDiff.concat("< ");
-                } else {
-                    firstDiff = firstDiff.concat("> ");
-                }
                 if (isNoBlank) {
-                    if (firstList.get(i).trim().isEmpty()) {
+                    if (!StringUtils.isBlank(firstList.get(i))) {
+                        if (isInput) {
+                            firstDiff = firstDiff.concat("< ");
+                        } else {
+                            firstDiff = firstDiff.concat("> ");
+                        }
                         firstDiff = firstDiff.concat(firstList.get(i));
                     }
                 } else {
+                    if (isInput) {
+                        firstDiff = firstDiff.concat("< ");
+                    } else {
+                        firstDiff = firstDiff.concat("> ");
+                    }
                     firstDiff = firstDiff.concat(firstList.get(i));
                 }
 
@@ -183,7 +205,7 @@ public class DiffApplication implements DiffInterface {
     }
 
     private String findCommonSubDirectories(String folderA, String folderB) {
-        String identicalDirectories = "";
+        String identicalDir = "";
         File[] directoriesA = new File(convertToAbsolutePath(folderA)).listFiles(File::isDirectory);
         File[] directoriesB = new File(convertToAbsolutePath(folderB)).listFiles(File::isDirectory);
         assert directoriesA != null;
@@ -198,40 +220,44 @@ public class DiffApplication implements DiffInterface {
                 }
             }
             if (isSame) {
-                if (identicalDirectories.length() != 0) {
-                    identicalDirectories = identicalDirectories.concat(STRING_NEWLINE);
-                    identicalDirectories = identicalDirectories.concat(output);
+                if (identicalDir.length() != 0) {
+                    identicalDir = identicalDir.concat(STRING_NEWLINE);
+                    identicalDir = identicalDir.concat(output);
                 } else {
-                    identicalDirectories = output.concat(identicalDirectories);
+                    identicalDir = output.concat(identicalDir);
                 }
-                identicalDirectories = identicalDirectories.concat(folderA + "/");
-                identicalDirectories = identicalDirectories.concat(subDirectoryA.getName());
-                identicalDirectories = identicalDirectories.concat(" and ");
-                identicalDirectories = identicalDirectories.concat(folderB + "/");
-                identicalDirectories = identicalDirectories.concat(subDirectoryA.getName());
+                identicalDir = identicalDir.concat(folderA + "/");
+                identicalDir = identicalDir.concat(subDirectoryA.getName());
+                identicalDir = identicalDir.concat(" and ");
+                identicalDir = identicalDir.concat(folderB + "/");
+                identicalDir = identicalDir.concat(subDirectoryA.getName());
             }
         }
-        return identicalDirectories;
+        return identicalDir;
     }
 
     private List<String> readFileContentsIntoList(File file) throws DiffException {
         try {
             List<String> fileContents = new ArrayList<>();
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            FileReader fr = new FileReader(file); //NOPMD
+            BufferedReader bufferedReader = new BufferedReader(fr); //NOPMD
             String currentLine = bufferedReader.readLine();
             while (currentLine != null) {
                 fileContents.add(currentLine);
                 currentLine = bufferedReader.readLine();
             }
+            fr.close();
+            bufferedReader.close();
             return fileContents;
         } catch (Exception e) {
-            throw new DiffException(ERR_FILE_NOT_FOUND);
+            throw (DiffException) new DiffException(ERR_FILE_NOT_FOUND).initCause(e);
         }
     }
 
     private String getDiffFilesAndFolders(File[] firstFiles, File[] secondFiles, String folderName) {
-        String diffFilesAndFolders = "";
-        String onlyInFolder = "Only in " + folderName + ": ";
+        String diffFilesFolders = "";
+        File folderAsFile = new File (folderName);
+        String onlyInFolder = "Only in " + folderAsFile.getName() + ": ";
         assert firstFiles != null;
         for (File fileA : firstFiles) {
             boolean sameFilesFolders = false;
@@ -243,13 +269,13 @@ public class DiffApplication implements DiffInterface {
                 }
             }
             if (!sameFilesFolders) {
-                if (diffFilesAndFolders.length()!=0) {
-                    diffFilesAndFolders = diffFilesAndFolders.concat(STRING_NEWLINE);
+                if (diffFilesFolders.length()!=0) {
+                    diffFilesFolders = diffFilesFolders.concat(STRING_NEWLINE);
                 }
-                diffFilesAndFolders = diffFilesAndFolders.concat(onlyInFolder).concat(fileA.getName());
+                diffFilesFolders = diffFilesFolders.concat(onlyInFolder).concat(fileA.getName());
             }
         }
-        return diffFilesAndFolders;
+        return diffFilesFolders;
     }
 
     private String findSameFilesDiff(String folderA, String folderB, File[] folderAFiles, File[] folderBFiles, Boolean isShowSame,
@@ -263,17 +289,19 @@ public class DiffApplication implements DiffInterface {
                     if (output.length() != 0) {
                         output = output.concat(STRING_NEWLINE);
                     }
-                    output = output.concat("diff ");
-                    output = output.concat(folderAFile.getName() + "/");
-                    output = output.concat(fileA.getName()).concat(String.valueOf(CHAR_SPACE));
-                    output = output.concat(folderBFile.getName() + "/");
-                    output = output.concat(fileB.getName());
-                    output = output.concat(STRING_NEWLINE);
+                    if (!isSimple) {
+                        output = output.concat("diff ");
+                        output = output.concat(folderAFile.getName() + "/");
+                        output = output.concat(fileA.getName()).concat(String.valueOf(CHAR_SPACE));
+                        output = output.concat(folderBFile.getName() + "/");
+                        output = output.concat(fileB.getName());
+                        output = output.concat(STRING_NEWLINE);
+                    }
                     String fileDifference = diffTwoFiles(fileA.toPath().toString(), fileB.toPath().toString(), isShowSame, isNoBlank, isSimple);
-                    if (isShowSame && fileDifference.trim().length() == 0) {
-                        fileDifference = "Files " + folderAFile.getName() + "/" + fileA.getName() + CHAR_SPACE + "-" + " are identical";
-                    } else if (isSimple && fileDifference.trim().length() > 0) {
-                        fileDifference = "Files " + folderAFile.getName() + "/" + fileA.getName() + CHAR_SPACE + folderBFile.getName() + "/" + fileB.getName() + " differ";
+                    if (isShowSame && StringUtils.isBlank(fileDifference)) {
+                        fileDifference = FILES + folderAFile.getName() + "/" + fileA.getName() + CHAR_SPACE + "-" + " are identical";
+                    } else if (isSimple && StringUtils.isBlank(fileDifference)) {
+                        fileDifference = FILES + folderAFile.getName() + "/" + fileA.getName() + CHAR_SPACE + folderBFile.getName() + "/" + fileB.getName() + " differ";
                     }
                     output = output.concat(fileDifference);
                     break;
@@ -319,5 +347,15 @@ public class DiffApplication implements DiffInterface {
         }
 
         return convertedPath;
+    }
+    private boolean checkIfListIsEmpty(List<String> list) {
+        boolean isEmpty = true;
+        for (String str : list) {
+            if (!str.trim().equals("")) {
+                isEmpty = false;
+                break;
+            }
+        }
+        return isEmpty;
     }
 }
