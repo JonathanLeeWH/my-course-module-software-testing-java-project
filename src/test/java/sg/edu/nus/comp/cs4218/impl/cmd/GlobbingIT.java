@@ -401,7 +401,7 @@ public class GlobbingIT {
     /**
      * Tests evaluate method mv and glob interaction
      * For example: mv TestFile* AnotherFolder
-     * Expected: Should mv 1 TestFile1.txt to AnotherFolder folder
+     * Expected: Should mv 1 TestFile1.txt to AnotherFolder 
      */
     @Test
     void testEvaluatePMvCommandWithGlobInteraction1FileShouldThrowFileNotFound() throws Exception {
