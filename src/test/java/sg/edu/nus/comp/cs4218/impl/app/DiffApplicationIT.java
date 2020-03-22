@@ -406,18 +406,6 @@ public class DiffApplicationIT {
     }
 
     @Test
-    void testRunWithValidIdenticalDirectoriesShouldReturnString() {
-        String[] args = {DIFFDIR1, DIFFDIR1_IDENTICAL};
-        try {
-            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
-            diffApp.run(args, inputStream, stdout);
-            assertEquals("Common subdirectories: diffDir1/diffSubDir1 and diffDir1-identical/diffSubDir1", stdout.toString().trim());
-        } catch(Exception e) {
-            fail("should not fail: " + e.getMessage());
-        }
-    }
-
-    @Test
     void testRunWithOneInvalidIdenticalDirectoriesShouldReturnString() {
         String[] args = {DIFFDIR1, "invalidDir"};
         try {
