@@ -8,7 +8,6 @@ import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.app.CutApplication;
 import sg.edu.nus.comp.cs4218.impl.parser.ArgsParser;
-import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
@@ -23,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
 public class CommandSubIT {
-    private ApplicationRunner applicationRunner;
     private ArgumentResolver argumentResolver;
     private InputStream ourTestStdin;
     private OutputStream ourTestStdout;
@@ -34,7 +32,6 @@ public class CommandSubIT {
 
     @BeforeEach
     public void setUp() {
-        applicationRunner = new ApplicationRunner();
         argumentResolver = new ArgumentResolver();
         ourTestStdin = new ByteArrayInputStream(TEST_STDIN_MSG_1.getBytes());
         ourTestStdout = new ByteArrayOutputStream();
@@ -84,9 +81,30 @@ public class CommandSubIT {
     }
 
     @Test
+    void testEchoCommandAndEchoAsSubCommandWithADoubleQuoteShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "`echo \"single quote is not interpreted as special character\"`");
+        List<String> expectedResult = Arrays.asList("echo", "single", "quote", "is", "not" ,"interpreted", "as", "special" ,"character");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
+    void testEchoCommandAndEchoAsSubCommandWithABackQuoteInsideASingleQuoteShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "\'`echo single quote is not interpreted as special character`\'");
+        List<String> expectedResult = Arrays.asList("echo", "`echo single quote is not interpreted as special character`");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
+    void testEchoCommandAndEchoAsSubCommandWithABackQuoteInsideADoubleQuoteShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "\"`echo single quote is not interpreted as special character`\"");
+        List<String> expectedResult = Arrays.asList("echo", "single quote is not interpreted as special character");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
     void testEchoCommandAndEchoAsSubCommandWithNumerousNonBackQuotesShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("echo", "`echo \"\'quote is not interpreted as special character\'\"`");
-        List<String> expectedResult = Arrays.asList("echo", "'quote", "is", "not" ,"interpreted", "as", "special" ,"character'");
+        List<String> args = Arrays.asList("echo", "`echo `echo test``");
+        List<String> expectedResult = Arrays.asList("echo", "echo test");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
 
