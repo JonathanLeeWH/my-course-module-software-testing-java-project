@@ -18,6 +18,7 @@ import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
+@SuppressWarnings({"PMD.ExcessiveMethodLength"})
 public class MvApplication implements MvInterface {
 
     @Override
@@ -50,10 +51,7 @@ public class MvApplication implements MvInterface {
         for(int i = 0 ; i < sourceDestination.size()-1 ; i++){
 
             String sourceName = sourceDestination.get(i);
-            if(!sourceName.equals(dest)) {
-                sources.add(sourceName);
-            }
-            else{
+            if(sourceName.equals(dest)) {
                 File file = new File(dest);
                 File sourceFile = new File(sourceName);
 
@@ -61,6 +59,9 @@ public class MvApplication implements MvInterface {
                     throw new MvException(SRC_DEST_SAME);
                 }
 
+            }
+            else{
+                sources.add(sourceName);
             }
         }
 
