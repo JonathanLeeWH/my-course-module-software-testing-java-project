@@ -28,7 +28,7 @@ public class DiffApplication implements DiffInterface { //NOPMD
         try {
             diffArguments.parse(args);
             List<String> files = diffArguments.getFiles();
-            File file = new File((files.get(0)));
+            File file = new File(IOUtils.resolveFilePath(files.get(0)).toString());
             if (!file.exists()) {
                 throw new DiffException(ERR_FILE_NOT_FOUND);
             }
@@ -41,17 +41,18 @@ public class DiffApplication implements DiffInterface { //NOPMD
                     throw new DiffException(ERR_MORE_THAN_TWO_FILES);
                 }
                 output = diffTwoFiles(files.get(0), files.get(1), diffArguments.isShowIdenticalMessage(),
-                        diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
-                stdout.write(output.getBytes());
+                        diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage());
             } else if (!file.isDirectory() && diffArguments.isStdin()) { // Stdin and Files
                 output = diffFileAndStdin(files.get(0), stdin, diffArguments.isShowIdenticalMessage(),
-                            diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
-                stdout.write(output.getBytes());
+                            diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage());
             } else {
                 output = diffTwoDir(files.get(0), files.get(1), diffArguments.isShowIdenticalMessage(),
-                        diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
-                stdout.write(output.getBytes());
+                        diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage());
             }
+            if (!output.isEmpty()) {
+                output = output.concat(STRING_NEWLINE);
+            }
+            stdout.write(output.getBytes());
         } catch (Exception e) {
             throw (DiffException) new DiffException(ERR_INVALID_ARGS).initCause(e);
         }
@@ -62,10 +63,9 @@ public class DiffApplication implements DiffInterface { //NOPMD
         if (fileNameA == null || fileNameB == null) {
             throw new DiffException(ERR_NULL_STREAMS);
         }
-        String pathA = convertToAbsolutePath(fileNameA);
-        String pathB = convertToAbsolutePath(fileNameB);
-        File fileA = new File(pathA);
-        File fileB = new File(pathB);
+        IOUtils.resolveFilePath(fileNameA);
+        File fileA = IOUtils.resolveFilePath(fileNameA).toFile();
+        File fileB = IOUtils.resolveFilePath(fileNameB).toFile();
         if (!fileA.exists() || !fileB.exists()) {
             throw new DiffException(ERR_FILE_NOT_FOUND);
         }
@@ -73,7 +73,9 @@ public class DiffApplication implements DiffInterface { //NOPMD
             throw new DiffException(ERR_IS_DIR);
         }
         try {
-            String difference = generateDiffOutput(fileNameA, fileNameB, isNoBlank).trim();
+
+            String difference = generateDiffOutput(fileA.toPath().toString(),
+                    fileB.toPath().toString(), isNoBlank).trim();
             if (difference.length() == 0 && isShowSame) {
                     return FILES + fileA.getParentFile().getName() + "/" +  fileA.getName()
                             + CHAR_SPACE + fileB.getParentFile().getName() + "/" + fileB.getName() + " are identical";
