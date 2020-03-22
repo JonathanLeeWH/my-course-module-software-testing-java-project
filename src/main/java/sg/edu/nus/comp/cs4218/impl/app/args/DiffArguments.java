@@ -71,7 +71,9 @@ public class DiffArguments {
                     this.showIdentMessage = true;
                 }
             } else {
-                this.files.add(arg.trim());
+                if (!arg.equals("-")) {
+                    this.files.add(arg.trim());
+                }
             }
         }
     }
