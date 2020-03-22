@@ -273,7 +273,4 @@ class GrepApplicationTest {
             e.getMessage();
         }
     }
-
-    // Test getGrepArgument Method.
-
 }

@@ -155,4 +155,20 @@ public class GrepApplicationIT {
             grepApplication.run(args, inputStream, outputStream);
         });
     }
+
+    @Test
+    void testRunMethodWithInconsistentCasesInPatternWithDashIFlagShouldStillReturnLines() throws FileNotFoundException, AbstractApplicationException {
+        String[] args = {"-i", "-c", "LinE", FILE_ONE_NAME + FILE_FORMAT};
+        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
+        grepApplication.run(args, inputStream, outputStream);
+        assertEquals(3 + System.lineSeparator(), outputStream.toString());
+    }
+
+    @Test
+    void testRunMethodWithInconsistentCasesInPatternWithDashCFlagShouldThrowException() throws FileNotFoundException, AbstractApplicationException {
+        String[] args = {"LinE", FILE_ONE_NAME + FILE_FORMAT};
+        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
+        grepApplication.run(args, inputStream, outputStream);
+        assertEquals(System.lineSeparator(), outputStream.toString());
+    }
 }
