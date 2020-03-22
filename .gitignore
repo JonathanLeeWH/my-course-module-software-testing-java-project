@@ -182,6 +182,6 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/linux,macos,windows
 
-# Team 22 custom .gitignore
+# Custom .gitignore
 .idea/
 target
