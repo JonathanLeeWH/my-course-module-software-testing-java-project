@@ -411,7 +411,7 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            assertEquals("", stdout.toString());
+            assertEquals("Common subdirectories: diffDir1/diffSubDir1 and diffDir1-identical/diffSubDir1", stdout.toString().trim());
         } catch(Exception e) {
             fail("should not fail: " + e.getMessage());
         }
