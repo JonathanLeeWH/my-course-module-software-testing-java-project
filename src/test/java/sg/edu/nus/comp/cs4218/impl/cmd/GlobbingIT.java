@@ -401,10 +401,15 @@ public class GlobbingIT {
     /**
      * Tests evaluate method mv and glob interaction
      * For example: mv TestFile* AnotherFolder
-     * Expected: Should mv 1 TestFile1.txt to AnotherFolder 
+     * Expected: Should mv 1 TestFile1.txt to AnotherFolder
      */
     @Test
     void testEvaluatePMvCommandWithGlobInteraction1FileShouldThrowFileNotFound() throws Exception {
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
         FileIOHelper.createFileFolder("AnotherFolder" , true);
         File file = new File(FILENAME1);
         assertTrue(file.exists());
@@ -432,6 +437,11 @@ public class GlobbingIT {
      */
     @Test
     void testEvaluatePMvCommandWithGlobInteraction3FileShouldThrowFileNotFound() throws Exception {
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
         FileIOHelper.createFileFolder("AnotherFolder" , true);
         FileIOHelper.createFileFolder(FILENAME2 , false);
         FileIOHelper.createFileFolder(FILENAME3 , false);
@@ -468,6 +478,11 @@ public class GlobbingIT {
      */
     @Test
     void testEvaluatePMvCommandWithGlobInteractionNoFileShouldThrowFileNotFound() throws Exception {
+
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList("mv" ,"TextFile*", "AnotherFolder");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
