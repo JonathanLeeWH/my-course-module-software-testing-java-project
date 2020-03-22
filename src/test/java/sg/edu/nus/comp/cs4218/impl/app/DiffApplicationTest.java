@@ -241,20 +241,21 @@ class diffAppTest {
         });
     }
 
-    /**
-     * Test diffTwoDir method when folderB are null.
-     * Expected: Throw Diff Exception.
-     */
     @Test
-    void testFindCommonSubDirectoriesMethod() throws DiffException {
+    void testDiffTwoDirMethodWithTwoDirectoriesThatAreDifferentWithIsShowSame() throws DiffException {
         String expected = "Only in diffDir1: diff1-identical.txt" + STRING_NEWLINE +
                 "Only in diffDir2: diff2.txt";
         String expectedTwo = FILES + DIFFDIR1NAME + "/" +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR2NAME + "/" + DIFF1_FILENAME + IDENTICAL;;
-        String expectedThree = "Common subdirectories: " + DIFFDIR1NAME + "/" + "diffSubDir1" + " and " + DIFFDIR2NAME + "/" + "diffSubDir1";
         String actualOutput = diffApp.diffTwoDir(DIFFDIR1, DIFFDIR2, true, true, true);
         assertTrue(actualOutput.contains(expected));
         assertTrue(actualOutput.contains(expectedTwo));
-        assertTrue(actualOutput.contains(expectedThree));
+    }
+
+    @Test
+    void testFindCommonSubDirectoriesMethodUsingDiffTwoDirMethodWithTwoDirectoriesThatHasSubDirectories() throws DiffException {
+        String expected = "Common subdirectories: " + DIFFDIR1NAME + "/" + "diffSubDir1" + " and " + DIFFDIR2NAME + "/" + "diffSubDir1";
+        String actualOutput = diffApp.diffTwoDir(DIFFDIR1, DIFFDIR2, true, true, true);
+        assertTrue(actualOutput.contains(expected));
     }
 
 
