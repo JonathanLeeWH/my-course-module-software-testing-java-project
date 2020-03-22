@@ -7,6 +7,7 @@ import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
+import sg.edu.nus.comp.cs4218.impl.util.TestFileUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -119,11 +120,38 @@ public class ShellSystemTest {
     }
 
     @Test
-    void shellComplexLsAndEchoTestRunSuccesss() throws Exception {
+    void testParseAndEvaluateUsingComplexLsAndEchoCommandWithSemiColonShouldRunSuccessfully() throws Exception {
         String input = "ls ROOT;echo hello";
 
         shell.parseAndEvaluate(input,outputStream);
         assertEquals(MOCK_FILE_NAME + System.lineSeparator()
                 + MOCK_FOLDER + System.lineSeparator() +"hello" + System.lineSeparator(), outputStream.toString());
+    }
+
+    @Test
+    void testParseAndEvaluateUsingComplexVariousCommandsWithSemiColonAndPipeAndBackQuoteShouldRunSuccessfully() throws Exception {
+        String input = "cd " + TestFileUtils.TESTDATA_DIR + "; paste test1.txt | grep \"CS4218\" | cut -c 1-7";
+        shell.parseAndEvaluate(input,outputStream);
+        String expectedOutput = "CS4218:" + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+    @Test
+    void testParseAndEvaluateUsingComplexVariousCommandsWithIORedirOperatorsAndGlobbingAndBackQuoteShouldRunSuccessfully() throws Exception {
+        String input = "paste " + TestFileUtils.TESTDATA_DIR + "test1.txt `paste < " + TestFileUtils.TESTDATA_DIR +
+                "test*Ab*` > " + TestFileUtils.TESTDATA_DIR + "testOut.txt";
+        shell.parseAndEvaluate(input,outputStream);
+        String expectedOutput = "Operation Done." + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+    @Test
+    void testParseAndEvaluateUsingComplexVariousCommandsWithIORedirOperatorsAndPipeOperatorAndGlobbingAndSemiColonAndSingleQuoteAndBackQuoteShouldRunSuccessfully() throws Exception {
+        String input = "echo < " + TestFileUtils.TESTDATA_DIR + "test1.txt > " + TestFileUtils.TESTDATA_DIR +
+                "testOutput.txt | grep \"CS4218\" | rm " + TestFileUtils.TESTDATA_DIR +
+                "testOutput.txt; echo `echo \'Operation Done.\'`";
+        shell.parseAndEvaluate(input,outputStream);
+        String expectedOutput = "Operation Done." + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
     }
 }
