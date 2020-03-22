@@ -133,7 +133,7 @@ Step 2: Run `open -na "Google Chrome" --args --new-window http://localhost:63342
 **Alternative for Step 2:** Open your favourite browser and go to http://localhost:63342/cs4218-project-ay1920-s2-2020-TEAMNUMBER/target/site/index.html`
 
 * Note that you are not suppose to remove anything inside the `src/site` folder.
-* Your link directory may defer depending on where your site folder is located.
+* Your link directory may vary depending on where your site folder is located.
 
 ## External libraries / plugins / tools / technologies used
 (The below has been approved by Prof or is as stated in Project Specification) 
