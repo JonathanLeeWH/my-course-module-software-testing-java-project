@@ -1,4 +1,4 @@
-# CS4218 Project: Shell Application [![Build Status](https://travis-ci.com/nus-cs4218/cs4218-project-ay1920-s2-2020-team22.svg?token=jKdVBsb1h7BZ2PCTqrnm&branch=master)](https://travis-ci.com/nus-cs4218/cs4218-project-ay1920-s2-2020-team22)
+# CS4218 Project: Shell Application
 
 ## Table of Contents
   * [Overview](#overview)
@@ -47,6 +47,12 @@ Step 3: Select Import Project from external Model option.
 
 Step 4: Select Maven and Click finish.
 
+Step 5: **The exclusion of PMD checks for test sources** Go to `IntelliJ Settings > PMD > Options > enable Skip Test sources > Apply`.
+
+An example image of exclusion of pmd checks for test sources is shown below:
+
+![PMD Skip Test Sources](PMDSettings.png)
+
 ## Instructions to run the Shell program
 **Option 1: Run using IntellJIdea** (Recommended)
 
@@ -70,11 +76,11 @@ Step 1: In IntellJIdea, navigate to `src` > `test` > `java` folder
 
 Step 2: Right click on the `java` folder and click `Run All Tests` to run all tests.
 
-**Note:** `Run All Tests` runs all test including those that tests that are expected to not work (excluded in maven) due to unimplemented ef1 as not part of our milestone 1 or bugs in ef1. As it does not take into account maven's exclude configuration in `pom.xml` as it is not part of maven.
+**Note:** `Run All Tests` runs all test including those that tests that are expected to not work (excluded in maven). As it does not take into account maven's exclude configuration in `pom.xml` as it is not part of maven.
 
 **Tests file to manually ignore the test cases that do not work if using option 1**
 
-Refer to `pom.xml`'s `<exclude>` tag in `build` tag > `plugins` tag under `maven-sunfire-plugin` and `maven-failsafe-plugin` configurations for a list of test cases to ignore if not working due to unimplemented ef1 or ef1 bugs in milestone 1.
+Refer to `pom.xml`'s `<exclude>` tag in `build` tag > `plugins` tag under `maven-sunfire-plugin` and `maven-failsafe-plugin` configurations for a list of test cases to ignore if not working for any reason.
 
 An example `build` tag content in `pom.xml` of a list of excluded `**Test.java` and `**IT.java`:
 
@@ -87,7 +93,7 @@ An example `build` tag content in `pom.xml` of a list of excluded `**Test.java` 
                 <version>2.22.0</version>
                 <configuration>
                     <excludes>
-<!--                    The configuration below are excluding extended functionality 1 unit test from maven build-->
+<!--                    The configuration below are sample test excluded from maven build-->
                         <exclude>**/CpApplicationTest.java</exclude>
                         <exclude>**/CdApplicationTest.java</exclude>
                         <exclude>**/DiffApplicationTest.java</exclude>
@@ -104,7 +110,7 @@ An example `build` tag content in `pom.xml` of a list of excluded `**Test.java` 
                 <version>2.22.0</version>
                 <configuration>
                     <excludes>
-<!--                    The configuration below are excluding extended functionality 1 integration test from maven build-->
+<!--                    The configuration below are sample excluded integration test from maven build-->
                         <exclude>**/WcApplicationIT.java</exclude>
                         <exclude>**/DiffApplicationIT.java</exclude>
                     </excludes>
@@ -122,9 +128,12 @@ You will just need to run `mvn test` (Not recommended for Windows as Windows usu
 
 Step 1: Run `mvn clean compile jxr:jxr jxr:test-jxr site:attach-descriptor site`
 
-Step 2: Run `open -na "Google Chrome" --args --new-window http://localhost:63342/cs4218-project-ay1920-s2-2020-team22/target/site/index.html` to view the automated report.
+Step 2: Run `open -na "Google Chrome" --args --new-window http://localhost:63342/cs4218-project-ay1920-s2-2020-TEAMNUMBER/target/site/index.html` to view the automated report.
+
+**Alternative for Step 2:** Open your favourite browser and go to http://localhost:63342/cs4218-project-ay1920-s2-2020-TEAMNUMBER/target/site/index.html`
 
 * Note that you are not suppose to remove anything inside the `src/site` folder.
+* Your link directory may defer depending on where your site folder is located.
 
 ## External libraries / plugins / tools / technologies used
 (The below has been approved by Prof or is as stated in Project Specification) 
