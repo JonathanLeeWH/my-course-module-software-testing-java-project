@@ -4,10 +4,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
-import sg.edu.nus.comp.cs4218.exception.CutException;
-import sg.edu.nus.comp.cs4218.exception.LsException;
-import sg.edu.nus.comp.cs4218.exception.RmException;
-import sg.edu.nus.comp.cs4218.exception.SortException;
+import sg.edu.nus.comp.cs4218.exception.*;
 import sg.edu.nus.comp.cs4218.impl.util.ErrorConstants;
 import sg.edu.nus.comp.cs4218.impl.FileIOHelper;
 import sg.edu.nus.comp.cs4218.impl.StringsArgListHelper;
@@ -402,6 +399,83 @@ public class GlobbingIT {
     }
 
     /**
+     * Tests evaluate method mv and glob interaction
+     * For example: mv TestFile* AnotherFolder
+     * Expected: Should mv 1 TestFile1.txt to AnotherFolder folder
+     */
+    @Test
+    void testEvaluatePMvCommandWithGlobInteraction1FileShouldThrowFileNotFound() throws Exception {
+        FileIOHelper.createFileFolder("AnotherFolder" , true);
+        File file = new File(FILENAME1);
+        assertTrue(file.exists());
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("mv" ,"TestFile*", "AnotherFolder");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        File file2 = new File(currDir + File.separator + "AnotherFolder" + File.separator + FILENAME1);
+        assertTrue(file2.exists());
+        assertFalse(file.exists());
+
+        file2.delete();
+        File folder = new File("AnotherFolder");
+        folder.delete();
+
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+    }
+
+    /**
+     * Tests evaluate method mv and glob interaction
+     * For example: mv TestFile* AnotherFolder
+     * Expected: Should mv 1 TestFile1.txt TestFile2.txt TestFile3.txt to AnotherFolder folder
+     */
+    @Test
+    void testEvaluatePMvCommandWithGlobInteraction3FileShouldThrowFileNotFound() throws Exception {
+        FileIOHelper.createFileFolder("AnotherFolder" , true);
+        FileIOHelper.createFileFolder(FILENAME2 , false);
+        FileIOHelper.createFileFolder(FILENAME3 , false);
+        File file = new File(FILENAME1);
+        assertTrue(file.exists());
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("mv" ,"TestFile*", "AnotherFolder");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        File file2 = new File(currDir + File.separator + "AnotherFolder" + File.separator + FILENAME1);
+        File file3 = new File(currDir + File.separator + "AnotherFolder" + File.separator + FILENAME2);
+        File file4 = new File(currDir + File.separator + "AnotherFolder" + File.separator + FILENAME3);
+
+        assertTrue(file2.exists());
+        assertTrue(file3.exists());
+        assertTrue(file4.exists());
+        assertFalse(file.exists());
+
+        file2.delete();
+        file3.delete();
+        file4.delete();
+        File folder = new File("AnotherFolder");
+        folder.delete();
+
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME1));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+    }
+
+    /**
+     * Tests evaluate method mv and glob interaction
+     * For example: mv TextFile* AnotherFolder
+     * Expected: Should throw error as no Files globbed
+     */
+    @Test
+    void testEvaluatePMvCommandWithGlobInteractionNoFileShouldThrowFileNotFound() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("mv" ,"TextFile*", "AnotherFolder");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        assertThrows(MvException.class, ()-> callCommand.evaluate(inputStream,outputStream));
+
+    }
+
+    /**
      * Tests evaluate method echo and glob interaction
      * For example: echo TestFile*
      * Expected: Only output file name of TestFile1.txt
@@ -454,6 +528,149 @@ public class GlobbingIT {
         callCommand.evaluate(inputStream,outputStream);
         assertEquals(   "TextFile*" + System.lineSeparator() , outputStream.toString());
     }
+
+    /**
+     * Tests evaluate method paste and glob interaction
+     * For example: paste TestFile* > outputFile1.txt
+     * Expected: Check content of outputFile1.txt should be correct for 1 testFile1.txt
+     */
+    @Test
+    void testEvaluatePasteCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(PASTE_APP ,"TestFile*", OUTPUT_REDIR_CHAR , OUTPUT_FILE_1);
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+
+
+        String outputFromFile = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
+        String expectedOutput = FILE_1_CONTENT;
+        assertEquals(expectedOutput, outputFromFile);
+}
+
+    /**
+     * Tests evaluate method paste and glob interaction
+     * For example: paste TestFile* > outputFile1.txt
+     * Expected: Check content of outputFile1.txt should be correct for 2 files TestFile1.txt TestFile2.txt
+     */
+    @Test
+    void testEvaluatePasteCommandWithGlobInteraction2FileShouldOutputCorrectly() throws Exception {
+
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME2));
+        writer1.write(System.lineSeparator()
+                + System.lineSeparator()
+                + System.lineSeparator()
+                + System.lineSeparator() +"A");
+        writer1.flush();
+        writer1.close();
+
+        BufferedWriter writer2 = new BufferedWriter(new PrintWriter(FILENAME3));
+        writer2.write(System.lineSeparator()
+                + System.lineSeparator()
+                + System.lineSeparator()
+                + System.lineSeparator()
+                + System.lineSeparator() +"B");
+        writer2.flush();
+        writer2.close();
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(PASTE_APP ,"TestFile*", OUTPUT_REDIR_CHAR , OUTPUT_FILE_1);
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+
+        String outputFromFile = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
+        String expectedOutput = "This is the content for file 1." + "\t"+ "\t"
+                + System.lineSeparator() + "There are some content here."+ "\t"+ "\t"
+                + System.lineSeparator() + "Some numbers: 50 1 2."+ "\t"+ "\t"
+                + System.lineSeparator() + "Some whitespace    ><*&^%.?"+ "\t"+ "\t"
+                + System.lineSeparator() + "A" + "\t"
+                + System.lineSeparator() + "B";
+        assertEquals(expectedOutput, outputFromFile);
+    }
+
+    /**
+     * Tests evaluate method paste and glob interaction
+     * For example: paste TextFile* > outputFile1.txt
+     * Expected: Should throw error cause no found globbed
+     */
+    @Test
+    void testEvaluatePasteCommandWithGlobInteraction1FileShouldThrowFileNotFound() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(PASTE_APP ,"TextFile*", OUTPUT_REDIR_CHAR , OUTPUT_FILE_1);
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        assertThrows(PasteException.class, ()-> callCommand.evaluate(inputStream,outputStream));
+
+    }
+
+
+    /**
+     * Tests evaluate method cp and glob interaction
+     * For example: cp TestFile* AnotherFolder
+     * Expected: Should cp 1 TestFile1.txt to AnotherFolder folder
+     */
+    @Test
+    void testEvaluatePCpCommandWithGlobInteraction1FileShouldThrowFileNotFound() throws Exception {
+        FileIOHelper.createFileFolder("AnotherFolder" , true);
+        File file = new File(FILENAME1);
+        assertTrue(file.exists());
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("cp" ,"TestFile*", "AnotherFolder");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        File file2 = new File(currDir + File.separator + "AnotherFolder" + File.separator + FILENAME1);
+        assertTrue(file2.exists());
+        assertTrue(file.exists());
+
+        file2.delete();
+        File folder = new File("AnotherFolder");
+        folder.delete();
+
+    }
+
+    /**
+     * Tests evaluate method cp and glob interaction
+     * For example: cp TestFile* AnotherFolder
+     * Expected: Should cp 1 TestFile1.txt TestFile2.txt TestFile3.txt to AnotherFolder folder
+     */
+    @Test
+    void testEvaluatePCpCommandWithGlobInteraction3FileShouldThrowFileNotFound() throws Exception {
+        FileIOHelper.createFileFolder("AnotherFolder" , true);
+        FileIOHelper.createFileFolder(FILENAME2 , false);
+        FileIOHelper.createFileFolder(FILENAME3 , false);
+        File file = new File(FILENAME1);
+        assertTrue(file.exists());
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("cp" ,"TestFile*", "AnotherFolder");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        File file2 = new File(currDir + File.separator + "AnotherFolder" + File.separator + FILENAME1);
+        File file3 = new File(currDir + File.separator + "AnotherFolder" + File.separator + FILENAME2);
+        File file4 = new File(currDir + File.separator + "AnotherFolder" + File.separator + FILENAME3);
+
+        assertTrue(file2.exists());
+        assertTrue(file3.exists());
+        assertTrue(file4.exists());
+        assertTrue(file.exists());
+
+        file2.delete();
+        file3.delete();
+        file4.delete();
+        File folder = new File("AnotherFolder");
+        folder.delete();
+
+    }
+
+    /**
+     * Tests evaluate method cp and glob interaction
+     * For example: cp TextFile* AnotherFolder
+     * Expected: Should throw error as no Files globbed
+     */
+    @Test
+    void testEvaluateCpvCommandWithGlobInteractionNoFileShouldThrowFileNotFound() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("cp" ,"TextFile*", "AnotherFolder");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        assertThrows(CpException.class, ()-> callCommand.evaluate(inputStream,outputStream));
+
+    }
+
+
 
 //    /**
 //     * Tests evaluate method grep and glob interaction
