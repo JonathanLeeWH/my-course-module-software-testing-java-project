@@ -1,0 +1,64 @@
+System Test 2
+
+// Ls Application
+Purpose of test case: Test if program list files correctly where testFolder is a folder
+in current directory and it contains testFile1.txt and testFile2.txt
+Required Inputs: ls testFolder
+Expected Results: list files inside testFolder
+Expected Output:
+testFile1.txt
+testFile2.txt
+
+Purpose of test case: Test if program list files correctly where testFolder is not a folder
+in current directory
+Required Inputs: ls testFolder
+Expected Results: Throw no File or folder specified Found Error
+
+Purpose of test case: Test whether file removed will still be listed where testFolder exists
+and file1.txt is in testFolder.
+Required Inputs: ls testFolder; rm file1.txt; ls testFolder
+Expected Results: file1.txt would be listed first then there will be no list(empty string) in the 2nd ls call.
+
+Purpose of test case: Test whether io streams are properly executed.
+Required Inputs: ls > outputFile.txt
+Expected Results: Result of Ls should be printed in outputFile.txt
+
+//Mv Application
+Purpose of test case: Ls application and check if MvApplication is completed where testFolder is empty folder and file1.txt exist in current directory.
+Required Inputs: ls testFolder; mv file1.txt testFolder; ls testFolder
+Expected Results: Moves file1.txt to testFolder, the first Ls will not print any files while the 2nd Ls will print file1.txt
+
+Purpose of test case: Test whether Mv and Find will work together. Consider folder
+testFolder exist and files test1.txt test2.txt exist
+Required Input: mv *.txt testFolder; find testFolder -name "*.txt"
+Expected Results: testFolder/test1.txt testFolder/test2.txt both files should be in output.
+
+Purpose of test case: Test MVapplication where file is not found
+Required Input: mv testFile.txt testFolder
+Expected Results: Throws file not found error
+
+Purpose of test case: Test MvApplication multiple files with globbing where testFile1.txt testFile2.txt both exist to testFolder
+Required Input: mv testFile* testFolder
+Where testFolder exists as a folder
+Expected Results: Correctly moves both globbed testFile to testFolder
+
+//Find application
+Purpose of test case: Test Find Application with Cp Application with Cp testFile1.txt into testFolder and use Find to output the file
+Required Input: cp testFile1.txt testFolder;find testFolder -name "testFile1.txt"
+Expected Results: testFolder/testFile1.txt would be the output.
+
+Purpose of test case: Test Find Application with Mv Application
+Required Input: mv testFile1.txt testFolder;find testFolder -name "testFile1.txt"
+Where testFolder is a directory which exist and testFile1.txt exist in the current directory
+Expected Results: testFolder/testFile1.txt would be the output.
+
+//Quoting
+Purpose of test case: Test quoting with echo
+Required Input: echo "hello world"
+Expected Results: "hello world"
+
+//Globbing
+Purpose of test case: Test if quoting works with Ls Application
+Required Input: ls *
+Expected Results: All files in the current directory will be output.
+
