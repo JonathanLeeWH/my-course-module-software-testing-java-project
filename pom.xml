@@ -36,7 +36,6 @@
                             </includes>
                             <excludes>
                                 <!-- Exclude integration tests within (unit) test phase. -->
-                                <exclude>**/DiffApplicationIT.java</exclude>
                                 <exclude>**/DiffApplicationTest.java</exclude>
                                 <exclude>**/GrepApplicationTest.java</exclude>
                                 <exclude>**/ArgumentResolverTest.java</exclude>
