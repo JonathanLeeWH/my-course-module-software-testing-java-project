@@ -17,6 +17,8 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.*;
 // Skeleton Code for DiffApplication since we are not allocated EF1
 public class DiffApplication implements DiffInterface { //NOPMD
     private static final String FILES = "Files ";
+    private static final int BUFFER_SIZE = 4096;
+
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws DiffException {
         if (stdin == null || stdout == null) {
             throw new DiffException(ERR_NULL_STREAMS);
@@ -30,7 +32,11 @@ public class DiffApplication implements DiffInterface { //NOPMD
             if (!file.exists()) {
                 throw new DiffException(ERR_FILE_NOT_FOUND);
             }
-            if (!file.isDirectory() && !diffArguments.isStdin()) { // Directories
+            String fileFormat = files.get(0).substring(files.get(0).length()-3);
+            if (fileFormat.equals("bmp") || fileFormat.equals("bin")) {
+                output = compareBinaryFiles(files.get(0), files.get(1)).concat(STRING_NEWLINE);
+                stdout.write(output.getBytes());
+            } else if (!file.isDirectory() && !diffArguments.isStdin()) { // Directories
                 output = diffTwoFiles(files.get(0), files.get(1), diffArguments.isShowIdenticalMessage(),
                         diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
                 stdout.write(output.getBytes());
@@ -358,5 +364,35 @@ public class DiffApplication implements DiffInterface { //NOPMD
             }
         }
         return isEmpty;
+    }
+
+    private String compareBinaryFiles(String firstBin, String secondBin) throws Exception {
+        File firstFile = new File(convertToAbsolutePath(firstBin));
+        File secondFile = new File(convertToAbsolutePath(secondBin));
+        String firstBinContents = readBinaryFileIntoList(firstFile);
+        String secondBinContents = readBinaryFileIntoList(secondFile);
+        if (!firstBinContents.equals(secondBinContents)) {
+            return "Binary files " + firstFile.getParentFile().getName() + "/" + firstFile.getName() + CHAR_SPACE
+                    + secondFile.getParentFile().getName() + "/" + secondFile.getName() + " differ";
+        } else {
+            return "";
+        }
+    }
+    private String readBinaryFileIntoList(File bin) {
+        String output = "";
+        try (
+                InputStream inputStream = new BufferedInputStream(new FileInputStream(bin));
+                OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(bin));
+        ) {
+            byte[] buffer = new byte[BUFFER_SIZE];
+
+            while (inputStream.read(buffer) != -1) {
+                outputStream.write(buffer);
+            }
+            output = outputStream.toString();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+        return output;
     }
 }

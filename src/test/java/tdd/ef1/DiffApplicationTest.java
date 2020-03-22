@@ -168,7 +168,6 @@ public class DiffApplicationTest { // NOPMD
         try {
             String actualOutput = diffApp.diffTwoFiles(DIFF1_FILE, DIFF1_BLANK_LINES_FILE, true, true, false);
             String expected = FILES + "DiffTestFolder/" +DIFF1_FILENAME + " " + "DiffTestFolder/" + DIFF1_BLANK_LINES_FILENAME + " are identical";
-            System.out.println(actualOutput);
             assertEquals(expected, actualOutput);
         } catch (DiffException e) {
             fail("should not fail: " + e.getMessage());
@@ -191,7 +190,6 @@ public class DiffApplicationTest { // NOPMD
             String actualOutput = diffApp.diffTwoDir(DIFFDIR1, DIFFDIR1_IDENTICAL, true, false, false);
             String expectedOne = FILES + DIFFDIR1NAME + "/" +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR1NAME_IDENTICAL + "/" + DIFF1_FILENAME + IDENTICAL;
             String expectedTwo = FILES + DIFFDIR1NAME + "/" + DIFF1_IDENTICAL_FILENAME + CHAR_SPACE + DIFFDIR1NAME_IDENTICAL + "/" + DIFF1_IDENTICAL_FILENAME + IDENTICAL;
-            System.out.println(actualOutput);
             assertTrue(actualOutput.contains(expectedOne));
             assertTrue(actualOutput.contains(expectedTwo));
         } catch (DiffException e) {
@@ -226,7 +224,6 @@ public class DiffApplicationTest { // NOPMD
                     "> test D" + StringUtils.STRING_NEWLINE +
                     "> test E" + StringUtils.STRING_NEWLINE +
                     "> test F";
-            System.out.println(actualOutput);
             assertTrue(actualOutput.contains(expected));
         } catch (IOException e) {
             fail("should not fail: " + e.getMessage());
