@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.cmd;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.Command;
@@ -42,6 +43,7 @@ class SequenceCommandIT {
     private static final String WC_APP = "wc";
     private static final String SED_APP = "sed";
     private static final String CUT_APP = "cut";
+    private static final String DIFF_APP = "diff";
     private static final String INVALID_APP = "lsa";
     private static final String FOLDER_NAME_1 = "folder1";
     private static final String FILE_NAME_1 = "CS4218A";
@@ -229,6 +231,30 @@ class SequenceCommandIT {
     }
 
     /**
+     * Tests evaluate method when involving cp command and rm command interaction
+     * For example: cp B.txt AB.txt; diff B.txt AB.txt
+     * Where B.txt is an existing file. AB.txt is a non existing file.
+     * Expected: No output as both files B.txt and AB.txt are identical as AB.txt should be a copy of the B.txt
+     */
+    @Test
+    void testEvaluateSequenceCommandWithCpCommandAndDiffCommandInteractionShouldOutputNothingAsFilesAreIdentical(@TempDir Path tempDir) throws Exception {
+        Path srcFile = tempDir.resolve(FILE_NAME_5);
+        Path destFile = tempDir.resolve(FILE_NAME_6);
+        List<String> contents = Arrays.asList(FILE_CONTENT_1, FILE_CONTENT_2);
+        Files.createFile(srcFile);
+        Files.write(srcFile, contents);
+        assertTrue(Files.exists(srcFile)); // check that B.txt exists
+        assertFalse(Files.exists(destFile)); // check that AB.txt does not exist.
+        assertEquals(contents, Files.readAllLines(srcFile));
+        commands.add(new CallCommand(Arrays.asList(CP_APP, srcFile.toString(), destFile.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(DIFF_APP, srcFile.toString(), destFile.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertTrue(outputStream.toString().isEmpty()); // No output as files are identical.
+        assertEquals(contents, Files.readAllLines(destFile)); // check that file content is copied.
+    }
+
+    /**
      * Tests evaluate method when involving mv command rm command interaction
      * For example: mv B.txt AB.txt; rm AB.txt
      * Where B.txt is an existing file and AB.txt is a non existing file.
@@ -324,7 +350,7 @@ class SequenceCommandIT {
 
     /**
      * Tests evaluate method when involving sed command and rm command
-     * For example: sed "s/^/> /" AB.txt; rm Ab.txt
+     * For example: sed "s/^/> /" AB.txt; rm AB.txt
      * Where AB.txt is an existing file.
      * It is mainly to test to ensure stream is closed for those commands that read files. As if streams are not closed, remove command
      * would not be able to remove the file.
@@ -494,6 +520,43 @@ class SequenceCommandIT {
         assertFalse(Files.exists(folder.resolve(FILE_NAME_5))); // check that folder1/B.txt is deleted
         assertFalse(Files.exists(folder.resolve(FILE_NAME_6))); // check that folder1/AB.txt is deleted
         assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+    }
+
+    /**
+     * Tests evaluate method with paste command mv command and rm command
+     * For example paste A.txt B.txt AB.txt; cp A.txt B.txt AB.txt folder1; diff folder1/A.txt folder1/B.txt
+     * Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
+     * Expected: Copies A.txt B.txt AB.txt to folder1/A.txt folder1/B.txt folder1/AB.txt and outputs correctly
+     */
+    @Test
+    void testEvaluateSequenceCommandsWithPasteCommandAndCpCommandAndDiffCommandShouldCopiesSourceFilesAndOutputsCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Path file3 = tempDir.resolve(FILE_NAME_6);
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Files.createDirectory(folder);
+        Files.createFile(file1);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.createFile(file2);
+        Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
+        Files.createFile(file3);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(CP_APP, file1.toString(), file2.toString(), file3.toString(), folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(DIFF_APP, folder.resolve(FILE_NAME_4).toString(), folder.resolve(FILE_NAME_5).toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertTrue(Files.exists(folder.resolve(FILE_NAME_4))); // check that folder1/A.txt exists
+        assertTrue(Files.exists(folder.resolve(FILE_NAME_5))); // check that folder1/B.txt exists
+        assertTrue(Files.exists(folder.resolve(FILE_NAME_6))); // check that folder1/AB.txt exists
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        assertEquals(FILE_CONTENT_1 + "\t" + FILE_CONTENT_2 + STRING_NEWLINE + "< " + FILE_CONTENT_1 + STRING_NEWLINE + "> " + FILE_CONTENT_2 + STRING_NEWLINE, outputStream.toString());
     }
 
     /**
