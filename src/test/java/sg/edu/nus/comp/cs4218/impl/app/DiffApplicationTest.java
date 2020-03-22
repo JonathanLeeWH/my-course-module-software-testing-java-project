@@ -250,16 +250,7 @@ class diffAppTest {
         assertTrue(actualOutput.contains(expected));
         assertTrue(actualOutput.contains(expectedTwo));
     }
-
-    @Test
-    void testFindCommonSubDirectoriesMethodUsingDiffTwoDirMethodWithTwoDirectoriesThatHasSubDirectories() throws DiffException {
-        String expected = "Common subdirectories: " + DIFFDIR1NAME + "/" + "diffSubDir1" + " and " + DIFFDIR2NAME + "/" + "diffSubDir1";
-        String actualOutput = diffApp.diffTwoDir(DIFFDIR1, DIFFDIR2, true, true, true);
-        assertTrue(actualOutput.contains(expected));
-    }
-
-
-
+    
     // Test diffFileAndStdin
 
     /**
