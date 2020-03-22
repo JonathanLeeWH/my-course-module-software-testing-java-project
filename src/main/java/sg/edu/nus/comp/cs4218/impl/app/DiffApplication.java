@@ -37,6 +37,9 @@ public class DiffApplication implements DiffInterface { //NOPMD
                 output = compareBinaryFiles(files.get(0), files.get(1)).concat(STRING_NEWLINE);
                 stdout.write(output.getBytes());
             } else if (!file.isDirectory() && !diffArguments.isStdin()) { // Directories
+                if (files.size() > 2) {
+                    throw new DiffException(ERR_MORE_THAN_TWO_FILES);
+                }
                 output = diffTwoFiles(files.get(0), files.get(1), diffArguments.isShowIdenticalMessage(),
                         diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage()).concat(STRING_NEWLINE);
                 stdout.write(output.getBytes());
