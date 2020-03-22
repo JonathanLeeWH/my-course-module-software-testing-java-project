@@ -751,20 +751,57 @@ public class GlobbingIT {
     }
 
 
-//    /**
-//     * Tests evaluate method grep and glob interaction
-//     * For example: grep "some content" TestFile*
-//     * Expected: Output 1 line in TestFile1.txt
-//     */
-//    @Test
-//    void testEvaluateGrepCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
-//
-//        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TestFile*");
-//        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-//        callCommand.evaluate(inputStream,outputStream);
-//        assertEquals(   "There are some content here." + System.lineSeparator() , outputStream.toString());
-//    }
+    /**
+     * Tests evaluate method grep and glob interaction
+     * For example: grep "some content" TestFile*
+     * Expected: Output 1 line in TestFile1.txt
+     */
+    @Test
+    void testEvaluateGrepCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
 
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   "There are some content here." + System.lineSeparator() , outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method grep and glob interaction
+     * For example: grep "some content" TestFile*
+     * Expected: Output 3 line in TestFile1.txt TestFile2.txt TestFile3.txt
+     */
+    @Test
+    void testEvaluateGrepCommandWithGlobInteractionMultipleFileShouldOutputCorrectly() throws Exception {
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME2));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+        BufferedWriter writer2 = new BufferedWriter(new PrintWriter(FILENAME3));
+        writer2.write(FILE_1_CONTENT);
+        writer2.flush();
+        writer2.close();
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals(   FILENAME1 + ":" + " There are some content here." + System.lineSeparator() +
+                FILENAME2 + ":" + " There are some content here." + System.lineSeparator() +
+                FILENAME3 + ":" + " There are some content here." + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method grep and glob interaction
+     * For example: grep "some content" TextFile*
+     * Expected: REturn empty as no file found
+     */
+    @Test
+    void testEvaluateGrepCommandWithGlobInteractionNoFileShouldThrowFileNotFound() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(GREP_APP,"\"some content\"" ,"TextFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        assertEquals(   "", outputStream.toString());
+    }
 
 
 }
