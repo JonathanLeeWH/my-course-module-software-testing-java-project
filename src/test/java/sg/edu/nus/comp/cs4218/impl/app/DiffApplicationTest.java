@@ -13,7 +13,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_ARGS;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_SPACE;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
-class diffAppTest {
+class DiffApplicationTest {
     private static DiffApplication diffApp;
     private static final String DIFF_EXCEPTION = "diff: ";
     private static final String IDENTICAL = " are identical";
