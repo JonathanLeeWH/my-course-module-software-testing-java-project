@@ -86,6 +86,9 @@ public class ApplicationRunner {
             case APP_MV:
                 application = new MvApplication();
                 break;
+            case APP_DIFF:
+                application = new DiffApplication();
+                break;
             case APP_PASTE:
                 application = new PasteApplication();
                 break;

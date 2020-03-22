@@ -1,73 +1,82 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.DiffException;
+import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_STREAMS;
+import static org.junit.jupiter.api.Assertions.*;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_SPACE;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 public class DiffApplicationIT {
-    private static final String SAME_LINE = "Same line";
-    private static final String FILE_ONE_TEXT = SAME_LINE + System.lineSeparator() + "Different line";
-    private static final String FILE_TWO_TEXT = SAME_LINE + System.lineSeparator() + "Different line";
-    private static final String FILE_THREE_TEXT = SAME_LINE + System.lineSeparator() + SAME_LINE;
-    private static final String FILE_ONE_NAME = "fileOne";
-    private static final String FILE_TWO_NAME = "fileTwo";
-    private static final String FILE_THREE_NAME = "fileThree";
-    private static final String FILE_FORMAT = ".txt";
-    private static final String SAME_OUTPUT = "Files are identical";
-    private static final String DIFF_OUTPUT = "The two files are different";
-    private static final String DIFF_LINES = "<line2" + System.lineSeparator() + ">line2";
+    private static DiffApplication diffApp;
     private static final String DIFF_EXCEPTION = "diff: ";
-    private static DiffApplication diffApplication;
-    private static File fileOne;
-    private static File fileTwo;
-    private static File fileThree;
-    private static InputStream stdinOne;
-    private static OutputStream stdoutOne, stdoutTwo, stdoutThree, osPrint;
-    private static boolean isShowSame, isNoBlank, isSimple;
+    private static final String IDENTICAL = " are identical";
+    private static final String FILES = "Files ";
+    private static final String DIFFFOLDER = "DiffTestFolder/";
+    private static final String ORIGINAL_DIR = EnvironmentHelper.currentDirectory;
+    private static final Path DIRECTORY = Paths.get("src", "test", "java", "sg", "edu", "nus","comp", "cs4218", "testdata", "DiffTestFolder");
+    private static final String ABSOLUTE_PATH = DIRECTORY.toFile().getAbsolutePath();
+    private static OutputStream stdout;
 
+    private static final String DIFF1_FILE = ABSOLUTE_PATH + "/diff1.txt";
+    private static final String DIFF1_FILENAME = "diff1.txt";
+    private static final String DIFF1_IDENTICAL_FILE = ABSOLUTE_PATH + "/diff1-identical.txt"; // NOPMD
+    private static final String DIFF1_IDENTICAL_FILENAME = "diff1-identical.txt"; // NOPMD
+    private static final String DIFF1_BLANK_LINES_FILE = ABSOLUTE_PATH + "/diff1-blank-lines.txt"; // NOPMD
+    private static final String DIFF1_BLANK_LINES_FILENAME = "diff1-blank-lines.txt"; // NOPMD
+    private static final String DIFF2_FILE = ABSOLUTE_PATH + "/diff2.txt";
+    private static final String DIFF2_FILENAME = "diff2.txt";
+
+    private static final String DIFFDIR1 = ABSOLUTE_PATH + "/diffDir1";
+    private static final String DIFFDIR1NAME = "diffDir1";
+    private static final String DIFFDIR1_IDENTICAL = ABSOLUTE_PATH + "/diffDir1-identical"; // NOPMD
+    private static final String DIFFDIR1NAME_IDENTICAL = "diffDir1-identical"; // NOPMD
+    private static final String DIFFDIR2 = ABSOLUTE_PATH + "/diffDir2";
+    private static final String DIFFDIR2NAME = "diffDir2";
+
+    private static final String DIFFBIN1 = ABSOLUTE_PATH + "/diff1Bin.bin";
+    private static final String DIFFBIN1NAME = "diff1Bin.bin";
+    private static final String DIFFBIN2 = ABSOLUTE_PATH + "/diff2Bin.bin";
+    private static final String DIFFBIN2NAME = "diff2Bin.bin";
+    private static final String DIFFBIN3 = ABSOLUTE_PATH + "/diff3Bin.bin";
+    private static final String DIFFBIN3NAME = "diff3Bin.bin";
+    
     @BeforeEach
     void setUp() throws Exception {
-        diffApplication = new DiffApplication();
-        fileOne = File.createTempFile(FILE_ONE_NAME, FILE_FORMAT);
-        fileTwo = File.createTempFile(FILE_TWO_NAME, FILE_FORMAT);
-        fileThree = File.createTempFile(FILE_THREE_NAME, FILE_FORMAT);
-        stdinOne = new FileInputStream(fileOne);
-        stdoutOne = new FileOutputStream(fileOne);
-        stdoutTwo = new FileOutputStream(fileTwo);
-        stdoutThree = new FileOutputStream(fileThree);
-        osPrint = new ByteArrayOutputStream();
-        stdoutOne.write(FILE_ONE_TEXT.getBytes());
-        stdoutTwo.write(FILE_TWO_TEXT.getBytes());
-        stdoutThree.write(FILE_THREE_TEXT.getBytes());
+        diffApp = new DiffApplication();
+        stdout = new ByteArrayOutputStream();
     }
 
     @AfterEach
     void tearDown() throws IOException {
-        fileOne.deleteOnExit();
-        fileTwo.deleteOnExit();
-        fileThree.deleteOnExit();
-        stdinOne.close();
-        stdoutOne.close();
-        stdoutTwo.close();
-        stdoutThree.close();
+        stdout.flush();
+        EnvironmentHelper.currentDirectory = ORIGINAL_DIR;
     }
 
+    @AfterAll
+    static void reset() {
+        EnvironmentHelper.currentDirectory = ORIGINAL_DIR;
+    }
+    
     /**
      * Run Null Stdout and null Stdin in run method with valid filenames in args.
      * Exception: Throw DiffException
      */
     @Test
     void testRunWhenBothStdinAndStdoutAreNullShouldThrowDiffException() {
-        String[] args = {fileOne.toPath().toString(), fileTwo.toPath().toString()};
+        String[] args = {DIFF1_FILE, DIFF1_IDENTICAL_FILE};
         Exception thrown = assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, null, null);
+            diffApp.run(args, null, null);
         });
         String expected = DIFF_EXCEPTION + ERR_NULL_STREAMS;
         assertEquals(expected, thrown.getMessage());
@@ -79,9 +88,9 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunWhenOnlyStdinIsNullShouldThrowDiffException() {
-        String[] args = {fileOne.toPath().toString(), fileTwo.toPath().toString()};
+        String[] args = {DIFF1_FILE, DIFF1_IDENTICAL_FILE};
         assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, null, stdoutOne);
+            diffApp.run(args, null, stdout);
         });
     }
 
@@ -91,33 +100,27 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunWhenOnlyStdoutIsNullShouldThrowDiffException() {
-        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
-        String[] args = {fileOne.toPath().toString(), fileTwo.toPath().toString()};
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, null);
-        });
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            String[] args = {DIFF1_FILE, DIFF1_IDENTICAL_FILE};
+            assertThrows(DiffException.class, () -> {
+                diffApp.run(args, inputStream, null);
+            });
+        } catch (Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
     }
 
     @Test
     void runNullArgsShouldThrowDiffException() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(null, inputStream, stdoutOne);
-        });
-    }
-
-    /**
-     * Test run method with args that has dash that comes after filename.
-     * The underlying assumption is that stdin should come before any filenames.
-     * Exception: Throw DiffException
-     */
-    @Test
-    void testRunStdinInSecondArgumentShouldThrowDiffException() {
-        String[] args = {fileOne.toPath().toString(), "-"};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.toPath().toString().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            assertThrows(DiffException.class, () -> {
+                diffApp.run(null, inputStream, stdout);
+            });
+        } catch (Exception e) {
+                fail("should not fail: " + e.getMessage());
+        }
     }
 
     /**
@@ -126,11 +129,15 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunOnlyOneArgShouldThrowDiffException() {
-        String[] args = {fileOne.toPath().toString()};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.getPath().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
+        try {
+            String[] args = {DIFF1_FILE};
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            assertThrows(DiffException.class, () -> {
+                diffApp.run(args, inputStream, stdout);
+            });
+        } catch (Exception e) {
+                fail("should not fail: " + e.getMessage());
+            }
     }
 
     /**
@@ -139,11 +146,15 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunOnlyOneArgInStdinWithDashSShouldThrowDiffException() {
-        String[] args = {"-s", fileOne.toPath().toString()};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.getPath().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
+        try {
+            String[] args = {"-s", DIFF1_FILE};
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            assertThrows(DiffException.class, () -> {
+                diffApp.run(args, inputStream, stdout);
+            });
+        } catch (Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
     }
 
     /**
@@ -152,11 +163,15 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunOnlyOneArgWithDashBShouldThrowDiffException() {
-        String[] args = {"-B", fileOne.toPath().toString()};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.getPath().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
+        try {
+            String[] args = {"-B", DIFF1_FILE};
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            assertThrows(DiffException.class, () -> {
+                diffApp.run(args, inputStream, stdout);
+            });
+        } catch (Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
     }
 
 
@@ -166,11 +181,15 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunOnlyOneArgWithDashQShouldThrowDiffException() {
-        String[] args = {"-q", fileOne.toPath().toString()};
-        InputStream inputStream = new ByteArrayInputStream(fileOne.getPath().getBytes());
-        assertThrows(DiffException.class, () -> {
-            diffApplication.run(args, inputStream, stdoutOne);
-        });
+        try {
+            String[] args = {"-q", DIFF1_FILE};
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            assertThrows(DiffException.class, () -> {
+                diffApp.run(args, inputStream, stdout);
+            });
+        } catch (Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
     }
 
     /**
@@ -179,9 +198,15 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunTwoSameFilesShouldReturnSameOutputMessageWhenDashSIsProvided() throws Exception {
-        String[] args = {"-s", fileOne.toPath().toString(), fileOne.toPath().toString()};
-        diffApplication.run(args, stdinOne, osPrint);
-        assertEquals(SAME_OUTPUT, osPrint.toString());
+        String[] args = {"-s", DIFF1_FILE, DIFF1_FILE};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_FILENAME + " are identical" + System.lineSeparator();
+            assertEquals(expected, stdout.toString());
+        } catch (DiffException e) {
+            fail("should not fail: " + e.getMessage());
+        }
     }
 
     /**
@@ -190,9 +215,15 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunTwoFilesWithIdenticalContentShouldReturnSameOutputMessageWhenDashSIsProvided() throws Exception {
-        String[] args = {"-s", fileOne.toPath().toString(), fileTwo.toPath().toString()};
-        diffApplication.run(args, stdinOne, osPrint);
-        assertEquals(SAME_OUTPUT, osPrint.toString());
+        String[] args = {"-s", DIFF1_FILE, DIFF1_IDENTICAL_FILE};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_IDENTICAL_FILENAME + " are identical";
+            assertEquals(expected + System.lineSeparator(), stdout.toString());
+        } catch (DiffException e) {
+            fail("should not fail: " + e.getMessage());
+        }
     }
 
     /**
@@ -201,9 +232,15 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunTwoIdenticalFilesShouldReturnNothingWhenDashQIsGiven() throws Exception {
-        String[] args = {"-q", fileOne.toPath().toString(), fileOne.toPath().toString()};
-        diffApplication.run(args, stdinOne, osPrint);
-        assertEquals("", stdinOne.toString());
+        String[] args = {"-q", DIFF1_FILE, DIFF1_FILE};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            assertEquals(System.lineSeparator(), stdout.toString());
+        } catch (DiffException e) {
+            fail("should not fail: " + e.getMessage());;
+        }
+
     }
 
     /**
@@ -212,10 +249,13 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunTwoDifferentFilesWithSameContentShouldReturnNothingWhenDashQIsGiven() throws Exception {
-        String[] args = {"-q", FILE_ONE_NAME, FILE_TWO_NAME};
-        diffApplication.run(args, stdinOne, osPrint);
-        assertEquals("", diffApplication.diffTwoFiles(FILE_ONE_NAME, FILE_TWO_NAME, false,
-                true, true));
+        String[] args = {"-q", DIFF1_FILENAME, DIFF1_IDENTICAL_FILENAME};
+        try {
+            assertEquals("", diffApp.diffTwoFiles(DIFF1_FILE, DIFF1_IDENTICAL_FILE, false,
+                    true, true));
+        } catch (DiffException e) {
+            fail("should not fail: " + e.getMessage());
+        }
     }
 
     /**
@@ -224,8 +264,14 @@ public class DiffApplicationIT {
      */
     @Test
     void testRunDiffTwoFilesMethodWithTwoFilesThatHaveDifferentContentsShouldReturnDiffMessage() throws Exception {
-        assertEquals(DIFF_OUTPUT, diffApplication.diffTwoFiles(FILE_ONE_NAME, FILE_THREE_NAME, true,
-                true, true));
+        String expected = "Files " + DIFF1_FILENAME + CHAR_SPACE + DIFF2_FILENAME + " differ";
+        try {
+            assertEquals(expected, diffApp.diffTwoFiles(DIFF1_FILE, DIFF2_FILE, true,
+                    true, true));
+        } catch (DiffException e) {
+            fail("should not fail: " + e.getMessage());
+        }
+
     }
 
     /**
@@ -234,10 +280,194 @@ public class DiffApplicationIT {
      */
     @Test
     void runTwoSameFilesWithoutAnyFlagsShouldPrintNothing() throws Exception {
-        String[] args = {fileOne.toPath().toString(), fileOne.toPath().toString()};
-        diffApplication.run(args, stdinOne, osPrint);
-        assertEquals("", osPrint.toString());
-
+        String[] args = {DIFF1_FILE, DIFF1_FILE};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            assertEquals(System.lineSeparator(), stdout.toString());
+        } catch(DiffException e) {
+            fail("should not fail: " + e.getMessage());
+        }
     }
 
+    @Test
+    void testRunWithValidStdinInSecondArgAndValidFilenameShouldReturnString() throws Exception {
+        String[] args = {DIFF1_FILE, "-"};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            assertEquals(System.lineSeparator(), stdout.toString());
+        } catch(DiffException e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithValidStdinInFirstArgAndValidFilenameShouldReturnString() throws Exception {
+        String[] args = {"-", DIFF1_FILE};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            assertEquals(System.lineSeparator(), stdout.toString());
+        } catch(DiffException e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithValidStdinInFirstArgAndValidFilenameThatHasTheDifferentFileNamesShouldReturnString() throws Exception {
+        String[] args = {"-", DIFF1_FILE};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF2_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            String expected = "< test A" + STRING_NEWLINE +
+                    "< test B" + STRING_NEWLINE +
+                    "< test C" + STRING_NEWLINE +
+                    "> test D" + STRING_NEWLINE +
+                    "> test E" + STRING_NEWLINE +
+                    "> test F" + STRING_NEWLINE;
+            assertEquals(expected, stdout.toString());
+        } catch(DiffException e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithValidStdinInFirstArgAndInvalidFilenameShouldThrowDiffException() throws Exception {
+        String[] args = {"-", "invalidFile"};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            Exception thrown = assertThrows(DiffException.class, () -> {
+                    diffApp.run(args, inputStream, stdout);
+            });
+            assertEquals("diff: " + ERR_INVALID_ARGS, thrown.getMessage());
+        } catch(Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithOneInvalidFileAndOneValidFile() {
+        try {
+            String[] args = {"invalid file", DIFF1_IDENTICAL_FILE};
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            Exception thrown = assertThrows(DiffException.class, () -> {
+                diffApp.run(args, inputStream, stdout);
+            });
+            String expected =  DIFF_EXCEPTION + ERR_INVALID_ARGS;
+            assertEquals(expected, thrown.getMessage());
+        } catch (Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithDiffDirContainFilesWithDifferentContent() {
+        try {
+            String[] args = {DIFFDIR1, DIFFDIR2};
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            String expected = "Only in diffDir1: diff1-identical.txt" + StringUtils.STRING_NEWLINE +
+                    "Only in diffDir2: diff2.txt";
+            assertTrue(stdout.toString().contains(expected));
+        } catch (Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunDiffDirContainFilesWithDifferentContentUsingFlagQ() {
+        try {
+            String[] args = {"-q", DIFFDIR1, DIFFDIR2};
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            String expected = "Only in diffDir1: diff1-identical.txt" + StringUtils.STRING_NEWLINE +
+                    "Only in diffDir2: diff2.txt";
+            assertTrue(stdout.toString().contains(expected));
+        } catch (Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunDiffDirContainFilesWithDifferentContentUsingFlagS() {
+        try {
+            String[] args = {"-s", DIFFDIR1, DIFFDIR2};
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            String expected = "Only in diffDir1: diff1-identical.txt" + STRING_NEWLINE +
+                    "Only in diffDir2: diff2.txt";
+            String expectedTwo = FILES + DIFFDIR1NAME + "/" +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR2NAME + "/" + DIFF1_FILENAME + IDENTICAL;;
+            assertTrue(stdout.toString().contains(expected));
+            assertTrue(stdout.toString().contains(expectedTwo));
+        } catch (Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithValidIdenticalDirectoriesShouldReturnString() {
+        String[] args = {DIFFDIR1, DIFFDIR1_IDENTICAL};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            assertEquals("", stdout.toString().trim());
+        } catch(Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithOneInvalidIdenticalDirectoriesShouldReturnString() {
+        String[] args = {DIFFDIR1, "invalidDir"};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            Exception thrown = assertThrows(DiffException.class, () -> {
+                diffApp.run(args, inputStream, stdout);
+            });
+            assertEquals("diff: " + ERR_INVALID_ARGS, thrown.getMessage());
+        } catch(Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithValidIdenticalDirectoriesWithFlagSShouldReturnSameMessage() {
+        String[] args = {"-s", DIFFDIR1, DIFFDIR1_IDENTICAL};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            String expected = FILES + DIFFDIR1NAME + "/" +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR1NAME_IDENTICAL + "/" + DIFF1_FILENAME + IDENTICAL;
+            String expectedTwo = FILES + DIFFDIR1NAME + "/" + DIFF1_IDENTICAL_FILENAME + CHAR_SPACE + DIFFDIR1NAME_IDENTICAL + "/" + DIFF1_IDENTICAL_FILENAME + IDENTICAL;
+            assertTrue(stdout.toString().contains(expected));
+            assertTrue(stdout.toString().contains(expectedTwo));
+        } catch(Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+    
+    @Test
+    void testRunWithBinaryFilesWithDifference() {
+        String[] args = {DIFFBIN1, DIFFBIN2};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            String expected = "Binary" + " files " + DIFFFOLDER +  DIFFBIN1NAME + CHAR_SPACE + DIFFFOLDER + DIFFBIN2NAME + " differ";
+            assertTrue(stdout.toString().contains(expected));
+        } catch(Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRunWithBinaryFilesWithNoDifference() {
+        String[] args = {DIFFBIN1, DIFFBIN3};
+        try {
+            InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
+            diffApp.run(args, inputStream, stdout);
+            assertTrue(stdout.toString().contains(STRING_NEWLINE));
+        } catch(Exception e) {
+            fail("should not fail: " + e.getMessage());
+        }
+    }
 }

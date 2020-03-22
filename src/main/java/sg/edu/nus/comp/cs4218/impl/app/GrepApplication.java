@@ -162,7 +162,7 @@ public class GrepApplication implements GrepInterface {
         if (convertedPath.length()>=home.length() && convertedPath.substring(0, home.length()).trim().equals(home)) {
             newPath = convertedPath;
         } else {
-            newPath = currentDir + CHAR_FILE_SEP + "src\\test\\java\\tdd\\" + convertedPath;
+            newPath = currentDir + CHAR_FILE_SEP + convertedPath;
         }
         return newPath;
     }
