@@ -662,7 +662,7 @@ public class GlobbingIT {
      * Expected: Should throw error as no Files globbed
      */
     @Test
-    void testEvaluateCpvCommandWithGlobInteractionNoFileShouldThrowFileNotFound() throws Exception {
+    void testEvaluateCpCommandWithGlobInteractionNoFileShouldThrowFileNotFound() throws Exception {
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList("cp" ,"TextFile*", "AnotherFolder");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
@@ -670,6 +670,60 @@ public class GlobbingIT {
 
     }
 
+    /**
+     * Tests evaluate method wc and glob interaction
+     * For example: wc TestFile*
+     * Expected: Output correctly for TestFile1.txt
+     */
+    @Test
+    void testEvaluateWcCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(WC_APP ,"TestFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+        assertEquals( String.format(" %7d %7d %7d", 3, 20, 110)+ " " + FILENAME1 + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method wc and glob interaction
+     * For example: wc TestFile*
+     * Expected: Output correctly for TestFile1.txt TestFile2.txt
+     */
+    @Test
+    void testEvaluateWcCommandWithGlobInteraction3FileShouldOutputCorrectly() throws Exception {
+
+        BufferedWriter writer1 = new BufferedWriter(new PrintWriter(FILENAME2));
+        writer1.write(FILE_1_CONTENT);
+        writer1.flush();
+        writer1.close();
+
+        BufferedWriter writer2 = new BufferedWriter(new PrintWriter(FILENAME3));
+        writer2.write(FILE_1_CONTENT);
+        writer2.flush();
+        writer2.close();
+        List<String> argList = StringsArgListHelper.concantenateStringsToList(WC_APP, "TestFile*");
+        callCommand = new CallCommand(argList, new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream, outputStream);
+        assertEquals(String.format(" %7d %7d %7d", 3, 20, 110) + " " + FILENAME1 + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 3, 20, 110) + " " + FILENAME2 + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 3, 20, 110) + " " + FILENAME3 + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 9, 60, 330) + " " + "total" + System.lineSeparator(), outputStream.toString());
+
+    }
+    /**
+     * Tests evaluate method wc and glob interaction
+     * For example: wc TextFile*
+     * Expected: Should throw error as no Files globbed
+     */
+    @Test
+    void testEvaluateWcCommandWithGlobInteractionNoFileShouldThrowFileNotFound() throws Exception {
+
+        List<String> argList = StringsArgListHelper.concantenateStringsToList("wc" ,"TextFile*");
+        callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
+        callCommand.evaluate(inputStream,outputStream);
+
+        assertEquals("wc: No such file or directory" + System.lineSeparator(), outputStream.toString());
+    }
 
 
 //    /**
