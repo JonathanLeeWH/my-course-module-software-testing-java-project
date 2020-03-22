@@ -280,7 +280,7 @@ public class DiffApplicationIT {
             e.getMessage();
         }
     }
-
+/*
     @Test
     void testRunWithValidIdenticalDirectoriesShouldReturnString() {
         String[] args = {dirOne.toString(), dirOne.toString()};
@@ -291,7 +291,7 @@ public class DiffApplicationIT {
             e.getMessage();
         }
     }
-/*
+
     @Test
     void testRunWithValidDifferentDirectoriesShouldReturnString() {
         String[] args = {dirOne.toString(), dirTwo.toString()};
