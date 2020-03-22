@@ -291,7 +291,7 @@ public class DiffApplicationIT {
             e.getMessage();
         }
     }
-
+/*
     @Test
     void testRunWithValidDifferentDirectoriesShouldReturnString() {
         String[] args = {dirOne.toString(), dirTwo.toString()};
@@ -311,5 +311,5 @@ public class DiffApplicationIT {
         });
         String expected =  DIFF_EXCEPTION + ERR_INVALID_ARGS;
         assertEquals(expected, thrown.getMessage());
-    }
+    } */
 }
