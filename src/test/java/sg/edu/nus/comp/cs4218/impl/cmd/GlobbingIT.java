@@ -186,7 +186,7 @@ public class GlobbingIT {
         List<String> argList = StringsArgListHelper.concantenateStringsToList(LS_APP , "TestFolder2*");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
 
-        assertThrows(LsException.class, () -> callCommand.evaluate(System.in, outputStream));
+        assertThrows(Exception.class, () -> callCommand.evaluate(System.in, outputStream));
     }
 
     /**
@@ -279,7 +279,7 @@ public class GlobbingIT {
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList(SORT_APP ,"TextFile*");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-        assertThrows(SortException.class, () -> callCommand.evaluate(System.in, outputStream));
+        assertThrows(Exception.class, () -> callCommand.evaluate(System.in, outputStream));
     }
 
     /**
@@ -325,7 +325,7 @@ public class GlobbingIT {
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList(CUT_APP ,"-c","3", "TextFile*");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-        assertThrows( CutException.class , () -> callCommand.evaluate(System.in, outputStream));
+        assertThrows(Exception.class , () -> callCommand.evaluate(System.in, outputStream));
     }
 
     /**
@@ -395,7 +395,7 @@ public class GlobbingIT {
         assertFalse(file.exists());
         List<String> argList = StringsArgListHelper.concantenateStringsToList("rm" ,"TestFile3*");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-        assertThrows(RmException.class, ()-> callCommand.evaluate(inputStream,outputStream));
+        assertThrows(Exception.class, ()-> callCommand.evaluate(inputStream,outputStream));
     }
 
     /**
@@ -486,7 +486,7 @@ public class GlobbingIT {
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList("mv" ,"TextFile*", "AnotherFolder");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-        assertThrows(MvException.class, ()-> callCommand.evaluate(inputStream,outputStream));
+        assertThrows(Exception.class, ()-> callCommand.evaluate(inputStream,outputStream));
 
     }
 
@@ -611,7 +611,7 @@ public class GlobbingIT {
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList(PASTE_APP ,"TextFile*", OUTPUT_REDIR_CHAR , OUTPUT_FILE_1);
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-        assertThrows(PasteException.class, ()-> callCommand.evaluate(inputStream,outputStream));
+        assertThrows(Exception.class, ()-> callCommand.evaluate(inputStream,outputStream));
 
     }
 
@@ -681,7 +681,7 @@ public class GlobbingIT {
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList("cp" ,"TextFile*", "AnotherFolder");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-        assertThrows(CpException.class, ()-> callCommand.evaluate(inputStream,outputStream));
+        assertThrows(Exception.class, ()-> callCommand.evaluate(inputStream,outputStream));
 
     }
 
@@ -694,9 +694,11 @@ public class GlobbingIT {
     void testEvaluateWcCommandWithGlobInteraction1FileShouldOutputCorrectly() throws Exception {
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList(WC_APP ,"TestFile*");
+        File file = new File(FILENAME1);
+        long fileLength = file.length();
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
         callCommand.evaluate(inputStream,outputStream);
-        assertEquals( String.format(" %7d %7d %7d", 3, 20, 110)+ " " + FILENAME1 + System.lineSeparator(), outputStream.toString());
+        assertEquals( String.format(" %7d %7d %7d", 3, 20, fileLength)+ " " + FILENAME1 + System.lineSeparator(), outputStream.toString());
     }
 
     /**
@@ -716,13 +718,21 @@ public class GlobbingIT {
         writer2.write(FILE_1_CONTENT);
         writer2.flush();
         writer2.close();
+
+        File file = new File(FILENAME1);
+        long fileLength = file.length();
+        File file2 = new File(FILENAME2);
+        long fileLength2 = file2.length();
+        File file3 = new File(FILENAME3);
+        long fileLength3 = file3.length();
+        long totalLength = fileLength + fileLength2 + fileLength3;
         List<String> argList = StringsArgListHelper.concantenateStringsToList(WC_APP, "TestFile*");
         callCommand = new CallCommand(argList, new ApplicationRunner(), new ArgumentResolver());
         callCommand.evaluate(inputStream, outputStream);
-        assertEquals(String.format(" %7d %7d %7d", 3, 20, 110) + " " + FILENAME1 + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 3, 20, 110) + " " + FILENAME2 + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 3, 20, 110) + " " + FILENAME3 + System.lineSeparator()
-                + String.format(" %7d %7d %7d", 9, 60, 330) + " " + "total" + System.lineSeparator(), outputStream.toString());
+        assertEquals(String.format(" %7d %7d %7d", 3, 20, fileLength) + " " + FILENAME1 + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 3, 20, fileLength2) + " " + FILENAME2 + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 3, 20, fileLength3) + " " + FILENAME3 + System.lineSeparator()
+                + String.format(" %7d %7d %7d", 9, 60, totalLength) + " " + "total" + System.lineSeparator(), outputStream.toString());
 
     }
     /**
