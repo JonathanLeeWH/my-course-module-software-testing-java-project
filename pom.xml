@@ -115,6 +115,7 @@
                         <param>sg.edu.nus.comp.cs4218.impl.cmd.GlobbingIT**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.util.ArgumentResolverTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.util.IORedirectionIT**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.ShellSystemTest**</param>
                         <param>**/tdd/**</param>
                     </excludedTestClasses>
                 </configuration>
