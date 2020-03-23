@@ -111,7 +111,7 @@
                         <param>sg.edu.nus.comp.cs4218.impl.app.SedApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.cmd.GlobbingTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.util.ArgumentResolverTest**</param>
-                        <!-- This one has to be excluded permernantly as it involves temp folder manipulation. -->
+                        <!-- This one has to be excluded permanently as it involves temp folder manipulation. -->
                         <param>sg.edu.nus.comp.cs4218.impl.util.IORedirectionIT**</param>
                         <param>**/tdd/**</param>
                     </excludedTestClasses>
