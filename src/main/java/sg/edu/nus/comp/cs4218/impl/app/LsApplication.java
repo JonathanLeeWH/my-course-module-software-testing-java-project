@@ -132,7 +132,7 @@ public class LsApplication implements LsInterface {
             try {
                 File file = new File(path.toString());
                 if(file.isDirectory() && !isFoldersOnly) {
-                    if(!previousFile.getPath().equals("") && !previousFile.isDirectory() && lastFileInFolder == false && !isRecursive){
+                    if(!previousFile.getPath().equals("") && !previousFile.isDirectory() && !lastFileInFolder && !isRecursive){
                         result.append(System.lineSeparator());
                         lastFileInFolder = true;
                     }
