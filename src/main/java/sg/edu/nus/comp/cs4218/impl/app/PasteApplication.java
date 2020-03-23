@@ -217,7 +217,9 @@ public class PasteApplication implements PasteInterface {
                     } else if (currentLine != null && StringUtils.isBlank(previousLine)) {
                         stringBuilder.append(currentLine);
                     }
-                    previousLine = currentLine;
+                    if (currentLine != null) {
+                        previousLine = currentLine;
+                    }
                 }
             if (allLinesNull) {
                 hasMoreLines = false;
