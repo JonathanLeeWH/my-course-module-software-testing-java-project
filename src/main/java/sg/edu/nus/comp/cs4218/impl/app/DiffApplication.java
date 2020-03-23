@@ -17,6 +17,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.*;
 // Skeleton Code for DiffApplication since we are not allocated EF1
 public class DiffApplication implements DiffInterface { //NOPMD
     private static final String FILES = "Files ";
+    private static final String DIFFER = " differ";
     private static final int BUFFER_SIZE = 4096;
 
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws DiffException {
@@ -33,10 +34,10 @@ public class DiffApplication implements DiffInterface { //NOPMD
                 throw new DiffException(ERR_FILE_NOT_FOUND);
             }
             String fileFormat = files.get(0).substring(files.get(0).length()-3);
-            if (fileFormat.equals("bmp") || fileFormat.equals("bin")) {
+            if ("bin".equals(fileFormat) || "bmp".equals(fileFormat)) {
                 output = compareBinaryFiles(files.get(0), files.get(1)).concat(STRING_NEWLINE);
                 stdout.write(output.getBytes());
-            } else if (!file.isDirectory() && !diffArguments.isStdin()) { // Directories
+            } else if (!file.isDirectory() && !diffArguments.isStdin()) { //NOPMD
                 if (files.size() > 2) {
                     throw new DiffException(ERR_MORE_THAN_TWO_FILES);
                 }
@@ -80,7 +81,7 @@ public class DiffApplication implements DiffInterface { //NOPMD
                     return FILES + fileA.getParentFile().getName() + "/" +  fileA.getName()
                             + CHAR_SPACE + fileB.getParentFile().getName() + "/" + fileB.getName() + " are identical";
             } else if (difference.length() > 0 && isSimple) {
-                return FILES + fileA.getName() + CHAR_SPACE + fileB.getName() + " differ";
+                return FILES + fileA.getName() + CHAR_SPACE + fileB.getName() + DIFFER;
             }
             return difference;
         } catch (IOException e) {
@@ -138,7 +139,7 @@ public class DiffApplication implements DiffInterface { //NOPMD
             if (difference.length() == 0 && isShowSame) {
                 return FILES + file.getName() + CHAR_SPACE + "-" + " are identical";
             } else if (difference.length() > 0 && isSimple) {
-                return FILES + file.getName() + CHAR_SPACE + "-" + " differ";
+                return FILES + file.getName() + CHAR_SPACE + "-" + DIFFER;
             }
             return difference;
         } catch (Exception e) {
@@ -247,11 +248,11 @@ public class DiffApplication implements DiffInterface { //NOPMD
                 }
             }
             if (isSame) {
-                if (identicalDir.length() != 0) {
+                if (identicalDir.length() == 0) {
+                    identicalDir = output.concat(identicalDir);
+                } else {
                     identicalDir = identicalDir.concat(STRING_NEWLINE);
                     identicalDir = identicalDir.concat(output);
-                } else {
-                    identicalDir = output.concat(identicalDir);
                 }
                 File folderAFile = new File(convertToAbsolutePath(folderA));
                 File folderBFile = new File(convertToAbsolutePath(folderB));
@@ -330,7 +331,7 @@ public class DiffApplication implements DiffInterface { //NOPMD
                     if (isShowSame && StringUtils.isBlank(fileDifference)) {
                         fileDifference = FILES + folderAFile.getName() + "/" + fileA.getName() + CHAR_SPACE + folderBFile.getName() + "/" + fileB.getName() + " are identical";
                     } else if (isSimple && StringUtils.isBlank(fileDifference)) {
-                        fileDifference = FILES + folderAFile.getName() + "/" + fileA.getName() + CHAR_SPACE + folderBFile.getName() + "/" + fileB.getName() + " differ";
+                        fileDifference = FILES + folderAFile.getName() + "/" + fileA.getName() + CHAR_SPACE + folderBFile.getName() + "/" + fileB.getName() + DIFFER;
                     }
                     output = output.concat(fileDifference);
                     break;
@@ -393,11 +394,11 @@ public class DiffApplication implements DiffInterface { //NOPMD
         File secondFile = new File(convertToAbsolutePath(secondBin));
         String firstBinContents = readBinaryFileIntoList(firstFile);
         String secondBinContents = readBinaryFileIntoList(secondFile);
-        if (!firstBinContents.equals(secondBinContents)) {
-            return "Binary files " + firstFile.getParentFile().getName() + "/" + firstFile.getName() + CHAR_SPACE
-                    + secondFile.getParentFile().getName() + "/" + secondFile.getName() + " differ";
-        } else {
+        if (firstBinContents.equals(secondBinContents)) {
             return "";
+        } else {
+            return "Binary files " + firstFile.getParentFile().getName() + "/" + firstFile.getName() + CHAR_SPACE
+                    + secondFile.getParentFile().getName() + "/" + secondFile.getName() + DIFFER;
         }
     }
     private String readBinaryFileIntoList(File bin) {
