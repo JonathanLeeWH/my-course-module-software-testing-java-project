@@ -15,7 +15,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.NO_FILE_OR_FOLDER;
 
 import java.io.*;
 
-public class ShellSystemTest {
+public class ShellImplIT {
     private static final String FILE_NAME_1 = "CS4218A.txt";
     private static final String FILE_NAME_2 = "A4218A.txt";
     private static final String FILE_NAME_3 = "CS3203A.txt";
