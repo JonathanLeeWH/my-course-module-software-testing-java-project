@@ -23,13 +23,13 @@ public class GlobbingTest {
     private static final Path DIRECTORY = Paths.get("src","test","java" , "tdd","util", "dummyTestFolder", "GlobbingTestFolder");
     private static final String RESOURCE_PATH = DIRECTORY.toString() + File.separator;
     private static final String FOLDER_WITH_FILE = RESOURCE_PATH + "B";
-    private static final String FOLDER_WITH_FILE_PATH = FOLDER_WITH_FILE + File.separator;
+    private static final String FOLDER_FILE_PATH = FOLDER_WITH_FILE + File.separator;
     private static final String FILE_1 = RESOURCE_PATH + "globbing_bar.txt";
     private static final String FILE_2 = RESOURCE_PATH + "globbing_foo.txt";
     private static final String FILE_3 = RESOURCE_PATH + "image.bmp";
     private static final String FILE_4 = RESOURCE_PATH + "file4.aat";
     private static final String FILE_5 = RESOURCE_PATH + "file5.txt";
-    private static final String FWF_FILE_1 = FOLDER_WITH_FILE_PATH + "text.txt";
+    private static final String FWF_FILE_1 = FOLDER_FILE_PATH + "text.txt";
     private static String emptyFolder;
     private static Path tempDir;
 
@@ -134,7 +134,7 @@ public class GlobbingTest {
 
     @Test
     void resolveOneArgumentSingleAsteriskFolderWithFileSuccess() throws AbstractApplicationException, ShellException {
-        String input = FOLDER_WITH_FILE_PATH + "*";
+        String input = FOLDER_FILE_PATH + "*";
         List<String> expected = Arrays.asList(FWF_FILE_1);
         List<String> actual = argumentResolver.resolveOneArgument(input);
         assertEquals(expected, actual);
@@ -142,7 +142,7 @@ public class GlobbingTest {
 
     @Test
     void resolveOneArgumentSingleAsteriskFolderWithFileFileExtensionExistSuccess() throws AbstractApplicationException, ShellException {
-        String input = FOLDER_WITH_FILE_PATH + "*.txt";
+        String input = FOLDER_FILE_PATH + "*.txt";
         List<String> expected = Arrays.asList(FWF_FILE_1);
         Collections.sort(expected);
         List<String> actual = argumentResolver.resolveOneArgument(input);
@@ -151,7 +151,7 @@ public class GlobbingTest {
 
     @Test
     void resolveOneArgumentSingleAsteriskFolderWithFileFileExtensionNonExistentSuccess() throws AbstractApplicationException, ShellException {
-        String input = FOLDER_WITH_FILE_PATH + "*.t";
+        String input = FOLDER_FILE_PATH + "*.t";
         List<String> expected = Arrays.asList(input);
         Collections.sort(expected);
         List<String> actual = argumentResolver.resolveOneArgument(input);
@@ -161,27 +161,27 @@ public class GlobbingTest {
     @Test
     void resolveOneArgumentMultipleAsterisksInARowFolderWithFileWorkTheSameAsSingleAsteriskSuccess() throws AbstractApplicationException, ShellException {
         // Double asterisks
-        String input = FOLDER_WITH_FILE_PATH + "**";
+        String input = FOLDER_FILE_PATH + "**";
         List<String> expected = Arrays.asList(FWF_FILE_1);
         Collections.sort(expected);
         List<String> actual = argumentResolver.resolveOneArgument(input);
         assertEquals(expected, actual);
 
         // Multiple asterisks
-        input = FOLDER_WITH_FILE_PATH + "*******";
+        input = FOLDER_FILE_PATH + "*******";
         actual = argumentResolver.resolveOneArgument(input);
         assertEquals(expected, actual);
     }
 
     @Test
     void resolveOneArgumentMultipleAsteriskFolderWithFileFileExtensionSuccess() throws AbstractApplicationException, ShellException {
-        String input = FOLDER_WITH_FILE_PATH + "*.t*";
+        String input = FOLDER_FILE_PATH + "*.t*";
         List<String> expected = Arrays.asList(FWF_FILE_1);
         Collections.sort(expected);
         List<String> actual = argumentResolver.resolveOneArgument(input);
         assertEquals(expected, actual);
 
-        input = FOLDER_WITH_FILE_PATH + "*.t*t";
+        input = FOLDER_FILE_PATH + "*.t*t";
         expected = Arrays.asList(FWF_FILE_1);
         Collections.sort(expected);
         actual = argumentResolver.resolveOneArgument(input);

@@ -81,10 +81,7 @@ public final class RegexArgument {
 
             File currentDir = Paths.get(EnvironmentHelper.currentDirectory + File.separator + dir).toFile();
 
-            if(!currentDir.exists()) {
-                globbedFiles.add(plaintext.toString());
-            }
-            else{
+            if(currentDir.exists()) {
                 for (File candidateFile : currentDir.listFiles()) {
                     if (candidateFile.getName().startsWith(".")) {
                         continue;
@@ -92,22 +89,11 @@ public final class RegexArgument {
 
                     String fileName = Paths.get(EnvironmentHelper.currentDirectory).relativize(candidateFile.toPath()).toString();
 
-                    if (regexPattern.matcher(fileName).matches()) {
-                        if(candidateFile.isDirectory()) {
-                            globbedFolders.add(fileName);
-                        }
-                        else{
-                            globbedFiles.add(fileName);
-                        }
-                    }
-
-                    if (candidateFile.isDirectory()) {
-                        String folderName = fileName + File.separator;
-                        if (regexPattern.matcher(folderName).matches()) {
-                            globbedFolders.add(folderName);
-                        }
-                    }
+                    addGlobbed(globbedFiles, globbedFolders, regexPattern, candidateFile, fileName);
                 }
+            }
+            else{
+                globbedFiles.add(plaintext.toString());
 
             }
 
@@ -126,6 +112,24 @@ public final class RegexArgument {
         }
 
         return globbedFiles;
+    }
+
+    private void addGlobbed(List<String> globbedFiles, List<String> globbedFolders, Pattern regexPattern, File candidateFile, String fileName) {
+        if (regexPattern.matcher(fileName).matches()) {
+            if(candidateFile.isDirectory()) {
+                globbedFolders.add(fileName);
+            }
+            else{
+                globbedFiles.add(fileName);
+            }
+        }
+
+        if (candidateFile.isDirectory()) {
+            String folderName = fileName + File.separator;
+            if (regexPattern.matcher(folderName).matches()) {
+                globbedFolders.add(folderName);
+            }
+        }
     }
 
 
