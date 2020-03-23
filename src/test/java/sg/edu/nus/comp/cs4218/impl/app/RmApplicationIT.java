@@ -1232,7 +1232,7 @@ class RmApplicationIT {
      * Tests run method when attempting to remove an empty folder in sub path but not sub path for the current path.
      * For example: rm -d ../hello2
      * Where hello2 is an empty folder that exists in the parent directory of the current directory.
-     * For example: The current directory is cd C:\Users\<COMPUTER_USER_NAME>\Documents\cs4218-project-ay1920-s2-2020-team22 and the input directory path to remove is C:\Users\<COMPUTER_USER_NAME>\Documents\hello2
+     * For example: The current directory is cd C:\Users\<COMPUTER_USER_NAME>\Documents\cs4218-project-ay1920-s2-2020-TEAMNUMBER and the input directory path to remove is C:\Users\<COMPUTER_USER_NAME>\Documents\hello2
      * Expected: Removes hello2 directory.
      */
     @Test
@@ -1260,7 +1260,7 @@ class RmApplicationIT {
      * Tests run method when attempting to remove a non empty folder in sub path but not sub path for the current path.
      * For example: rm -rd ../hello2
      * Where hello2 is a non empty folder that exists in the parent directory of the current directory.
-     * For example: The current directory is cd C:\Users\<COMPUTER_USER_NAME>\Documents\cs4218-project-ay1920-s2-2020-team22 and the input directory path to remove is C:\Users\<COMPUTER_USER_NAME>\Documents\hello2
+     * For example: The current directory is cd C:\Users\<COMPUTER_USER_NAME>\Documents\cs4218-project-ay1920-s2-2020-TEAMNUMBER and the input directory path to remove is C:\Users\<COMPUTER_USER_NAME>\Documents\hello2
      * Expected: Removes hello2 directory.
      */
     @Test
