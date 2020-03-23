@@ -24,7 +24,7 @@ public class PasteApplication implements PasteInterface {
      * @throws PasteException ERR_NULL_STREAMS, FILE_NOT_FOUND
      */
     @Override
-    public void run(String[] args, InputStream stdin, OutputStream stdout) throws PasteException {
+    public void run(String[] args, InputStream stdin, OutputStream stdout) throws PasteException {//NOPMD
         int hasFile = 0, hasStdin = 0, sum = 0; // Let hasStdin be 0 when there is no stdin, and 1 when there is stdin. Let hasFile be 0 when there is no file name, and 2 when there is at least one file name.
         if (stdout == null || stdin == null) { // if stdout is empty
             throw new PasteException(ERR_NULL_STREAMS);
@@ -50,10 +50,8 @@ public class PasteApplication implements PasteInterface {
         } else {
             List<String> filesNamesList = new ArrayList<>(); // Since total number of files is unknown, use ArrayList.
             for (int i = 0; i < args.length; i++) {
-                if (hasStdin == 1) {
-                    if (args[i].equals("-")) {
-                        throw new PasteException(INVALID_DASH);
-                    }
+                if (hasStdin == 1 && args[i].equals("-")) {
+                    throw new PasteException(INVALID_DASH);
                 }
                 if (args[i].equals("-")) { // check if argument is a stdin type of argument.
                     hasStdin = 1;
@@ -130,7 +128,7 @@ public class PasteApplication implements PasteInterface {
                     throw new PasteException(ERR_IS_DIR);
                 }
             } catch (InvalidPathException e) {
-                throw new PasteException(ERR_INVALID_FILE);
+                throw (PasteException) new PasteException(ERR_INVALID_FILE).initCause(e);
             }
         }
         try {
@@ -212,7 +210,7 @@ public class PasteApplication implements PasteInterface {
                         } else if (i == 0) {
                             stringBuilder.append(currentLine);
                         }
-                    } else if (currentLine != null && !StringUtils.isBlank(previousLine)) {
+                    } else if (currentLine != null && !StringUtils.isBlank(previousLine)) {//NOPMD
                         stringBuilder.append(CHAR_TAB).append(currentLine);
                     } else if (currentLine != null && StringUtils.isBlank(previousLine)) {
                         stringBuilder.append(currentLine);
