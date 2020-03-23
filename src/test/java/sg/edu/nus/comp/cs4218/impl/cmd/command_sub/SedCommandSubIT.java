@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.cmd.command_sub;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
@@ -71,6 +72,7 @@ public class SedCommandSubIT {
     }
 
     @Test
+    @Disabled("Incompatible with Windows.")
     void testSedCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("sed", "s/^/> /", "`sed \"s|" + testFile2.getFileName() +
                 "|" + testFile2.toFile().getPath() + "|\" " + testFile5.toFile().getPath() + "`");
@@ -111,6 +113,7 @@ public class SedCommandSubIT {
     }
 
     @Test
+    @Disabled("Incompatible with Windows.")
     void testSedCommandAndLsAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("sed", "s|" + TestFileUtils.TESTDATA_DIR + "|>> |", "`ls -d " + TestFileUtils.TESTDATA_DIR + "`" + testFile4.getFileName());
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
