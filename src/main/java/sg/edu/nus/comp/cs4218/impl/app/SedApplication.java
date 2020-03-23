@@ -135,14 +135,14 @@ public class SedApplication implements SedInterface {
                 output.append(builder.toString()).append(STRING_NEWLINE);
             }
             if (regexp.isEmpty() || replacementIndex > input.length) {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder stringBuilder = new StringBuilder();
                 for(int i = 0; i < input.length; i++) {
                     if (i != 0) {
-                        sb.append(STRING_NEWLINE);
+                        stringBuilder.append(STRING_NEWLINE);
                     }
-                    sb.append(input[i]);
+                    stringBuilder.append(input[i]);
                 }
-                String returnString = sb.toString();
+                String returnString = stringBuilder.toString();
                 return returnString + STRING_NEWLINE;
             }
         }

@@ -7,8 +7,6 @@ import sg.edu.nus.comp.cs4218.exception.GrepException;
 import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringJoiner;
@@ -29,8 +27,8 @@ public class GrepApplication implements GrepInterface {
     private static final String NULL_POINTER = "Null Pointer Exception";
     private static final String INVALID_FILES = "No such file or directory";
     private static final String INVALID_REGEX = "Invalid regular expression supplied";
-    private static final String NO_READ_PERMISSION = ": Permission denied" + StringUtils.STRING_NEWLINE;
-    private static final String REGEX_CANNOT_BE_EMPTY = "Regular expression cannot be empty";
+    private static final String NO_READ_PERM = ": Permission denied" + StringUtils.STRING_NEWLINE;
+    private static final String NO_EMPTY_REGEX = "Regular expression cannot be empty";
 
     private static final int NUM_ARGUMENTS = 2;
     private static final char CASE_INSEN_IDENT = 'i';
@@ -49,7 +47,7 @@ public class GrepApplication implements GrepInterface {
         try {
             Pattern.compile(pattern);
         } catch (PatternSyntaxException e) {
-            throw new GrepException(INVALID_REGEX);
+            throw (GrepException) new GrepException(INVALID_REGEX).initCause(e);
         }
         if (fileNames[0].equals("") && fileNames.length == 1) {
             return IS_A_DIR;
@@ -236,7 +234,7 @@ public class GrepApplication implements GrepInterface {
                 throw new Exception(ERR_NO_INPUT);
             }
             if (args == null || args.length == 0 || args[0].equals("")) {
-                throw new GrepException(REGEX_CANNOT_BE_EMPTY);
+                throw new GrepException(NO_EMPTY_REGEX);
             }
             if (pattern == null) {
                 throw new Exception(ERR_SYNTAX);

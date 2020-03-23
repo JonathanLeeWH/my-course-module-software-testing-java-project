@@ -77,8 +77,9 @@ public class ErrorConstants {
     public static final String NO_OVERWRITE = "No overwrite and destination file exist";
 
     // `Paste` related
-    public static final String INVALID_DASH = "Dash should only appear in the first argument";
+    public static final String INVALID_DASH = "multiple dashes are not supported";
     public static final String FILE_NOT_FOUND = "No such file or directory";
+
 
     //`ls` related
 
