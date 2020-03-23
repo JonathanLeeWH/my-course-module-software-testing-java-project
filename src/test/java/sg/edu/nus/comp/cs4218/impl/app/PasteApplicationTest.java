@@ -94,20 +94,6 @@ class PasteApplicationTest {
     }
 
     /**
-     * Test mergeFile method when filename is empty.
-     *  Expected: Throws FileNotFound Exception
-     */
-    @Test
-    void runEmptyFileNameShouldThrowPasteException() {
-        String[] args = { oneLineFile.toPath().toString(), " "};
-        Exception thrown = assertThrows(PasteException.class, () -> {
-            pasteApplication.mergeFile(args);
-        });
-        String expected = PASTE_EXCEPTION + ERR_INVALID_FILE;
-        assertEquals(expected, thrown.getMessage());
-    }
-
-    /**
      * Test mergeFile method when file content is empty.
      *  Expected: Print Nothing.
      */
