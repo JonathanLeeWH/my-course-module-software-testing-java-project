@@ -102,14 +102,24 @@ public class DiffApplication implements DiffInterface { //NOPMD
         String commonSubDir = findCommonSubDirectories(folderA, folderB);
         File[] folderAFiles = new File(convertToAbsolutePath(folderA)).listFiles();
         File[] folderBFiles = new File(convertToAbsolutePath(folderB)).listFiles();
-        output = output.concat(getDiffFilesAndFolders(folderAFiles, folderBFiles, folderA));
-        output = output.concat(STRING_NEWLINE);
-        output = output.concat(getDiffFilesAndFolders(folderBFiles, folderAFiles, folderB));
-        output = output.concat(STRING_NEWLINE);
+        String firstSet = getDiffFilesAndFolders(folderAFiles, folderBFiles, folderA);
+        output = output.concat(firstSet);
+        if (!firstSet.isEmpty()) {
+            output = output.concat(STRING_NEWLINE);
+        }
+        String secondSet = getDiffFilesAndFolders(folderBFiles, folderAFiles, folderB);
+                output = output.concat(secondSet);
+        if (!secondSet.isEmpty()) {
+            output = output.concat(STRING_NEWLINE);
+        }
         try {
-            output = output.concat(findSameFilesDiff(folderA, folderB, folderAFiles, folderBFiles, isShowSame,
-                    isNoBlank, isSimple));
-            return output.concat(STRING_NEWLINE).concat(commonSubDir);
+            String thirdSet = findSameFilesDiff(folderA, folderB, folderAFiles, folderBFiles, isShowSame,
+                    isNoBlank, isSimple);
+            output = output.concat(thirdSet);
+            if (!thirdSet.isEmpty()) {
+                output = output.concat(STRING_NEWLINE);
+            }
+            return output.concat(commonSubDir);
         } catch (IOException e) {
             throw (DiffException) new DiffException(ERR_READING_FILE).initCause(e);
         }
