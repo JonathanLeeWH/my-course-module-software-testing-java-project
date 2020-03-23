@@ -2,9 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.cmd;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
-import sg.edu.nus.comp.cs4218.exception.ExitException;
-import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.exception.*;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
 import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 
@@ -370,5 +368,95 @@ class CallCommandIT {
         });
         String expected = "exit: 0";
         assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    void testRunCallCommandWithDiffWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("diff", "invalidFile"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(DiffException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithSedWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("sed", "/s/"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(SedException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithGrepWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("grep", "-ic"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(GrepException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithRMWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("rm", "invalid"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(RmException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithSortWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("sort", "invalid"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(SortException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithFindWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("find", "invalid"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(FindException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithCPWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("cp", "invalid"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(CpException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithCutWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("cut", "invalid"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(CutException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithLSWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("ls", "invalid"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(LsException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
+    }
+
+    @Test
+    void testRunCallCommandWithMVWithInvalidArgShouldThrowException() {
+        argsList = new ArrayList<>(Arrays.asList("mv", "invalid"));
+        callCommand = new CallCommand(argsList, applicationRunner, argumentResolver);
+        assertThrows(MvException.class, () -> {
+            callCommand.evaluate(System.in, outputStream);
+        });
     }
 }
