@@ -82,7 +82,7 @@ class PasteApplicationTest {
     public void testMergeStdin_singleLine_noTabAdded() throws Exception {
         try (InputStream inStream = new FileInputStream(FILE_SINGLE)) {
             String expected = getExpectedResult(FILE_SINGLE);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeStdin(inStream));
+            assertEquals(expected, pasteApp.mergeStdin(inStream));
         }
     }
 
@@ -90,13 +90,13 @@ class PasteApplicationTest {
     public void testMergeStdin_multipleLine() throws Exception {
         // Double lines
         try (InputStream inStream = new FileInputStream(FILE_DOUBLE)) {
-            String expected = "Double" + STRING_NEWLINE + "double" + STRING_NEWLINE;
+            String expected = "Double" + STRING_NEWLINE + "double";
             assertEquals(expected, pasteApp.mergeStdin(inStream));
         }
 
         // Triple lines
         try (InputStream inStream = new FileInputStream(FILE_TRIPLE)) {
-            String expected = "Triple" + STRING_NEWLINE + "triple" + STRING_NEWLINE + "3ple" + STRING_NEWLINE;
+            String expected = "Triple" + STRING_NEWLINE + "triple" + STRING_NEWLINE + "3ple";
             assertEquals(expected, pasteApp.mergeStdin(inStream));
         }
 
@@ -104,13 +104,13 @@ class PasteApplicationTest {
         try (InputStream inStream = new FileInputStream(FILE_MULTIPLE)) {
             String expected = "qaz" + STRING_NEWLINE + "wsx" + STRING_NEWLINE + "edc"
                     + STRING_NEWLINE + "rfv" + STRING_NEWLINE + "tgb" + STRING_NEWLINE + "yhn" + STRING_NEWLINE
-                    + "ujm" + STRING_NEWLINE + "ik  ol p" + STRING_NEWLINE + "tab" + STRING_NEWLINE;
+                    + "ujm" + STRING_NEWLINE + "ik  ol p" + STRING_NEWLINE + "tab";
             assertEquals(expected, pasteApp.mergeStdin(inStream));
         }
 
         // Newline
         try (InputStream inStream = new FileInputStream(FILE_NEW_PATH)) {
-            String expected = "" + STRING_NEWLINE + "" + STRING_NEWLINE + "" + STRING_NEWLINE + "" + STRING_NEWLINE;
+            String expected = "" + STRING_NEWLINE + "" + STRING_NEWLINE + "" + STRING_NEWLINE;
             assertEquals(expected, pasteApp.mergeStdin(inStream));
         }
     }
@@ -125,34 +125,34 @@ class PasteApplicationTest {
     @Test
     public void testMergeFile_singleFile_noTabAdded() throws Exception {
         // Single line
-        String expected = getExpectedResult(FILE_SINGLE) + STRING_NEWLINE;
+        String expected = getExpectedResult(FILE_SINGLE);
         assertEquals(expected, pasteApp.mergeFile(FILE_SINGLE));
 
         // Double lines
-        expected = getExpectedResult(FILE_DOUBLE) + STRING_NEWLINE;
+        expected = getExpectedResult(FILE_DOUBLE);
         assertEquals(expected, pasteApp.mergeFile(FILE_DOUBLE));
 
         // Triple lines
-        expected = getExpectedResult(FILE_TRIPLE) + STRING_NEWLINE;
+        expected = getExpectedResult(FILE_TRIPLE);
         assertEquals(expected, pasteApp.mergeFile(FILE_TRIPLE));
 
         // Multiple lines
-        expected = getExpectedResult(FILE_MULTIPLE) + STRING_NEWLINE;
+        expected = getExpectedResult(FILE_MULTIPLE);
         assertEquals(expected, pasteApp.mergeFile(FILE_MULTIPLE));
 
         // Newline only
-        expected = getExpectedResult(FILE_NEW_PATH) + STRING_NEWLINE;
+        expected = "";
         assertEquals(expected, pasteApp.mergeFile(FILE_NEW_PATH));
     }
 
     @Test
     public void testMergeFile_multipleFiles_sameFile() throws Exception {
         // Double files
-        String expected = getExpectedResult(FILE_1_1) + STRING_NEWLINE;
+        String expected = getExpectedResult(FILE_1_1);
         assertEquals(expected, pasteApp.mergeFile(FILE_1, FILE_1));
 
         // Triple files
-        expected = getExpectedResult(FILE_1_1_1) + STRING_NEWLINE;
+        expected = getExpectedResult(FILE_1_1_1);
         assertEquals(expected, pasteApp.mergeFile(FILE_1, FILE_1, FILE_1));
 /*
         // Newline
@@ -166,26 +166,26 @@ class PasteApplicationTest {
     @Test
     public void testMergeFile_multipleFiles_diffFilesSameNumOfLines() throws Exception {
         // Double files
-        String expected = getExpectedResult(FILE_1_2) + STRING_NEWLINE;
+        String expected = getExpectedResult(FILE_1_2);
         assertEquals(expected, pasteApp.mergeFile(FILE_1, FILE_2));
 
         // Triple files
-        expected = getExpectedResult(FILE_1_2_3) + STRING_NEWLINE;
+        expected = getExpectedResult(FILE_1_2_3);
         assertEquals(expected, pasteApp.mergeFile(FILE_1, FILE_2, FILE_3));
 
         // Double files with newline
-        expected = getExpectedResult(FILE_NEW_3) + STRING_NEWLINE;
+        expected = getExpectedResult(FILE_NEW_3);
         assertEquals(expected, pasteApp.mergeFile(FILE_NEW_PATH, FILE_3));
     }
 
     @Test
     public void testMergeFile_multipleFiles_diffFilesDiffNumOfLines() throws Exception {
         // Double files
-        String expected = getExpectedResult(FILE_SIN_DOU) + STRING_NEWLINE;
+        String expected = getExpectedResult(FILE_SIN_DOU);
         assertEquals(expected, pasteApp.mergeFile(FILE_SINGLE, FILE_DOUBLE));
 
         // Triple files
-        expected = getExpectedResult(FILE_DOU_SIN_TRI) + STRING_NEWLINE;
+        expected = getExpectedResult(FILE_DOU_SIN_TRI);
         assertEquals(expected, pasteApp.mergeFile(FILE_DOUBLE, FILE_SINGLE, FILE_TRIPLE));
 /*
         // Triple files with newline
@@ -275,7 +275,7 @@ class PasteApplicationTest {
     public void testMergeFileAndStdin_stdinOnly_singleLine_noTabAdded() throws Exception {
         try (InputStream inStream = new FileInputStream(FILE_SINGLE)) {
             String expected = getExpectedResult(FILE_SINGLE);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, DASH));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, DASH));
         }
     }
 
@@ -284,25 +284,25 @@ class PasteApplicationTest {
         // Double lines
         try (InputStream inStream = new FileInputStream(FILE_DOUBLE)) {
             String expected = "Double" + STRING_NEWLINE + "double";
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, DASH));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, DASH));
         }
 
         // Triple lines
         try (InputStream inStream = new FileInputStream(FILE_TRIPLE)) {
             String expected = "Triple" + STRING_NEWLINE + "triple" + STRING_NEWLINE + "3ple";
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, DASH));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, DASH));
         }
 
         // Multiple lines with line that have space
         try (InputStream inStream = new FileInputStream(FILE_MULTIPLE)) {
             String expected = "qaz" + STRING_NEWLINE + "wsx" + STRING_NEWLINE + "edc" + STRING_NEWLINE + "rfv" + STRING_NEWLINE + "tgb" + STRING_NEWLINE + "yhn" + STRING_NEWLINE + "ujm" + STRING_NEWLINE + "ik  ol p" + STRING_NEWLINE + "tab";
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, DASH));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, DASH));
         }
 
         // Newline
         try (InputStream inStream = new FileInputStream(FILE_NEW_PATH)) {
             String expected = "" + STRING_NEWLINE + "" + STRING_NEWLINE + "" + STRING_NEWLINE + "";
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, DASH));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, DASH));
         }
     }
 
@@ -311,13 +311,13 @@ class PasteApplicationTest {
         // Stdin Index at 0
         try (InputStream inStream = new FileInputStream(FILE_1)) {
             String expected = getExpectedResult(FILE_1_1);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, FILE_1));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, FILE_1));
         }
 
         // Stdin Index at 1
         try (InputStream inStream = new FileInputStream(FILE_1)) {
             String expected = getExpectedResult(FILE_1_1);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, FILE_1));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, FILE_1));
         }
     }
 
@@ -326,7 +326,7 @@ class PasteApplicationTest {
         // Stdin Index at 0
         try (InputStream inStream = new FileInputStream(FILE_1)) {
             String expected = getExpectedResult(FILE_1_2);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, FILE_2));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, FILE_2));
         }
 /*
         // Stdin Index at 1
@@ -343,13 +343,13 @@ class PasteApplicationTest {
         // Stdin Index at 0
         try (InputStream inStream = new FileInputStream(FILE_SINGLE)) {
             String expected = getExpectedResult(FILE_SIN_DOU);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, FILE_DOUBLE));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, FILE_DOUBLE));
         }
 
         // Stdin Index at 1
         try (InputStream inStream = new FileInputStream(FILE_SINGLE)) {
             String expected = getExpectedResult(FILE_SIN_DOU);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, FILE_DOUBLE));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, FILE_DOUBLE));
         }
     }
 
@@ -358,19 +358,19 @@ class PasteApplicationTest {
         // Double files, stdin Index at 0
         try (InputStream inStream = new FileInputStream(FILE_1)) {
             String expected = getExpectedResult(FILE_1_1_1);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, FILE_1, FILE_1));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, FILE_1, FILE_1));
         }
 
         // Double files, stdin Index at 1
         try (InputStream inStream = new FileInputStream(FILE_1)) {
             String expected = getExpectedResult(FILE_1_1_1);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream,FILE_1, FILE_1));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream,FILE_1, FILE_1));
         }
 
         // Double files, stdin Index at 2
         try (InputStream inStream = new FileInputStream(FILE_1)) {
             String expected = getExpectedResult(FILE_1_1_1);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream,FILE_1, FILE_1));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream,FILE_1, FILE_1));
         }
     }
 
@@ -379,7 +379,7 @@ class PasteApplicationTest {
         // Double files, stdin Index at 0
         try (InputStream inStream = new FileInputStream(FILE_1)) {
             String expected = getExpectedResult(FILE_1_2_3);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, FILE_2, FILE_3));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, FILE_2, FILE_3));
         }
 /*
         // Double files, stdin Index at 1
@@ -401,7 +401,7 @@ class PasteApplicationTest {
         // Double files, stdin Index at 0
         try (InputStream inStream = new FileInputStream(FILE_DOUBLE)) {
             String expected = getExpectedResult(FILE_DOU_SIN_TRI);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, FILE_SINGLE, FILE_TRIPLE));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, FILE_SINGLE, FILE_TRIPLE));
         }
 /*
         // Double files, stdin Index at 1
@@ -422,7 +422,7 @@ class PasteApplicationTest {
     public void testMergeFileAndStdin_multipleStdinWithNoFile() throws Exception {
         try (InputStream inStream = new FileInputStream(FILE_1)) {
             String expected = getExpectedResult(FILE_1);
-            assertEquals(expected + STRING_NEWLINE, pasteApp.mergeFileAndStdin(inStream, DASH));
+            assertEquals(expected, pasteApp.mergeFileAndStdin(inStream, DASH));
         }
     }
 

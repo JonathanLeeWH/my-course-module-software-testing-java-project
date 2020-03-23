@@ -5,6 +5,7 @@ import sg.edu.nus.comp.cs4218.exception.PasteException;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
 import java.io.*;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,23 +31,31 @@ public class PasteApplication implements PasteInterface {
         if (args == null) {
             throw new PasteException(ERR_NULL_ARGS);
         }
+        String output = "";
         if (args.length == 0) { // When there are no filenames provided (i.e. stdin provided)
             if (stdin == null) { // if stdin is empty
                 throw new PasteException(ERR_NULL_STREAMS);
             }
             try { // if stdin is not empty.
-                stdout.write(mergeStdin(stdin).getBytes()); // print the output of the stdin
+                output = mergeStdin(stdin);
+                if (output.isEmpty()) {
+                    stdout.write(output.getBytes()); // print the output of the stdin
+                } else {
+                    stdout.write(output.concat(STRING_NEWLINE).getBytes());
+                }
             } catch (Exception e) {
                 throw (PasteException) new PasteException(FILE_NOT_FOUND).initCause(e);
             }
         } else {
             List<String> filesNamesList = new ArrayList<>(); // Since total number of files is unknown, use ArrayList.
             for (int i = 0; i < args.length; i++) {
-                if (args[i].equals("-")) { // check if argument is a stdin type of argument.
-                    hasStdin = 1;
-                    if (i != 0) {
+                if (hasStdin == 1) {
+                    if (args[i].equals("-")) {
                         throw new PasteException(INVALID_DASH);
                     }
+                }
+                if (args[i].equals("-")) { // check if argument is a stdin type of argument.
+                    hasStdin = 1;
                 } else { // else argument is a filename.
                     hasFile = 2;
                     filesNamesList.add(args[i]);
@@ -59,14 +68,29 @@ public class PasteApplication implements PasteInterface {
             sum = hasFile + hasStdin;
             try {
                 if (sum == 1) { //1: means only standard inputs are present in the argument.
-                    stdout.write(mergeStdin(stdin).getBytes());
+                    output = mergeStdin(stdin);
+                    if (output.isEmpty()) {
+                        stdout.write(output.getBytes());
+                    } else {
+                        stdout.write(output.concat(STRING_NEWLINE).getBytes());
+                    }
                 } else if (sum == 2) { //2: means only filenames are present in the argument.
-                    stdout.write(mergeFile(allFileNames).getBytes());
+                    output = mergeFile(allFileNames);
+                    if (output.isEmpty()) {
+                        stdout.write(output.getBytes());
+                    } else {
+                        stdout.write(output.concat(STRING_NEWLINE).getBytes());
+                    }
                 } else { //  3: means both standard inputs and filenames are present in the argument.
-                    stdout.write(mergeFileAndStdin(stdin, allFileNames).getBytes());
+                    output = mergeFileAndStdin(stdin, allFileNames);
+                    if (output.isEmpty()) {
+                        stdout.write(output.getBytes());
+                    } else {
+                        stdout.write(output.concat(STRING_NEWLINE).getBytes());
+                    }
                 }
             } catch (Exception e) {
-                throw (PasteException) new PasteException(ERR_WRITE_STREAM).initCause(e);
+                throw (PasteException) new PasteException(ERR_FILE_NOT_FOUND).initCause(e);
             }
         }
     }
@@ -83,7 +107,7 @@ public class PasteApplication implements PasteInterface {
         }
         List<String> stdinContent = IOUtils.getLinesFromInputStream(stdin);
         String delimiter = STRING_NEWLINE;
-        return String.join(delimiter, stdinContent).concat(STRING_NEWLINE);
+        return String.join(delimiter, stdinContent);
     }
 
     /**
@@ -98,10 +122,14 @@ public class PasteApplication implements PasteInterface {
             throw new PasteException(ERR_NULL_ARGS);
         }
         for (String s : fileName) {
-            Path path = IOUtils.resolveFilePath(s);
-            File file = new File(path.toString());
-            if (file.isDirectory()) {
-                throw new PasteException(ERR_IS_DIR);
+            try {
+                Path path = IOUtils.resolveFilePath(s);
+                File file = new File(path.toString());
+                if (file.isDirectory()) {
+                    throw new PasteException(ERR_IS_DIR);
+                }
+            } catch (InvalidPathException e) {
+                throw new PasteException(ERR_INVALID_FILE);
             }
         }
         try {
@@ -194,6 +222,6 @@ public class PasteApplication implements PasteInterface {
         for (BufferedReader br : bufferedReaders) { //NOPMD
             br.close();
         }
-        return stringBuilder.toString().concat(STRING_NEWLINE);
+        return stringBuilder.toString();
     }
 }
