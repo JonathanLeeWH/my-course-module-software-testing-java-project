@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.cmd.command_sub;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
@@ -66,6 +67,7 @@ public class LsCommandSubIT {
     }
 
     @Test
+    @Disabled("Incompatible with Windows.")
     void testLsCommandAndSedAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("ls", "`sed \"s|" + testFile2.toFile().getPath() + "|src/test/|\" " + testFile4.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
@@ -76,7 +78,7 @@ public class LsCommandSubIT {
 
     @Test
     void testLsCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("ls", "`grep \"src/test/\" " + testFile4.toFile().getPath() + "`");
+        List<String> args = Arrays.asList("ls", "`grep \"src\" " + testFile4.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = testFile2.getFileName() + System.lineSeparator();
