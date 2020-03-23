@@ -144,6 +144,7 @@ public class DiffCommandSubIT {
     }
 
     @Test
+    @Disabled("Incompatible with Windows.")
     void testDiffCommandAndFindAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("diff", testFile2.toFile().getPath(), "`find " + TestFileUtils.TESTDATA_DIR +
                 " -name \"" + testFile5.toFile().getPath() + "\"`");
