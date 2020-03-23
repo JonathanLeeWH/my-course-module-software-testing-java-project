@@ -216,4 +216,33 @@ public class SedApplicationIT {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Test run method with null arguments.
+     * Expected: Exception thrown with ERR_NULL_ARGS message.
+     */
+    @Test
+    void runNullArgsInRunMethodShouldThrowException() {
+        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
+        SedException thrown = assertThrows(SedException.class, () -> {
+            sedApplication.run
+                    (null, stdinTwo, outputStreamTwo);
+        });
+        assertEquals(SED_EXCEPTION + ERR_NULL_ARGS, thrown.getMessage());
+    }
+
+    /**
+     * Test run method with empty arguments.
+     * Expected: Throw exception with
+     */
+    @Test
+    void runEmptyArgsInRunMethodShouldThrowException() {
+        String[] args = new String[0];
+        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
+        SedException thrown = assertThrows(SedException.class, () -> {
+            sedApplication.run
+                    (args, stdinTwo, outputStreamTwo);
+        });
+        assertEquals(SED_EXCEPTION + ERR_NO_ARGS, thrown.getMessage());
+    }
 }
