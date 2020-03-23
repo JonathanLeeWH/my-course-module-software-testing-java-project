@@ -78,7 +78,7 @@ public class LsCommandSubIT {
 
     @Test
     void testLsCommandAndGrepAsSubCommandShouldEvaluateSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("ls", "`grep \"src/test/\" " + testFile4.toFile().getPath() + "`");
+        List<String> args = Arrays.asList("ls", "`grep \"src\" " + testFile4.toFile().getPath() + "`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
         String expectedResult = testFile2.getFileName() + System.lineSeparator();

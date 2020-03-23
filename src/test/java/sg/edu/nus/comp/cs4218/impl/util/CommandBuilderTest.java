@@ -24,6 +24,13 @@ public class CommandBuilderTest {
     }
 
     @Test
+    void testParseCommandWithMisplacedQuotestShouldThrowShellException() {
+        Throwable thrown = assertThrows(ShellException.class,
+                () -> parseCommand("echo \"Test\'", appRunner));
+        assertEquals(thrown.getMessage(), "shell: " + ERR_SYNTAX);
+    }
+
+    @Test
     void testParseCommandWithEmptyCommandStringShouldThrowShellException() {
         Throwable thrown = assertThrows(ShellException.class,
                 () -> parseCommand("", appRunner));

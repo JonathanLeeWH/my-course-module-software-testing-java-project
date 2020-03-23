@@ -202,8 +202,8 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_FILENAME + " are identical" + STRING_NEWLINE;
-            assertEquals(expected, stdout.toString());
+            String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_FILENAME + " are identical";
+            assertEquals(expected + STRING_NEWLINE, stdout.toString());
         } catch (DiffException e) {
             fail("should not fail: " + e.getMessage());
         }
@@ -219,8 +219,8 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_IDENTICAL_FILENAME + " are identical" + STRING_NEWLINE;
-            assertEquals(expected, stdout.toString());
+            String expected = "Files " + DIFFFOLDER + DIFF1_FILENAME + CHAR_SPACE + DIFFFOLDER + DIFF1_IDENTICAL_FILENAME + " are identical";
+            assertEquals(expected + STRING_NEWLINE, stdout.toString());
         } catch (DiffException e) {
             fail("should not fail: " + e.getMessage());
         }
@@ -325,8 +325,8 @@ public class DiffApplicationIT {
                     "< test C" + STRING_NEWLINE +
                     "> test D" + STRING_NEWLINE +
                     "> test E" + STRING_NEWLINE +
-                    "> test F" + STRING_NEWLINE;
-            assertEquals(expected, stdout.toString());
+                    "> test F";
+            assertEquals(expected + STRING_NEWLINE, stdout.toString());
         } catch(DiffException e) {
             fail("should not fail: " + e.getMessage());
         }
