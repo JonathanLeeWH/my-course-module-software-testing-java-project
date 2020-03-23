@@ -174,14 +174,4 @@ public class ShellSystemTest {
                 "crucial skills on testing and debugging through hands-on assignments." + System.lineSeparator();
         assertEquals(expectedOutput, outputStream.toString());
     }
-
-    @Test
-    void testParseAndEvaluateUsingComplexVariousCommandsWithIORedirOperatorsAndPipeOperatorAndGlobbingAndSemiColonAndSingleQuoteAndBackQuoteShouldRunSuccessfully() throws Exception {
-        String input = "echo < " + TestFileUtils.TESTDATA_DIR + "test1.txt > " + TestFileUtils.TESTDATA_DIR +
-                "testOutput.txt | rm " + TestFileUtils.TESTDATA_DIR +
-                "testOutput*; echo `echo \'Operation Done.\'`";
-        shell.parseAndEvaluate(input,outputStream);
-        String expectedOutput = "Operation Done." + System.lineSeparator();
-        assertEquals(expectedOutput, outputStream.toString());
-    }
 }
