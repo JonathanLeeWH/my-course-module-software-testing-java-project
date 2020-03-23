@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
+import sg.edu.nus.comp.cs4218.exception.WcException;
 import sg.edu.nus.comp.cs4218.impl.FileIOHelper;
 import sg.edu.nus.comp.cs4218.impl.StringsArgListHelper;
 import sg.edu.nus.comp.cs4218.impl.util.ApplicationRunner;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_GENERAL;
 
 public class GlobbingIT {
 
@@ -723,9 +725,15 @@ public class GlobbingIT {
 
         List<String> argList = StringsArgListHelper.concantenateStringsToList("wc" ,"TextFile*");
         callCommand = new CallCommand(argList , new ApplicationRunner(), new ArgumentResolver());
-        callCommand.evaluate(inputStream,outputStream);
-
-        assertEquals("wc: No such file or directory" + System.lineSeparator(), outputStream.toString());
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {//NOPMD {
+            Exception exception = assertThrows(Exception.class, () -> {
+                callCommand.evaluate(inputStream,outputStream);
+            });
+            assertEquals(new WcException(ERR_GENERAL).getMessage(), exception.getMessage()); // as in Windows the * character in path is invalid
+        } else {
+            callCommand.evaluate(inputStream,outputStream);
+            assertEquals("wc: No such file or directory" + System.lineSeparator(), outputStream.toString()); // for unix * is accepted as valid path name
+        }
     }
 
 

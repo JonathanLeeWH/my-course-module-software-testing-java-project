@@ -21,14 +21,14 @@ public class MvArgsParserTest {
          mvArgsParser = new MvArgsParser();
     }
     @Test
-    void isNoArgsReturn() throws InvalidArgsException {
+    void testParseNoArgsReturn() throws InvalidArgsException {
         List<String> expected = new ArrayList<String>();
         mvArgsParser.parse("");
         assertEquals(expected.toString(), mvArgsParser.getNonFlagArgs().toString());
     }
 
     @Test
-    void isOneArgsReturnTrue() throws InvalidArgsException {
+    void testParseOneArgsReturnTrue() throws InvalidArgsException {
         List<String> expected = new ArrayList<String>();
         expected.add(FOLDER_NAME);
         mvArgsParser.parse(FOLDER_NAME);
@@ -37,7 +37,7 @@ public class MvArgsParserTest {
 
 
     @Test
-    void isMultipleArgsReturnTrue() throws InvalidArgsException {
+    void testParseMultipleArgsReturnTrue() throws InvalidArgsException {
         List<String> expected = new ArrayList<String>();
         expected.add(FOLDER_NAME);
         expected.add("folder1");
@@ -46,13 +46,13 @@ public class MvArgsParserTest {
     }
 
     @Test
-    void isNFlagReturnTrue() throws InvalidArgsException {
+    void testParseNFlagReturnTrue() throws InvalidArgsException {
         mvArgsParser.parse("-n");
         assertTrue(mvArgsParser.isNotOverWrite());
     }
 
     @Test
-    void isNFlagMultipleArgsReturnTrue() throws InvalidArgsException {
+    void testParseNFlagMultipleArgsReturnTrue() throws InvalidArgsException {
         mvArgsParser.parse("-n" , "file1","file2");
         assertTrue(mvArgsParser.isNotOverWrite());
         List<String> expected = new ArrayList<String>();
