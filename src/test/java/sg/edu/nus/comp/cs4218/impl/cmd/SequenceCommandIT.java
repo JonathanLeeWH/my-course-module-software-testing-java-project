@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.cmd;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import sg.edu.nus.comp.cs4218.Command;
@@ -42,6 +43,7 @@ class SequenceCommandIT {
     private static final String WC_APP = "wc";
     private static final String SED_APP = "sed";
     private static final String CUT_APP = "cut";
+    private static final String DIFF_APP = "diff";
     private static final String INVALID_APP = "lsa";
     private static final String FOLDER_NAME_1 = "folder1";
     private static final String FILE_NAME_1 = "CS4218A";
@@ -53,6 +55,12 @@ class SequenceCommandIT {
     private static final String FILE_NAME_7 = "1.txt";
     private static final String FILE_CONTENT_1 = "Hello world";
     private static final String FILE_CONTENT_2 = "How are you";
+    private static final String FILE_CONTENT_3 = "1";
+    private static final String FILE_CONTENT_4 = "2";
+    private static final String FILE_CONTENT_5 = "3";
+    private static final String FILE_CONTENT_6 = "A";
+    private static final String FILE_CONTENT_7 = "B";
+    private static final String FILE_CONTENT_8 = "AA";
     private static final String REGEX_EXPR_1 = "s/^/> /";
     private static final String C_FLAG = "-c";
     private static final String RELATIVE_UP = "..";
@@ -163,26 +171,20 @@ class SequenceCommandIT {
      */
     @Test
     void testEvaluateSequenceCommandWithOutputRedirectionPasteCommandAndRemoveCommandShouldRemoveTheCreatedFile(@TempDir Path tempDir) throws IOException, AbstractApplicationException, ShellException {
-        Path file1 = Paths.get(FILE_NAME_4);
-        Path file2 = Paths.get(FILE_NAME_5);
-        Path file3 = Paths.get(FILE_NAME_6);
-        Files.deleteIfExists(file1); // delete A.txt used for testing if it exists before the test.
-        Files.deleteIfExists(file2); // delete B.txt used for testing if it exists before the test.
-        Files.deleteIfExists(file3); // delete AB.txt used for testing if it exists before the test.
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Path file3 = tempDir.resolve(FILE_NAME_6);
         Files.createFile(file1);
         Files.createFile(file2);
         assertTrue(Files.exists(file1)); // Check A.txt exists
         assertTrue(Files.exists(file2)); // Check B.txt exists
         assertFalse(Files.exists(file3)); // Check AB.txt does not exist initially
+        EnvironmentHelper.currentDirectory = tempDir.toString();
         commands.add(new CallCommand(Arrays.asList(PASTE_APP, FILE_NAME_4, FILE_NAME_5, Character.toString(CHAR_REDIR_OUTPUT), FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
         commands.add(new CallCommand(Arrays.asList(RM_APP, FILE_NAME_6), new ApplicationRunner(), new ArgumentResolver()));
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
         assertFalse(Files.exists(file3)); // Check that AB.txt does not exist as it should be removed
-        // clean up
-        Files.deleteIfExists(file1);
-        Files.deleteIfExists(file2);
-        Files.deleteIfExists(file3);
     }
 
     /**
@@ -226,6 +228,32 @@ class SequenceCommandIT {
         assertFalse(Files.exists(srcFile)); // check that B.txt does not exist.
         assertTrue(Files.exists(destFile)); // check that AB.txt exists.
         assertEquals(contents, Files.readAllLines(destFile)); // check that file content is copied.
+    }
+
+    /**
+     * Tests evaluate method when involving paste command and diff command interaction
+     * For example: paste A.txt B.txt > AB.txt; diff B.txt AB.txt
+     * Where A.txt and B.txt are existing files. AB.txt is a non existing file. A.txt and B.txt contents are different.
+     * Expected: Outputs correctly. B.txt content should be different from AB.txt content.
+     */
+    @Test
+    void testEvaluateSequenceCommandWithPasteCommandAndDiffCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Path file3 = tempDir.resolve(FILE_NAME_6);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        Files.write(file1, Arrays.asList(FILE_CONTENT_3, FILE_CONTENT_4, FILE_CONTENT_5));
+        Files.write(file2, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        assertTrue(Files.exists(file1)); // Check A.txt exists
+        assertTrue(Files.exists(file2)); // Check B.txt exists
+        assertFalse(Files.exists(file3)); // Check AB.txt does not exist initially
+        EnvironmentHelper.currentDirectory = tempDir.toString();
+        commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), Character.toString(CHAR_REDIR_OUTPUT), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(DIFF_APP, file2.toString(), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals("< " + FILE_CONTENT_6 + STRING_NEWLINE + "< " + FILE_CONTENT_7 + STRING_NEWLINE + "< " + FILE_CONTENT_8 + STRING_NEWLINE + "> " + FILE_CONTENT_3 + "\t" + FILE_CONTENT_6 + STRING_NEWLINE + "> " + FILE_CONTENT_4 + "\t" + FILE_CONTENT_7 + STRING_NEWLINE + "> " + FILE_CONTENT_5 + "\t" + FILE_CONTENT_8 + STRING_NEWLINE, outputStream.toString());
     }
 
     /**
@@ -324,7 +352,7 @@ class SequenceCommandIT {
 
     /**
      * Tests evaluate method when involving sed command and rm command
-     * For example: sed "s/^/> /" AB.txt; rm Ab.txt
+     * For example: sed "s/^/> /" AB.txt; rm AB.txt
      * Where AB.txt is an existing file.
      * It is mainly to test to ensure stream is closed for those commands that read files. As if streams are not closed, remove command
      * would not be able to remove the file.
@@ -494,6 +522,43 @@ class SequenceCommandIT {
         assertFalse(Files.exists(folder.resolve(FILE_NAME_5))); // check that folder1/B.txt is deleted
         assertFalse(Files.exists(folder.resolve(FILE_NAME_6))); // check that folder1/AB.txt is deleted
         assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+    }
+
+    /**
+     * Tests evaluate method with paste command mv command and rm command
+     * For example paste A.txt B.txt AB.txt; cp A.txt B.txt AB.txt folder1; diff folder1/A.txt folder1/B.txt
+     * Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
+     * Expected: Copies A.txt B.txt AB.txt to folder1/A.txt folder1/B.txt folder1/AB.txt and outputs correctly
+     */
+    @Test
+    void testEvaluateSequenceCommandsWithPasteCommandAndCpCommandAndDiffCommandShouldCopiesSourceFilesAndOutputsCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Path file3 = tempDir.resolve(FILE_NAME_6);
+        Path folder = tempDir.resolve(FOLDER_NAME_1);
+        Files.createDirectory(folder);
+        Files.createFile(file1);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.createFile(file2);
+        Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
+        Files.createFile(file3);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        commands.add(new CallCommand(Arrays.asList(PASTE_APP, file1.toString(), file2.toString(), file3.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(CP_APP, file1.toString(), file2.toString(), file3.toString(), folder.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        commands.add(new CallCommand(Arrays.asList(DIFF_APP, folder.resolve(FILE_NAME_4).toString(), folder.resolve(FILE_NAME_5).toString()), new ApplicationRunner(), new ArgumentResolver()));
+        SequenceCommand sequenceCommand = new SequenceCommand(commands);
+        sequenceCommand.evaluate(System.in, outputStream);
+        assertTrue(Files.exists(file1)); // check that A.txt exists
+        assertTrue(Files.exists(file2)); // check that B.txt exists
+        assertTrue(Files.exists(file3)); // check that AB.txt exists
+        assertTrue(Files.exists(folder.resolve(FILE_NAME_4))); // check that folder1/A.txt exists
+        assertTrue(Files.exists(folder.resolve(FILE_NAME_5))); // check that folder1/B.txt exists
+        assertTrue(Files.exists(folder.resolve(FILE_NAME_6))); // check that folder1/AB.txt exists
+        assertTrue(Files.isDirectory(folder)); // check that folder1 exists
+        assertEquals(FILE_CONTENT_1 + "\t" + FILE_CONTENT_2 + STRING_NEWLINE + "< " + FILE_CONTENT_1 + STRING_NEWLINE + "> " + FILE_CONTENT_2 + STRING_NEWLINE, outputStream.toString());
     }
 
     /**

@@ -329,6 +329,7 @@ public class DiffApplicationIT {
                     "> test E" + STRING_NEWLINE +
                     "> test F" + STRING_NEWLINE ;
             assertEquals(expected, stdout.toString());
+
         } catch(DiffException e) {
             fail("should not fail: " + e.getMessage());
         }
