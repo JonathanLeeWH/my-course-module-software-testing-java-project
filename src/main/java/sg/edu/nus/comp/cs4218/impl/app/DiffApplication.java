@@ -50,7 +50,7 @@ public class DiffApplication implements DiffInterface { //NOPMD
                         diffArguments.isIgnoreBlankLines(), diffArguments.isDiffMessage());
             }
             if (!output.isEmpty()) {
-                output.concat(STRING_NEWLINE);
+                output = output.concat(STRING_NEWLINE);
             }
             stdout.write(output.getBytes());
         } catch (Exception e) {

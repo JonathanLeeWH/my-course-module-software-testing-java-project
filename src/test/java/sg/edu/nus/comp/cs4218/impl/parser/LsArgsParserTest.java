@@ -23,14 +23,14 @@ public class LsArgsParserTest {
     }
 
     @Test
-    void isNoArgsReturnTrue() throws InvalidArgsException {
+    void testParseNoArgsReturnTrue() throws InvalidArgsException {
         List<String> expected = new ArrayList<String>();
         lsArgsParser.parse("");
         assertEquals(expected.toString(), lsArgsParser.getDirectories().toString());
     }
 
     @Test
-    void isOneArgsReturnTrue() throws InvalidArgsException {
+    void testParseOneArgsReturnTrue() throws InvalidArgsException {
         List<String> expected = new ArrayList<String>();
         expected.add("folder");
         lsArgsParser.parse("folder");
@@ -38,7 +38,7 @@ public class LsArgsParserTest {
     }
 
     @Test
-    void isMultipleArgsReturnTrue() throws InvalidArgsException {
+    void testParseMultipleArgsReturnTrue() throws InvalidArgsException {
         List<String> expected = new ArrayList<String>();
         expected.add("folder");
         expected.add("folder1");
@@ -48,25 +48,25 @@ public class LsArgsParserTest {
     }
 
     @Test
-    void isRFlagReturnTrue() throws InvalidArgsException {
+    void testParseRFlagReturnTrue() throws InvalidArgsException {
         lsArgsParser.parse("-R");
         assertTrue(lsArgsParser.isRecursive());
     }
 
     @Test
-    void isNotRFlagReturnTrue() throws InvalidArgsException {
+    void testParseNotRFlagReturnTrue() throws InvalidArgsException {
         lsArgsParser.parse("");
         assertTrue(!lsArgsParser.isRecursive());
     }
 
     @Test
-    void isDFlagReturnTrue() throws InvalidArgsException {
+    void testParseDFlagReturnTrue() throws InvalidArgsException {
         lsArgsParser.parse("-d");
         assertTrue(lsArgsParser.isFoldersOnly());
     }
 
     @Test
-    void isNotDFlagReturnTrue() throws InvalidArgsException {
+    void testParseNotDFlagReturnTrue() throws InvalidArgsException {
         lsArgsParser.parse("");
         assertTrue(!lsArgsParser.isFoldersOnly());
     }
