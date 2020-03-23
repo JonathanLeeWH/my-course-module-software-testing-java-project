@@ -50,6 +50,15 @@ public class WcArgumentsTest {
                 Arrays.asList(testFile2.toFile().getPath(), "-cl").toArray(new String[2]));
     }
 
+    @Test
+    public void testParseWithEmptyArgsShouldRunSuccessfully() throws Exception {
+        wcArguments.parse("");
+        assertTrue(wcArguments.isBytes());
+        assertTrue(wcArguments.isLines());
+        assertTrue(wcArguments.isWords());
+        assertTrue(wcArguments.getFiles().isEmpty());
+    }
+
     // Positive test cases
     @Test
     public void testParseWithNoFlagArgsAndNoFilesShouldRunSuccessfully() throws Exception {

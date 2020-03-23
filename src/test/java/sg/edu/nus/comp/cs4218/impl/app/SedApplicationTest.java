@@ -122,63 +122,6 @@ class SedApplicationTest {
                 (LINE, REPLACE, replacementIndex, fileWithTwoLines.toPath().toString()));
     }
 
-
-    /**
-     * Test null regex in replaceSubstringInFile method.
-     * Expected: Exception thrown, with ERR_NULL_ARGS message.
-     */
-    @Test
-    void runEmptyRegexShouldThrowException() {
-        String commandInput = "s///1";
-        String[] args = {commandInput, fileWithTwoLines.toPath().toString()};
-        try (InputStream stdin = new FileInputStream(fileWithTwoLines.toPath().toString());) {
-            OutputStream osPrint = new ByteArrayOutputStream();
-            Exception thrown = assertThrows(Exception.class, () -> {
-                sedApplication.run(
-                        args, stdin, osPrint);
-            });
-            assertEquals(SED_EXCEPTION + ERR_EMPTY_REGEX, thrown.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Test replaceSubstringInFile method with invalid replacement index.
-     * Expected: Exception thrown, ERR_INVALID_REP_X message.
-     */
-    @Test
-    void runInvalidReplacementIndexShouldThrowException() throws FileNotFoundException {
-        String[] args = {"s/line/replace/-1", fileWithTwoLines.toPath().toString()};
-        try (InputStream stdin = new FileInputStream(fileWithTwoLines.toPath().toString())) {
-            OutputStream osPrint = new ByteArrayOutputStream();
-            Exception thrown = assertThrows(Exception.class, () -> {
-                sedApplication.run(
-                        args, stdin, osPrint);
-            });
-            assertEquals(SED_EXCEPTION + ERR_INVALID_REP_X, thrown.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Test run method with other separating character
-     * Expected: Print out the file contents with the content replaced accordingly based on replacement index.
-     */
-    @Test
-    void runOtherSeparatingCharacterShouldWorkTheSameWay() throws SedException, FileNotFoundException {
-        String[] args = {VALID_ARG, fileWithTwoLines.toPath().toString()};
-        OutputStream osPrint = new ByteArrayOutputStream();
-        try (InputStream stdin = new FileInputStream(fileWithTwoLines.toPath().toString())) {
-            sedApplication.run(args, stdin, osPrint);
-            String expected = REPLACE_TWO + STRING_NEWLINE + REPLACED_LINE + STRING_NEWLINE;
-            assertEquals(expected, osPrint.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Test replaceSubstringInFile method with Directory instead of filename.
      * Expected: Exception thrown, with ERR_IS_DIR message.
@@ -216,84 +159,6 @@ class SedApplicationTest {
                     ("valid", REPLACEMENT, 1, null);
         });
         assertEquals(ERR_NULL_ARGS, thrown.getMessage());
-    }
-
-    /**
-     * Test run method with null arguments.
-     * Expected: Exception thrown with ERR_NULL_ARGS message.
-     */
-    @Test
-    void runNullArgsInRunMethodShouldThrowException() {
-        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
-        SedException thrown = assertThrows(SedException.class, () -> {
-            sedApplication.run
-                    (null, stdinTwo, outputStreamTwo);
-        });
-        assertEquals(SED_EXCEPTION + ERR_NULL_ARGS, thrown.getMessage());
-    }
-
-    /**
-     * Test run method with empty arguments.
-     * Expected: Throw exception with
-     */
-    @Test
-    void runEmptyArgsInRunMethodShouldThrowException() {
-        String[] args = new String[0];
-        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
-        SedException thrown = assertThrows(SedException.class, () -> {
-            sedApplication.run
-                    (args, stdinTwo, outputStreamTwo);
-        });
-        assertEquals(SED_EXCEPTION + ERR_NO_ARGS, thrown.getMessage());
-    }
-
-    /**
-     * Test run method with null stdout.
-     * Expected: Throw exception with ERR_NULL_STREAMS message.
-     */
-    @Test
-    void runNullStdoutInRunMethodShouldThrowSedException() {
-        String[] args = {VALID_ARG};
-        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
-        SedException thrown = assertThrows(SedException.class, () -> {
-            sedApplication.run
-                    (args, stdinTwo, null);
-        });
-        assertEquals(SED_EXCEPTION + ERR_NULL_STREAMS, thrown.getMessage());
-    }
-
-    /**
-     * Test run method with non-'s' invalid first character.
-     * Expected: Throw exception with ERR_INVALID_REP_RULE message.
-     */
-    @Test
-    void runInvalidFirstArgumentInRunMethodShouldThrowSedException() {
-        String[] args = {"invalid|line|replace|1"};
-        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
-        SedException thrown = assertThrows(SedException.class, () -> {
-            sedApplication.run
-                    (args, stdinTwo, outputStreamOne);
-        });
-        assertEquals(SED_EXCEPTION + ERR_INVALID_REP_RULE, thrown.getMessage());
-    }
-
-    /**
-     * Test run method with negative replacement index
-     * Expected: Exception thrown, with ERR_INVALID_REP_X message.
-     */
-    @Test
-    void runInvalidReplacementIndexInRunMethodShouldThrowSedException() throws SedException {
-        String[] args = {"s|line|replace|-1"};
-        try {
-            InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
-            SedException thrown = assertThrows(SedException.class, () -> {
-                sedApplication.run
-                        (args, stdinTwo, outputStreamOne);
-            });
-            assertEquals(SED_EXCEPTION + ERR_INVALID_REP_X, thrown.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -353,41 +218,5 @@ class SedApplicationTest {
                     ("valid", REPLACEMENT, 1, null);
         });
         assertEquals(ERR_NULL_STREAMS, thrown.getMessage());
-    }
-
-    /**
-     * Test run method with valid filename.
-     * Expected: Print file contents with replaced contents based on the replacement index.
-     */
-    @Test
-    void runValidFileNamesInRunShouldPrintFileContentsWithReplacements() throws IOException, SedException {
-        String[] args = {VALID_ARG, fileWithOneLine.toPath().toString()};
-        try (InputStream stdinTwo = new FileInputStream(fileWithOneLine.toPath().toString())) {
-            OutputStream osPrint = new ByteArrayOutputStream();
-            sedApplication.run(args, stdinTwo, osPrint);
-            assertEquals("replaceTwo\t line twoLine aline" + STRING_NEWLINE, osPrint.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    /**
-     * Test valid filename in run method with a file with two lines/
-     * Expected: print both lines with replacements based on replacement index.
-     */
-    @Test
-    void runValidFileNameInRunMethodWithTwoLinesShouldPrintFileContentsWithReplacements() throws IOException, SedException {
-        String[] args = {VALID_ARG, fileWithTwoLines.toPath().toString()};
-        try(InputStream stdinTwo = new FileInputStream(fileWithTwoLines.toPath().toString())) {
-            OutputStream osPrint = new ByteArrayOutputStream();
-            sedApplication.run(args, stdinTwo, osPrint);
-            String expected = REPLACE_TWO + STRING_NEWLINE + REPLACED_LINE + STRING_NEWLINE;
-            assertEquals(expected, osPrint.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 }

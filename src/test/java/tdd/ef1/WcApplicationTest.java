@@ -1,6 +1,8 @@
 package tdd.ef1;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.WcException;
@@ -102,6 +104,7 @@ class WcApplicationTest {
 
         @Test
         @DisplayName("should count only bytes")
+        @EnabledOnOs(OS.WINDOWS)
         void countFromFiles_countBytes() throws AbstractApplicationException {
             String expected = "71 file1.txt";
             wcApplication.run(new String[]{BYTES_FLAG, FILENAME1}, inputStream, outputStream);
@@ -110,6 +113,7 @@ class WcApplicationTest {
 
         @Test
         @DisplayName("should count lines and bytes")
+        @EnabledOnOs(OS.WINDOWS)
         void countFromFiles_countLinesAndBytes() throws AbstractApplicationException {
             String expected = "4      71 file1.txt";
             wcApplication.run(new String[]{LINES_FLAG, BYTES_FLAG, FILENAME1}, inputStream, outputStream);
@@ -118,6 +122,7 @@ class WcApplicationTest {
 
         @Test
         @DisplayName("should count lines, bytes, and words with all args")
+        @EnabledOnOs(OS.WINDOWS)
         void countFromFiles_allArgs() throws AbstractApplicationException {
             String expected = "4      11      71 file1.txt";
             wcApplication.run(new String[]{WORDS_FLAG, LINES_FLAG, BYTES_FLAG, FILENAME1}, inputStream, outputStream);
@@ -126,6 +131,7 @@ class WcApplicationTest {
 
         @Test
         @DisplayName("should count lines, bytes, and words from multiple files")
+        @EnabledOnOs(OS.WINDOWS)
         void countFromFiles_multiFiles() throws AbstractApplicationException {
             String expected = "4      11      71 file1.txt" + System.lineSeparator() +
                     "       4      13      81 file2.txt" + System.lineSeparator() +

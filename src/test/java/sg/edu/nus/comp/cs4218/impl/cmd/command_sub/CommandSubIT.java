@@ -1,4 +1,4 @@
-package sg.edu.nus.comp.cs4218.impl.cmd;
+package sg.edu.nus.comp.cs4218.impl.cmd.command_sub;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +43,7 @@ public class CommandSubIT {
         ourTestStdout.close();
     }
 
+    // Error test cases
     @Test
     void testWcCommandAndCutAsSubCommandWithErrorExceptionThrownShouldThrowCutException() {
         List<String> args = Arrays.asList("wc", "`cut -x 300 "+testFile1.toFile().getPath()+"`");
@@ -50,9 +51,9 @@ public class CommandSubIT {
         assertEquals(thrown.getMessage(), CutApplication.COMMAND + ": " + ArgsParser.ILLEGAL_FLAG_MSG + "x");
     }
 
-
+    // Positive test cases
     @Test
-    void testLsCommandAndEchoAsSubCommandWithBlankOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+    void testEchoCommandAndCutAsSubCommandWithBlankOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("echo", "`cut -c 200 "+testFile1.toFile().getPath()+"`");
         List<String> expectedResult = Arrays.asList("echo");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
@@ -66,7 +67,7 @@ public class CommandSubIT {
     }
 
     @Test
-    void testWcCommandAndCutAsSubCommandWithMultipleLineOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+    void testWcCommandAndEchoAsSubCommandWithMultipleLineOutputShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("wc", "`echo " + testFile1.toFile().getPath()  + " " + testFile2.toFile().getPath() + "`");
         List<String> expectedResult = Arrays.asList("wc", testFile1.toFile().getPath(), testFile2.toFile().getPath());
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
@@ -81,15 +82,29 @@ public class CommandSubIT {
 
     @Test
     void testEchoCommandAndEchoAsSubCommandWithADoubleQuoteShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("echo", "`echo \"Welcome to CS4218: Software Testing\"`");
-        List<String> expectedResult = Arrays.asList("echo", "Welcome", "to", "CS4218:", "Software" , "Testing");
+        List<String> args = Arrays.asList("echo", "`echo \"single quote is not interpreted as special character\"`");
+        List<String> expectedResult = Arrays.asList("echo", "single", "quote", "is", "not" ,"interpreted", "as", "special" ,"character");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
+    void testEchoCommandAndEchoAsSubCommandWithABackQuoteInsideASingleQuoteShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "\'`echo single quote is not interpreted as special character`\'");
+        List<String> expectedResult = Arrays.asList("echo", "`echo single quote is not interpreted as special character`");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
+    void testEchoCommandAndEchoAsSubCommandWithABackQuoteInsideADoubleQuoteShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "\"`echo single quote is not interpreted as special character`\"");
+        List<String> expectedResult = Arrays.asList("echo", "single quote is not interpreted as special character");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
 
     @Test
     void testEchoCommandAndEchoAsSubCommandWithNumerousNonBackQuotesShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
-        List<String> args = Arrays.asList("echo", "`echo \"\'quote is not interpreted as special character\'\"`");
-        List<String> expectedResult = Arrays.asList("echo", "'quote", "is", "not" ,"interpreted", "as", "special" ,"character'");
+        List<String> args = Arrays.asList("echo", "`echo `echo test``");
+        List<String> expectedResult = Arrays.asList("echo", "echo test");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
 
@@ -104,6 +119,13 @@ public class CommandSubIT {
     void testWcCommandAndLsAndGrepAndCutAsSubCommandUsingMultiplePipeOperatorShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("wc", "-c", "`ls | grep s* | cut -c 1-3`");
         List<String> expectedResult = Arrays.asList("wc", "-c", "src");
+        assertEquals(expectedResult, argumentResolver.parseArguments(args));
+    }
+
+    @Test
+    void testEchoCommandAndEchoCommandsAsSubCommandWithMultipleSubCommandShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
+        List<String> args = Arrays.asList("echo", "`echo abc`123`echo abc`123`echo abc`123");
+        List<String> expectedResult = Arrays.asList("echo", "abc123", "abc123", "abc123");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
 }
