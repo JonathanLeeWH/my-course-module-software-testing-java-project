@@ -572,10 +572,10 @@ public class GlobbingIT {
         callCommand.evaluate(inputStream,outputStream);
 
         String outputFromFile = FileIOHelper.extractAndConcatenate(OUTPUT_FILE_1);
-        String expectedOutput = "This is the content for file 1." + "\t"+ "\t"
-                + System.lineSeparator() + "There are some content here."+ "\t"+ "\t"
-                + System.lineSeparator() + "Some numbers: 50 1 2."+ "\t"+ "\t"
-                + System.lineSeparator() + "Some whitespace    ><*&^%.?"+ "\t"+ "\t"
+        String expectedOutput = "This is the content for file 1." + "\t"
+                + System.lineSeparator() + "There are some content here."+ "\t"
+                + System.lineSeparator() + "Some numbers: 50 1 2."+ "\t"
+                + System.lineSeparator() + "Some whitespace    ><*&^%.?"+ "\t"
                 + System.lineSeparator() + "A" + "\t"
                 + System.lineSeparator() + "B";
         assertEquals(expectedOutput, outputFromFile);
