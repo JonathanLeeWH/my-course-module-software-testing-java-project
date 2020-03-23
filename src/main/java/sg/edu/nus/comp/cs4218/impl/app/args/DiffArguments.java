@@ -9,9 +9,9 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_NULL_ARGS;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_FLAG_PREFIX;
 
 public class DiffArguments {
-    private static final char CHAR_IDENT_FILES = 's';
-    private static final char CHAR_IGNORE_BLANKS = 'B';
-    private static final char CHAR_DIFF_FILES = 'q';
+    private static final char IDENT_FILES = 's';
+    private static final char IGNORE_BLANKS = 'B';
+    private static final char DIFF_FILES = 'q';
     private final List<String> files;
     private boolean showIdentMessage, ignoreBlankLines, diffMessageOnly, stdin;
 
@@ -34,7 +34,7 @@ public class DiffArguments {
             throw new DiffException(ERR_NULL_ARGS);
         }
         for (String arg : args) {
-            if (arg.equals("-")) {
+            if ("-".equals(arg)) {
                 stdin = true;
                 break;
             }
@@ -45,33 +45,33 @@ public class DiffArguments {
             }
             // `parsingFlag` is to ensure all flags come first, followed by files.
             if (arg.charAt(0) == CHAR_FLAG_PREFIX && arg.length() == 4) {
-                if (arg.contains(String.valueOf(CHAR_IDENT_FILES)) && arg.contains(String.valueOf(CHAR_IGNORE_BLANKS))
-                        && arg.contains(String.valueOf(CHAR_DIFF_FILES))) {
+                if (arg.contains(String.valueOf(IDENT_FILES)) && arg.contains(String.valueOf(IGNORE_BLANKS))
+                        && arg.contains(String.valueOf(DIFF_FILES))) {
                     this.showIdentMessage = true;
                     this.ignoreBlankLines = true;
                     this.diffMessageOnly = true;
                 }
             } else if (arg.charAt(0) == CHAR_FLAG_PREFIX && arg.length() == 3) {
-                if (arg.contains(String.valueOf(CHAR_IDENT_FILES)) && arg.contains(String.valueOf(CHAR_IGNORE_BLANKS))) {
+                if (arg.contains(String.valueOf(IDENT_FILES)) && arg.contains(String.valueOf(IGNORE_BLANKS))) {
                     this.showIdentMessage = true;
                     this.ignoreBlankLines = true;
-                } else if (arg.contains(String.valueOf(CHAR_IDENT_FILES)) && arg.contains(String.valueOf(CHAR_DIFF_FILES))) {
+                } else if (arg.contains(String.valueOf(IDENT_FILES)) && arg.contains(String.valueOf(DIFF_FILES))) {
                     this.showIdentMessage = true;
                     this.diffMessageOnly = true;
-                } else if (arg.contains(String.valueOf(CHAR_IGNORE_BLANKS)) && arg.contains(String.valueOf(CHAR_DIFF_FILES))) {
+                } else if (arg.contains(String.valueOf(IGNORE_BLANKS)) && arg.contains(String.valueOf(DIFF_FILES))) {
                     this.ignoreBlankLines = true;
                     this.diffMessageOnly = true;
                 }
             } else if (arg.charAt(0) == CHAR_FLAG_PREFIX && arg.length() == 2) {
-                if (arg.contains(String.valueOf(CHAR_IGNORE_BLANKS))) {
+                if (arg.contains(String.valueOf(IGNORE_BLANKS))) {
                     this.ignoreBlankLines = true;
-                } else if (arg.contains(String.valueOf(CHAR_DIFF_FILES))) {
+                } else if (arg.contains(String.valueOf(DIFF_FILES))) {
                     this.diffMessageOnly = true;
-                } else if (arg.contains(String.valueOf(CHAR_IDENT_FILES))){
+                } else if (arg.contains(String.valueOf(IDENT_FILES))){
                     this.showIdentMessage = true;
                 }
             } else {
-                if (!arg.equals("-")) {
+                if (!"-".equals(arg)) {
                     this.files.add(arg.trim());
                 }
             }
