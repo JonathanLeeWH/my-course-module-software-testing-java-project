@@ -7,6 +7,7 @@ import sg.edu.nus.comp.cs4218.exception.PasteException;
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_FILE;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.FILE_NOT_FOUND;
 
 class PasteApplicationTest {
@@ -93,20 +94,6 @@ class PasteApplicationTest {
     }
 
     /**
-     * Test mergeFile method when filename is empty.
-     *  Expected: Throws FileNotFound Exception
-     */
-    @Test
-    void runEmptyFileNameShouldThrowPasteException() {
-        String[] args = { oneLineFile.toPath().toString(), " "};
-        Exception thrown = assertThrows(PasteException.class, () -> {
-            pasteApplication.mergeFile(args);
-        });
-        String expected = PASTE_EXCEPTION + FILE_NOT_FOUND;
-        assertEquals(expected, thrown.getMessage());
-    }
-
-    /**
      * Test mergeFile method when file content is empty.
      *  Expected: Print Nothing.
      */
@@ -114,7 +101,7 @@ class PasteApplicationTest {
     void runEmptyFileContentShouldPrintNothing() throws Exception {
         String[] fileNames = new String[1];
         fileNames[0] = emptyFile.toPath().toString();
-        assertEquals(System.lineSeparator(), pasteApplication.mergeFile(fileNames));
+        assertEquals("", pasteApplication.mergeFile(fileNames));
     }
 
     /**
@@ -125,7 +112,7 @@ class PasteApplicationTest {
     void runTwoLinesFileShouldPrintTwoLines() throws Exception {
         String[] fileName = new String[1];
         fileName[0] = twoLinesFile.toPath().toString();
-        assertEquals(TWO_LINES + System.lineSeparator(), pasteApplication.mergeFile(fileName));
+        assertEquals(TWO_LINES, pasteApplication.mergeFile(fileName));
     }
 
     /**
@@ -136,7 +123,7 @@ class PasteApplicationTest {
     void runOneLineFileShouldPrintOneLines() throws Exception {
         String[] fileName = new String[1];
         fileName[0] = oneLineFile.toPath().toString();
-        assertEquals(ONE_LINE + System.lineSeparator(), pasteApplication.mergeFile(fileName));
+        assertEquals(ONE_LINE, pasteApplication.mergeFile(fileName));
     }
 
     /**
@@ -148,7 +135,7 @@ class PasteApplicationTest {
         String tab = "\t";
         String[] args = { twoLinesFile.toPath().toString(), oneLineFile.toPath().toString() };
         String expectedOutput = FIRST_LINE + tab + FIRST_LINE + System.lineSeparator()
-                + SECOND_LINE + System.lineSeparator();
+                + SECOND_LINE;
         String actualOutput = pasteApplication.mergeFile(args);
         assertEquals(expectedOutput, actualOutput);
     }
@@ -162,7 +149,7 @@ class PasteApplicationTest {
         String tab = "\t";
         String[] args = { twoLinesFile.toPath().toString(), oneLineFile.toPath().toString(), emptyFile.toPath().toString() };
         String expectedOutput = FIRST_LINE + tab + FIRST_LINE + System.lineSeparator()
-                + SECOND_LINE + System.lineSeparator();
+                + SECOND_LINE;
         String actualOutput = pasteApplication.mergeFile(args);
         assertEquals(expectedOutput, actualOutput);
     }
@@ -185,7 +172,7 @@ class PasteApplicationTest {
     @Test
     void runStdinSingleLineShouldPrintSingleLine() throws Exception {
         try(InputStream inputStream = new FileInputStream(oneLineFile.toPath().toString())) {
-            assertEquals(ONE_LINE + System.lineSeparator(), pasteApplication.mergeStdin(inputStream));
+            assertEquals(ONE_LINE, pasteApplication.mergeStdin(inputStream));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -198,7 +185,7 @@ class PasteApplicationTest {
     @Test
     void runStdinMultipleLinesOnMergeStdinMethodShouldPrintMultipleLines() throws Exception {
         try(InputStream inputStream = new FileInputStream(twoLinesFile.toPath().toString())) {
-            assertEquals(TWO_LINES + System.lineSeparator(), pasteApplication.mergeStdin(inputStream));
+            assertEquals(TWO_LINES, pasteApplication.mergeStdin(inputStream));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -214,7 +201,7 @@ class PasteApplicationTest {
         try (InputStream inputStream = new FileInputStream(twoLinesFile.toPath().toString())) {
             String[] fileNames = { twoLinesFile.toPath().toString() };
             String expectedOutput = FIRST_LINE + tab + FIRST_LINE + System.lineSeparator()
-                    + SECOND_LINE + tab + SECOND_LINE + System.lineSeparator();
+                    + SECOND_LINE + tab + SECOND_LINE;
             assertEquals(expectedOutput, pasteApplication.mergeFileAndStdin(inputStream, fileNames));
         }
     }
@@ -319,22 +306,6 @@ class PasteApplicationTest {
             String[] args = new String[0];
             assertThrows(PasteException.class, () -> {
                 pasteApplication.run(args, null, osPrint);
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     *  Test run method with null outputStream.
-     *  Expected: String of merged contents from the input files.
-     */
-    @Test
-    void runInvalidDashPositionShouldThrowPasteException() {
-        try(InputStream inputStream = new ByteArrayInputStream(oneLineFile.toPath().toString().getBytes())) {
-            String[] args = {oneLineFile.toPath().toString(), "-"};
-            assertThrows(PasteException.class, () -> {
-                pasteApplication.run(args, inputStream, osPrint);
             });
         } catch (IOException e) {
             e.printStackTrace();
