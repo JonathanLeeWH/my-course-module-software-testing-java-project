@@ -50,6 +50,7 @@ class PipeCommandIT {
     private static final String PASTE_APP = "paste";
     private static final String SED_APP = "sed";
     private static final String RM_APP = "rm";
+    private static final String DIFF_APP = "diff";
     private static final String INVALID_APP = "lsa";
     private static final String B_FLAG = "-b";
     private static final String C_FLAG = "-c";
@@ -308,6 +309,29 @@ class PipeCommandIT {
     }
 
     /**
+     * Tests evaluate method sed and grep interaction
+     * For example: diff 1.txt 2.txt | grep ">"
+     * Where 1.txt and 2.txt exists and both contain different file contents
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithDiffCommandAndGrepCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        Files.write(file1, Arrays.asList(FILE_CONTENT_6, FILE_CONTENT_7, FILE_CONTENT_8));
+        callCommands.add(new CallCommand(Arrays.asList(DIFF_APP, file1.toString(), file2.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "\">\""), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("> " + FILE_CONTENT_2 + System.lineSeparator(), outputStream.toString());
+    }
+
+    /**
      * Tests evaluate method sed and cut interaction
      * For example: sed "s/^/> /" 1.txt | cut -c 1-2
      * Where 1.txt exists.
@@ -466,5 +490,29 @@ class PipeCommandIT {
         pipeCommand.evaluate(System.in, outputStream);
         long expectedTotalBytes = file1.toFile().length() + file2.toFile().length();
         assertEquals("1       1       2      " + file1.toFile().length() + " CS4218A.txt" + STRING_NEWLINE + "1       2       5      " + file2.toFile().length() + " A4218A.txt" + STRING_NEWLINE + "1       3       7      " + expectedTotalBytes +" total" + STRING_NEWLINE, outputStream.toString());
+    }
+
+    /**
+     * Tests evaluate method paste command and sed command and grep interaction
+     * For example: diff 1.txt 2.txt | sed "s/^/> /" | grep ">"
+     * Where 1.txt and 2.txt exists and contain different file contents
+     * Expected: Outputs correctly
+     */
+    @Test
+    void testEvaluatePipeCommandWithDiffCommandAndSedCommandAndGrepCommandInteractionShouldOutputCorrectly(@TempDir Path tempDir) throws Exception {
+        Path file1 = tempDir.resolve(FILE_NAME_4);
+        Path file2 = tempDir.resolve(FILE_NAME_5);
+        Files.createFile(file1);
+        Files.createFile(file2);
+        Files.write(file1, Collections.singletonList(FILE_CONTENT_1));
+        Files.write(file2, Collections.singletonList(FILE_CONTENT_2));
+        assertTrue(Files.exists(file1)); // check that 1.txt exists
+        assertTrue(Files.exists(file2)); // check that 2.txt exists.
+        callCommands.add(new CallCommand(Arrays.asList(DIFF_APP, file1.toString(), file2.toString()), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(SED_APP, REGEX_EXPR_1), new ApplicationRunner(), new ArgumentResolver()));
+        callCommands.add(new CallCommand(Arrays.asList(GREP_APP, "\">\""), new ApplicationRunner(), new ArgumentResolver()));
+        PipeCommand pipeCommand = new PipeCommand(callCommands);
+        pipeCommand.evaluate(System.in, outputStream);
+        assertEquals("> < " + FILE_CONTENT_1 + System.lineSeparator() + "> > " + FILE_CONTENT_2 + System.lineSeparator(), outputStream.toString());
     }
 }
