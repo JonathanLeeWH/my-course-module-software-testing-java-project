@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import sg.edu.nus.comp.cs4218.app.PasteInterface;
 import sg.edu.nus.comp.cs4218.exception.PasteException;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
+import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.*;
 import java.nio.file.InvalidPathException;
@@ -198,6 +199,7 @@ public class PasteApplication implements PasteInterface {
     private String paste(BufferedReader... bufferedReaders) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         boolean hasMoreLines = true;
+        String previousLine = "";
         while (hasMoreLines) {
             boolean allLinesNull = true;
                 for (int i = 0; i < bufferedReaders.length; i++) {
@@ -210,10 +212,12 @@ public class PasteApplication implements PasteInterface {
                         } else if (i == 0) {
                             stringBuilder.append(currentLine);
                         }
-                    }
-                    else if (currentLine != null) {
+                    } else if (currentLine != null && !StringUtils.isBlank(previousLine)) {
                         stringBuilder.append(CHAR_TAB).append(currentLine);
+                    } else if (currentLine != null && StringUtils.isBlank(previousLine)) {
+                        stringBuilder.append(currentLine);
                     }
+                    previousLine = currentLine;
                 }
             if (allLinesNull) {
                 hasMoreLines = false;
