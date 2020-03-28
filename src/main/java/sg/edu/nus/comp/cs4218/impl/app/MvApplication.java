@@ -65,8 +65,9 @@ public class MvApplication implements MvInterface {
             }
         }
 
+        File destFile = IOUtils.resolveFilePath(dest).toFile();
         if(sources.size() > 1) {
-            File destFile = new File(dest);
+
             if(destFile.exists()) {
                 if(!destFile.isDirectory()) {
                     throw new MvException(DESTINATION_FOLDER_NOT);
@@ -82,7 +83,7 @@ public class MvApplication implements MvInterface {
 
             StringBuilder stringbuilder = new StringBuilder(currentDir);
             stringbuilder.append(dest);
-            String checkDest = dest;
+            String checkDest = destFile.getPath() ;
 
             File file = new File(checkDest);
             File sourceFile = new File(source);
@@ -118,7 +119,7 @@ public class MvApplication implements MvInterface {
             fileMoved = false;
             throw (MvException) new MvException(NO_DESTINATION);
         }
-        Files.move(Paths.get(srcFile), Paths.get(destFile), REPLACE_EXISTING);
+        Files.move(Paths.get(file.getPath()), Paths.get(destinationFile.getPath()), REPLACE_EXISTING);
 
 
         if(file.exists()) {
@@ -156,7 +157,7 @@ public class MvApplication implements MvInterface {
             String currentSrcName = file.getName();
             String dest = destinationFile.getPath().toString() + File.separator + currentSrcName;
             try {
-                Files.move(Paths.get(sourceFile), Paths.get(dest), REPLACE_EXISTING);
+                Files.move(Paths.get(file.getPath()), Paths.get(dest), REPLACE_EXISTING);
 
             } catch (Exception e) {
                 fileMoved = false;
