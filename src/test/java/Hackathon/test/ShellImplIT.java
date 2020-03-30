@@ -3,6 +3,7 @@ package Hackathon.test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
@@ -10,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,9 +38,9 @@ public class ShellImplIT {
     @Test
     void testParseAndEvaluateForBugReportNum3() throws Exception {
         String input = "cd main3/`ls main3`";
+        String expectedPath = Paths.get(EnvironmentHelper.currentDirectory + "/main3/sub3").toString();
         shell.parseAndEvaluate(input, outputStream);
-        String expectedResult = "";
-        assertEquals(expectedResult, outputStream.toString());
+        assertEquals(expectedPath, EnvironmentHelper.currentDirectory);
     }
 
     @Test
