@@ -3,8 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.parser;
 import sg.edu.nus.comp.cs4218.exception.CutException;
 import sg.edu.nus.comp.cs4218.impl.util.MyPair;
 
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_LESS_THAN_ZERO;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_MISSING_ARG;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 public class CutArgsParser extends ArgsParser{
 
@@ -50,11 +49,23 @@ public class CutArgsParser extends ArgsParser{
 
         if (list.contains(LIST_COMMA_OPTION)) {
             int commaPos = list.indexOf(LIST_COMMA_OPTION);
-            startPos = Integer.parseInt(list.substring(startPos, commaPos));
-            endPos = Integer.parseInt(list.substring(commaPos + 1));
+            String startIndex = list.substring(startPos, commaPos);
+            String endIndex = list.substring(commaPos + 1);
+            if ((startIndex.contains(LIST_RANGE_OPTION)) || (endIndex.contains(LIST_RANGE_OPTION))) {
+                throw new Exception(ERR_INVALID_ARGS);
+            }
+
+            startPos = Integer.parseInt(startIndex);
+            endPos = Integer.parseInt(endIndex);
         }
         else if (list.contains(LIST_RANGE_OPTION)) {
             int dashPos = list.indexOf(LIST_RANGE_OPTION);
+            String startIndex = list.substring(startPos, dashPos);
+            String endIndex = list.substring(dashPos + 1);
+            if ((startIndex.contains(LIST_COMMA_OPTION)) || (endIndex.contains(LIST_COMMA_OPTION))) {
+                throw new Exception(ERR_INVALID_ARGS);
+            }
+
             startPos = Integer.parseInt(list.substring(startPos, dashPos));
             endPos = Integer.parseInt(list.substring(dashPos + 1));
         }

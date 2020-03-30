@@ -6,12 +6,14 @@ import org.junit.jupiter.api.Test;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_ARGS;
 
 public class ShellImplIT {
     private static Shell shell;
@@ -27,6 +29,7 @@ public class ShellImplIT {
     @BeforeEach
     void setUpBeforeEach() {
         shell = new ShellImpl();
+        inputStream = new ByteArrayInputStream("123".getBytes());
         outputStream = new ByteArrayOutputStream();
     }
 
@@ -39,10 +42,10 @@ public class ShellImplIT {
     }
 
     @Test
-    void testParseAndEvaluateForBugReportNum11() throws Exception {
+    void testParseAndEvaluateForBugReportNum11() {
         String input = "cut -b 1,3-5 file1.txt";
         Throwable thrown = assertThrows(Exception.class, () -> shell.parseAndEvaluate(input, outputStream));
-        String expectedResult = "";
+        String expectedResult = "cut: " + ERR_INVALID_ARGS;
         assertEquals(thrown.getMessage(), expectedResult);
     }
 }
