@@ -492,10 +492,10 @@ class SequenceCommandIT {
      * Tests evaluate method with paste command mv command and rm command
      * For example paste A.txt B.txt AB.txt; cp A.txt B.txt AB.txt folder1; rm folder1/A.txt folder1/B.txt folder1/AB.txt
      * Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
-     * Expected: Removes folder1/A.txt, folder1/B.txt and folder1/AB.txt
+     * Expected: Outputs correctly and Removes folder1/A.txt, folder1/B.txt and folder1/AB.txt
      */
     @Test
-    void testEvaluateSequenceCommandsWithPasteCommandAndCpCommandAndRmCommandShouldRemoveFilesInFolder(@TempDir Path tempDir) throws Exception {
+    void testEvaluateSequenceCommandsWithPasteCommandAndCpCommandAndRmCommandShouldOutputCorrectlyAndRemoveFilesInFolder(@TempDir Path tempDir) throws Exception {
         Path file1 = tempDir.resolve(FILE_NAME_4);
         Path file2 = tempDir.resolve(FILE_NAME_5);
         Path file3 = tempDir.resolve(FILE_NAME_6);
@@ -515,6 +515,7 @@ class SequenceCommandIT {
         commands.add(new CallCommand(Arrays.asList(RM_APP, folder.resolve(FILE_NAME_4).toString(), folder.resolve(FILE_NAME_5).toString(), folder.resolve(FILE_NAME_6).toString()), new ApplicationRunner(), new ArgumentResolver()));
         SequenceCommand sequenceCommand = new SequenceCommand(commands);
         sequenceCommand.evaluate(System.in, outputStream);
+        assertEquals(FILE_CONTENT_1 + "\t" + FILE_CONTENT_2 + STRING_NEWLINE, outputStream.toString());
         assertTrue(Files.exists(file1)); // check that A.txt exists
         assertTrue(Files.exists(file2)); // check that B.txt exists
         assertTrue(Files.exists(file3)); // check that AB.txt exists
@@ -563,7 +564,7 @@ class SequenceCommandIT {
 
     /**
      * Tests evaluate method with paste command mv command and rm command
-     * For example cd A.txt; cp A.txt B.txt AB.txt 1.txt folder1; rm folder1/A.txt folder1/B.txt
+     * For example cd A.txt; cp A.txt B.txt AB.txt 1.txt folder1; rm folder1/A.txt folder1/B.txt folder1/AB.txt
      * Where A.txt and B.txt and AB.txt exist and 1.txt does not exist and folder1 is an existing directory.
      * Expected: Outputs cd ERR_IS_NOT_DIR exception followed by a new line and cp ERR_FILE_NOT_FOUND exception followed by a new line.
      * At the same time, A.txt, B.txt and AB.txt are copied to folder1 and then folder1/A.txt and folder1/B.txt folder1/AB.txt are removed.
