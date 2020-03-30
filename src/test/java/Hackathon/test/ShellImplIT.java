@@ -1,16 +1,13 @@
 package Hackathon.test;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.Shell;
+import sg.edu.nus.comp.cs4218.impl.FileIOHelper;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +18,26 @@ public class ShellImplIT {
     private static Shell shell;
     private static InputStream inputStream;
     private static ByteArrayOutputStream outputStream;
+    private static final String MAIN_3_DIR = "main3";
+    private static final String SUB_3_SUB_DIR = MAIN_3_DIR + File.separator + "sub3";
+
+    @BeforeAll
+    static void setUp() throws IOException {
+        inputStream = Mockito.mock(InputStream.class);
+
+        File main3Dir = new File(MAIN_3_DIR);
+        main3Dir.mkdir();
+
+        File sub3Dir = new File(SUB_3_SUB_DIR);
+        sub3Dir.mkdir();
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException {
+        inputStream.close();
+        outputStream.close();
+        FileIOHelper.deleteTestFiles(MAIN_3_DIR, SUB_3_SUB_DIR);
+    }
 
     @AfterEach
     void tearDownAfterEach() throws IOException {
