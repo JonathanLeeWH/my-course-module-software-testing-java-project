@@ -1,0 +1,3 @@
+The Structure.zip resource file provided by Team 13 is placed inside the resource/ directory as we cannot follow exactly the structure they stated of unzipping to our root project directory as it will cause the root project directory to be disorganised and all resource files involved in Hackathon should be collated in this folder so we adjust their test cases that involve the resources they provided with the correct path to this resource directory.
+
+Our Test cases for the bug reports from other teams are placed inside test/

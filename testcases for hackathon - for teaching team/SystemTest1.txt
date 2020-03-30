@@ -15,20 +15,24 @@ Required Inputs: ls > 1.txt; rm 1.txt
 Expected Results: Removes 1.txt which is created after ls command execution.
 
 Purpose of test case: Test when one of the command throws an exception.
-Required Inputs: cd A.txt; cp A.txt B.txt AB.txt 1.txt folder1; rm folder1/A.txt folder1/B.txt
+Required Inputs: cd A.txt; cp A.txt B.txt AB.txt 1.txt folder1; rm folder1/A.txt folder1/B.txt folder1/AB.txt
 Where A.txt and B.txt and AB.txt exist and 1.txt does not exist and folder1 is an existing directory.
 Expected Results: Outputs cd ERR_IS_NOT_DIR exception followed by a new line and cp ERR_FILE_NOT_FOUND exception followed by a new line. At the same time, A.txt, B.txt and AB.txt are copied to folder1 and then folder1/A.txt and folder1/B.txt folder1/AB.txt are removed.
 
 Purpose of test case: Tests at least 2 sequence commands
 Required Inputs: paste A.txt B.txt AB.txt; cp A.txt B.txt AB.txt folder1; rm folder1/A.txt folder1/B.txt folder1/AB.txt
 Where A.txt and B.txt and AB.txt exist and folder1 is an existing directory.
-Expected Results: Removes folder1/A.txt, folder1/B.txt and folder1/AB.txt
+Expected Results: Outputs correctly and removes folder1/A.txt, folder1/B.txt and folder1/AB.txt
 
 // Pipe Command
 Purpose of test case: check if terminate with exception if an exception occurred in pipe command
 Required Inputs: paste A.txt B.txt | grep <valid regex>
 Where A.txt B.txt does not exists
 Expected Results: Throws an exception.
+
+Purpose of test case: Test piping ls and sort command interaction
+Required Inputs: ls | sort -r
+Expected Output: Outputs list of files and directories in current directory sorted in reverse order.
 
 Purpose of test case: Pipe command allows normal command execution even if streams are not used.
 Required Input: ls > 1.txt | rm 1.txt 
