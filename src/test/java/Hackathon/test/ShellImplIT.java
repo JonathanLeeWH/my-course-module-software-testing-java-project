@@ -23,6 +23,7 @@ public class ShellImplIT {
 
     @BeforeAll
     static void setUp() throws IOException {
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
         inputStream = Mockito.mock(InputStream.class);
 
         File main3Dir = new File(MAIN_3_DIR);
@@ -34,6 +35,7 @@ public class ShellImplIT {
 
     @AfterAll
     static void tearDown() throws IOException {
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
         inputStream.close();
         outputStream.close();
         FileIOHelper.deleteTestFiles(MAIN_3_DIR, SUB_3_SUB_DIR);
@@ -41,12 +43,14 @@ public class ShellImplIT {
 
     @AfterEach
     void tearDownAfterEach() throws IOException {
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
         inputStream.close();
         outputStream.close();
     }
 
     @BeforeEach
     void setUpBeforeEach() {
+        EnvironmentHelper.currentDirectory = System.getProperty("user.dir");
         shell = new ShellImpl();
         inputStream = new ByteArrayInputStream("123".getBytes());
         outputStream = new ByteArrayOutputStream();
