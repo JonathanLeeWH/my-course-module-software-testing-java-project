@@ -36,10 +36,6 @@
                             </includes>
                             <excludes>
                                 <!-- Exclude integration tests within (unit) test phase. -->
-                                <exclude>**/**CommandSubIT.java</exclude>
-                                <exclude>**/DiffApplicationIT.java</exclude>
-                                <exclude>**/DiffApplicationTest.java</exclude>
-                                <exclude>**/tdd/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -104,10 +100,14 @@
                     <excludedTestClasses>
                         <!-- These classes are excluded as there are failing test cases. PIT require a green test suite.-->
                         <param>sg.edu.nus.comp.cs4218.impl.cmd.command_sub.**CommandSubIT**</param>
-                        <param>sg.edu.nus.comp.cs4218.impl.app.DiffApplicationIT**</param>
-                        <param>sg.edu.nus.comp.cs4218.impl.app.DiffApplicationTest**</param>
                         <!-- This one has to be excluded permanently as it involves temp folder manipulation. -->
                         <param>sg.edu.nus.comp.cs4218.impl.cmd.GlobbingTest**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.CutApplicationIT**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.CutApplicationTest**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.SortApplicationIT**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.SortApplicationTest**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.WcApplicationIT**</param>
+                        <param>sg.edu.nus.comp.cs4218.impl.app.WcApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.FindApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.MvApplicationTest**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.app.GrepApplicationTest**</param>
@@ -117,6 +117,7 @@
                         <param>sg.edu.nus.comp.cs4218.impl.util.IORedirectionIT**</param>
                         <param>sg.edu.nus.comp.cs4218.impl.ShellImplIT**</param>
                         <param>**/tdd/**</param>
+                        <param>**/Hackathon/**</param>
                     </excludedTestClasses>
                 </configuration>
                 <executions>

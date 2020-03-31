@@ -98,6 +98,8 @@ public class ArgumentResolver {
                             }
                         }
                         else {
+                            RegexArgument firstOutputArg = subOutputSegment.remove(0);
+                            appendParsedArgIntoSegment(parsedArgsSegment, firstOutputArg);
                             parsedArgsSegment.addAll(subOutputSegment);
                         }
                     } else {

@@ -125,7 +125,7 @@ public class CommandSubIT {
     @Test
     void testEchoCommandAndEchoCommandsAsSubCommandWithMultipleSubCommandShouldParseArgumentsSuccessfully() throws AbstractApplicationException, ShellException {
         List<String> args = Arrays.asList("echo", "`echo abc`123`echo abc`123`echo abc`123");
-        List<String> expectedResult = Arrays.asList("echo", "abc123", "abc123", "abc123");
+        List<String> expectedResult = Arrays.asList("echo", "abc123abc123abc123");
         assertEquals(expectedResult, argumentResolver.parseArguments(args));
     }
 }
