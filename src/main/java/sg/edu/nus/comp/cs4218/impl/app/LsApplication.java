@@ -91,7 +91,9 @@ public class LsApplication implements LsInterface {
 
         try {
             stdout.write(result.getBytes());
-            stdout.write(StringUtils.STRING_NEWLINE.getBytes());
+            if(!result.isEmpty()) {
+                stdout.write(StringUtils.STRING_NEWLINE.getBytes());
+            }
         } catch (Exception e) {
             throw (LsException) new LsException(ERR_WRITE_STREAM).initCause(e);
         }
