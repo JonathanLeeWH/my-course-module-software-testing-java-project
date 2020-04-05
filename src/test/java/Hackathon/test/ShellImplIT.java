@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.ERR_INVALID_ARGS;
+import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 public class ShellImplIT {
     private static Shell shell;
@@ -116,15 +116,61 @@ public class ShellImplIT {
             EnvironmentHelper.currentDirectory = TestUtil.resolveFilePath(path).toString();
         }
 
-        String input = " cd main1; mv file1.txt sub1/file3.txt";
+        String input = "cd main1; mv file1.txt sub1/file3.txt";
         shell.parseAndEvaluate(input, outputStream);
 
         File file = new File(path + File.separator + "main1" + File.separator + "sub1" + File.separator + "file3.txt");
         assertTrue(file.exists());
 
 
-        String inputPutBack = " cd sub1; mv file3.txt " + "\"" + path + File.separator + "main1" +  File.separator + "file1.txt\"";
+        String inputPutBack = "cd sub1; mv file3.txt " + "\"" + path + File.separator + "main1" +  File.separator + "file1.txt\"";
         shell.parseAndEvaluate(inputPutBack, outputStream);
 
+    }
+
+    /**
+     * Tests Bug Report 7 where moving folder to same location
+     * Command:    mv main3 .
+     */
+    @Test
+    void testParseAndEvaluateForBugReportNum7() throws Exception {
+
+        String path = System.getProperty("user.dir")
+                + StringUtils.fileSeparator() + "src"
+                + StringUtils.fileSeparator() + "test"
+                + StringUtils.fileSeparator() + "java"
+                + StringUtils.fileSeparator() + "Hackathon"
+                + StringUtils.fileSeparator() + "resource";
+        if (Files.isDirectory(TestUtil.resolveFilePath(path))) {
+            EnvironmentHelper.currentDirectory = TestUtil.resolveFilePath(path).toString();
+        }
+
+        String input = "mv main3 .";
+        Throwable thrown = assertThrows(Exception.class, () -> shell.parseAndEvaluate(input, outputStream));
+        String expectedResult = "mv: " + IDENTICAL_LOCATION;
+        assertEquals(thrown.getMessage(), expectedResult);
+    }
+
+    /**
+     * Tests Bug Report 8 where moving folder to same location
+     * Command:  mv main3 main3/sub3
+     */
+    @Test
+    void testParseAndEvaluateForBugReportNum8() throws Exception {
+
+        String path = System.getProperty("user.dir")
+                + StringUtils.fileSeparator() + "src"
+                + StringUtils.fileSeparator() + "test"
+                + StringUtils.fileSeparator() + "java"
+                + StringUtils.fileSeparator() + "Hackathon"
+                + StringUtils.fileSeparator() + "resource";
+        if (Files.isDirectory(TestUtil.resolveFilePath(path))) {
+            EnvironmentHelper.currentDirectory = TestUtil.resolveFilePath(path).toString();
+        }
+
+        String input = "mv main3 main3/sub3";
+        Throwable thrown = assertThrows(Exception.class, () -> shell.parseAndEvaluate(input, outputStream));
+        String expectedResult = "mv: " + MOVING_TO_CHILD;
+        assertEquals(thrown.getMessage(), expectedResult);
     }
 }
