@@ -8,6 +8,7 @@ import sg.edu.nus.comp.cs4218.impl.parser.MvArgsParser;
 import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.*;
 import java.io.File;
@@ -112,12 +113,12 @@ public class MvApplication implements MvInterface {
 
         if(!file.exists()) {
             fileMoved = false;
-            throw (MvException) new MvException(NO_FILE);
+            throw new Exception(NO_FILE);
         }
 
         if(destFile.isEmpty()) {
             fileMoved = false;
-            throw (MvException) new MvException(NO_DESTINATION);
+            throw new Exception(NO_DESTINATION);
         }
         Files.move(Paths.get(file.getPath()), Paths.get(destinationFile.getPath()), REPLACE_EXISTING);
 
@@ -150,18 +151,25 @@ public class MvApplication implements MvInterface {
         boolean fileMoved = true;
         File destinationFile = IOUtils.resolveFilePath(destFolder).toFile();
         if(!destinationFile.exists()) {
-            throw (MvException) new MvException(NO_DESTINATION_FOLDER);
+            throw new Exception(NO_DESTINATION_FOLDER);
         }
         for(String sourceFile : fileName) {
             File file = IOUtils.resolveFilePath(sourceFile).toFile();
             String currentSrcName = file.getName();
             String dest = destinationFile.getPath().toString() + File.separator + currentSrcName;
+            File checkDestFile = new File(dest);
+            if(checkDestFile.toPath().normalize().equals(file.toPath().normalize())){
+                throw new Exception(IDENTICAL_LOCATION);
+            }
+            if(checkDestFile.toPath().normalize().toString().contains(file.getPath())) {
+                throw new Exception(MOVING_TO_CHILD);
+            }
             try {
                 Files.move(Paths.get(file.getPath()), Paths.get(dest), REPLACE_EXISTING);
 
             } catch (Exception e) {
                 fileMoved = false;
-                throw (MvException) new MvException(FAILED_TO_MOVE).initCause(e);
+                throw new Exception(FAILED_TO_MOVE);
             }
         }
         String returnString = "File not moved";

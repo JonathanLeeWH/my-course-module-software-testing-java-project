@@ -76,6 +76,8 @@ public class ErrorConstants {
     public static final String FAILED_TO_MOVE = "Failed to move file";
     public static final String NO_FILE = "No file specified found";
     public static final String NO_OVERWRITE = "No overwrite and destination file exist";
+    public static final String IDENTICAL_LOCATION = "Moving folder to same location";
+    public static final String MOVING_TO_CHILD = "Moving folder to child folder";
 
     // `Paste` related
     public static final String INVALID_DASH = "multiple dashes are not supported";

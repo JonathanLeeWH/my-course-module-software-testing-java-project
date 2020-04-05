@@ -296,11 +296,11 @@ public class MvApplicationTest {
         assertTrue(Files.exists(file1));
         assertFalse(Files.exists(file2));
 
-        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             mvApplication.mvFilesToFolder(destFolderString,fileSrcString);
         });
+        assertTrue(exception.getMessage().contains(String.format(NO_DESTINATION_FOLDER)));
 
-        assertEquals(new MvException(NO_DESTINATION_FOLDER).getMessage(), exception.getMessage());
     }
 
     @Test
@@ -313,11 +313,11 @@ public class MvApplicationTest {
         assertFalse(Files.exists(file1));
         assertFalse(Files.exists(file2));
 
-        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             mvApplication.mvSrcFileToDestFile(fileSrcString,destFileString);
         });
+        assertTrue(exception.getMessage().contains(String.format(NO_FILE)));
 
-        assertEquals(new MvException(NO_FILE).getMessage(), exception.getMessage());
     }
 
     @Test
@@ -327,10 +327,11 @@ public class MvApplicationTest {
 
         Files.createFile(file1);
         assertTrue(Files.exists(file1));
-        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             mvApplication.mvSrcFileToDestFile(fileSrcString,"");
         });
-        assertEquals(new MvException(NO_DESTINATION).getMessage(), exception.getMessage());
+        assertTrue(exception.getMessage().contains(String.format(NO_DESTINATION)));
+
     }
 
     @Test
@@ -355,10 +356,12 @@ public class MvApplicationTest {
 
         Files.createFile(file1);
         assertTrue(Files.exists(file1));
-        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+
+
+        Exception exception = assertThrows(Exception.class, () -> {
             mvApplication.mvSrcFileToDestFile(fileSrcString,"");
         });
-        assertEquals(new MvException(NO_DESTINATION).getMessage(), exception.getMessage());
+        assertTrue(exception.getMessage().contains(String.format(NO_DESTINATION)));
     }
 
     @Test
@@ -368,10 +371,10 @@ public class MvApplicationTest {
 
         Files.createFile(file1);
         assertTrue(Files.exists(file1));
-        AbstractApplicationException exception = assertThrows(MvException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             mvApplication.mvFilesToFolder(TEST_FOLDER,fileSrcString);
         });
-        assertEquals(new MvException(NO_DESTINATION_FOLDER).getMessage(), exception.getMessage());
+        assertTrue(exception.getMessage().contains(String.format(NO_DESTINATION_FOLDER)));
     }
 
     // Test mv app move two files into a non existent folder
