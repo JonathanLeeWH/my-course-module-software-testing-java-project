@@ -6,6 +6,7 @@ import sg.edu.nus.comp.cs4218.EnvironmentHelper;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.impl.FileIOHelper;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
+import sg.edu.nus.comp.cs4218.impl.util.ArgumentResolver;
 import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 import tdd.util.TestUtil;
 
@@ -13,6 +14,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
@@ -20,6 +23,7 @@ import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 public class ShellImplIT {
     private static Shell shell;
     private static InputStream inputStream;
+    private static ArgumentResolver argumentResolver;
     private static ByteArrayOutputStream outputStream;
     private static final String MAIN_1_DIR = "main1";
     private static final String MAIN_2_DIR = "main2";
@@ -89,6 +93,7 @@ public class ShellImplIT {
         shell = new ShellImpl();
         inputStream = new ByteArrayInputStream("123".getBytes());
         outputStream = new ByteArrayOutputStream();
+        argumentResolver = new ArgumentResolver();
     }
 
     @Test
@@ -97,6 +102,15 @@ public class ShellImplIT {
         String expectedPath = Paths.get(EnvironmentHelper.currentDirectory + "/main3/sub3").toString();
         shell.parseAndEvaluate(input, outputStream);
         assertEquals(expectedPath, EnvironmentHelper.currentDirectory);
+
+        // This part was meant to test the example below which is mentioned in bug report 3
+        // Example:
+        // Before Command Sub: arg: abc`echo 1 2 3`xyz`echo 4 5 6`
+        // After Command Sub: arg: abc`1 2 3`xyz`4 5 6` (contents in `` is after command sub)
+        // Expected output: [abc1, 2, 3xyz4, 5, 6]
+        String argsList = "abc`echo 1 2 3`xyz`echo 4 5 6`";
+        List<String> expectedArgList = Arrays.asList("abc1", "2", "3xyz4", "5", "6");
+        assertArrayEquals(expectedArgList.toArray(), argumentResolver.resolveOneArgument(argsList).toArray());
     }
 
     @Test
