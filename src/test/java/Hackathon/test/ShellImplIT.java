@@ -11,6 +11,7 @@ import tdd.util.TestUtil;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,8 +21,12 @@ public class ShellImplIT {
     private static Shell shell;
     private static InputStream inputStream;
     private static ByteArrayOutputStream outputStream;
+    private static final String MAIN_1_DIR = "main1";
+    private static final String MAIN_2_DIR = "main2";
     private static final String MAIN_3_DIR = "main3";
     private static final String SUB_3_SUB_DIR = MAIN_3_DIR + File.separator + "sub3";
+    private static final String RESOURCE_DIR = "src" + File.separator + "test" + File.separator + "java" + File.separator + "Hackathon" + File.separator + "resource";
+    private static final String KEEP_FILE = ".keep";
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -33,6 +38,20 @@ public class ShellImplIT {
 
         File sub3Dir = new File(SUB_3_SUB_DIR);
         sub3Dir.mkdir();
+
+        // The limitation in git of not allowing empty directories to be pushed to git repository
+        // and the work around is to include a .keep file within the empty directory which makes it not technically empty but will be able to push to GitHub
+        // The resolution is to check if the .keep file exists and if so remove them before running the test suite to ensure the testing resource structure is maintained
+        Path resource = Paths.get(EnvironmentHelper.currentDirectory + File.separator + RESOURCE_DIR);
+        Path[] keepPaths = {resource.resolve(MAIN_1_DIR + File.separator + "sub2" + File.separator + KEEP_FILE),
+                resource.resolve(MAIN_2_DIR + File.separator + KEEP_FILE),
+                resource.resolve(MAIN_3_DIR + File.separator + KEEP_FILE),
+                resource.resolve(MAIN_3_DIR + File.separator + "sub3" + File.separator + KEEP_FILE)};
+        for (Path path : keepPaths) {
+            if (Files.exists(path)) {
+                Files.delete(path);
+            }
+        }
     }
 
     @AfterAll
@@ -41,6 +60,20 @@ public class ShellImplIT {
         inputStream.close();
         outputStream.close();
         FileIOHelper.deleteTestFiles(MAIN_3_DIR, SUB_3_SUB_DIR);
+
+        // The limitation in git of not allowing empty directories to be pushed to git repository
+        // and the work around is to include a .keep file within the empty directory which makes it not technically empty but will be able to push to GitHub
+        // To avoid issues with deleting the .keep file and pushing the deletion to Git repository after this test suite is completed, this will revert the deletion of .keep file after the test suite completed running.
+        Path resource = Paths.get(EnvironmentHelper.currentDirectory + File.separator + RESOURCE_DIR);
+        Path[] keepPaths = {resource.resolve(MAIN_1_DIR + File.separator + "sub2" + File.separator + KEEP_FILE),
+                resource.resolve(MAIN_2_DIR + File.separator + KEEP_FILE),
+                resource.resolve(MAIN_3_DIR + File.separator + KEEP_FILE),
+                resource.resolve(MAIN_3_DIR + File.separator + "sub3" + File.separator + KEEP_FILE)};
+        for (Path path : keepPaths) {
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+        }
     }
 
     @AfterEach
@@ -94,9 +127,8 @@ public class ShellImplIT {
         String input = "ls main2";
         shell.parseAndEvaluate(input, outputStream);
         String expectedResult = "";
-        assertEquals(expectedResult ,outputStream.toString() );
+        assertEquals(expectedResult, outputStream.toString());
     }
-
 
 
     /**
@@ -123,7 +155,7 @@ public class ShellImplIT {
         assertTrue(file.exists());
 
 
-        String inputPutBack = "cd sub1; mv file3.txt " + "\"" + path + File.separator + "main1" +  File.separator + "file1.txt\"";
+        String inputPutBack = "cd sub1; mv file3.txt " + "\"" + path + File.separator + "main1" + File.separator + "file1.txt\"";
         shell.parseAndEvaluate(inputPutBack, outputStream);
 
     }
