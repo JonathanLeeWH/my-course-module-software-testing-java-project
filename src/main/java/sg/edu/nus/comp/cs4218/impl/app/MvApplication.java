@@ -169,7 +169,7 @@ public class MvApplication implements MvInterface {
 
             } catch (Exception e) {
                 fileMoved = false;
-                throw new Exception(FAILED_TO_MOVE);
+                throw (Exception) new Exception(FAILED_TO_MOVE).initCause(e);
             }
         }
         String returnString = "File not moved";
