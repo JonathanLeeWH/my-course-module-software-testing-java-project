@@ -22,6 +22,8 @@ public class ShellImplIT {
     private static ByteArrayOutputStream outputStream;
     private static final String MAIN_3_DIR = "main3";
     private static final String SUB_3_SUB_DIR = MAIN_3_DIR + File.separator + "sub3";
+    private static final String MAIN_1_DIR= "main1";
+    private static final String MAIN_2_DIR = "main2";
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -173,4 +175,7 @@ public class ShellImplIT {
         String expectedResult = "mv: " + MOVING_TO_CHILD;
         assertEquals(thrown.getMessage(), expectedResult);
     }
+
+
+ 
 }
