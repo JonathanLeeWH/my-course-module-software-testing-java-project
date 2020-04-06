@@ -219,7 +219,69 @@ public class ShellImplIT {
         String expectedResult = "mv: " + MOVING_TO_CHILD;
         assertEquals(thrown.getMessage(), expectedResult);
     }
+    /**
+     * ArgumentResolver does not workcorrectly with backticks within
+     * double quotes, expecting an error with missing closing backtick.
+     * Command : echo “a`a”
+     */
+    @Test
+    void testParseAndEvaluateForBugReportNum6() throws Exception {
 
+        String input = "echo \"a`a\"";
+        Throwable thrown = assertThrows(Exception.class, () -> shell.parseAndEvaluate(input, outputStream));
+        String expectedResult = "echo: missing closing back quote" ;
+        assertEquals(thrown.getMessage(), expectedResult);
+    }
+
+    /**
+     * Tests Bug Report 27 where windows throws error “Illegal char <*> at index” Unix systems will work
+     * //Command: ls -d * /
+     *
+     */
+    @Test
+    void testParseAndEvaluateForBugReportNum27() throws Exception {
+
+        String path = System.getProperty("user.dir")
+                + StringUtils.fileSeparator() + "src"
+                + StringUtils.fileSeparator() + "test"
+                + StringUtils.fileSeparator() + "java"
+                + StringUtils.fileSeparator() + "Hackathon"
+                + StringUtils.fileSeparator() + "resource";
+        if (Files.isDirectory(TestUtil.resolveFilePath(path))) {
+            EnvironmentHelper.currentDirectory = TestUtil.resolveFilePath(path).toString();
+        }
+
+        String input = "ls -d */";
+        shell.parseAndEvaluate(input, outputStream);
+        String expectedResult = MAIN_1_DIR + File.separator + System.lineSeparator()
+                + MAIN_2_DIR + File.separator + System.lineSeparator()
+                + MAIN_3_DIR + File.separator + System.lineSeparator();
+        assertEquals(expectedResult ,outputStream.toString() );
+    }
+
+    /**
+     * Tests Bug Report 32 where echo should expand to all files in subdirectories in the current directory
+     * Command:
+     *
+     */
+    @Test
+    void testParseAndEvaluateForBugReportNum32() throws Exception {
+
+        String path = System.getProperty("user.dir")
+                + StringUtils.fileSeparator() + "src"
+                + StringUtils.fileSeparator() + "test"
+                + StringUtils.fileSeparator() + "java"
+                + StringUtils.fileSeparator() + "Hackathon"
+                + StringUtils.fileSeparator() + "resource";
+        if (Files.isDirectory(TestUtil.resolveFilePath(path))) {
+            EnvironmentHelper.currentDirectory = TestUtil.resolveFilePath(path).toString();
+        }
+
+        String input = "echo */*";
+        shell.parseAndEvaluate(input, outputStream);
+        String expectedResult = "main1/a.bmp main1/file1.txt main1/file2.txt main1/sub1 main1/sub2 main3/sub3" ;
+        assertEquals(expectedResult ,outputStream.toString() );
+    }
 
  
 }
