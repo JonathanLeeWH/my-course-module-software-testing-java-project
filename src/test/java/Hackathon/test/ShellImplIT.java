@@ -123,7 +123,7 @@ public class ShellImplIT {
 
     /**
      * Tests Bug Report 2 where LS prints new line in empty file
-     * Command: ls main2
+     * Command:     ls main2
      */
     @Test
     void testParseAndEvaluateForBugReportNum2() throws Exception {
@@ -222,7 +222,7 @@ public class ShellImplIT {
     /**
      * ArgumentResolver does not workcorrectly with backticks within
      * double quotes, expecting an error with missing closing backtick.
-     * Command : echo “a`a”
+     * Command:     echo “a`a”
      */
     @Test
     void testParseAndEvaluateForBugReportNum6() throws Exception {
@@ -235,8 +235,7 @@ public class ShellImplIT {
 
     /**
      * Tests Bug Report 27 where windows throws error “Illegal char <*> at index” Unix systems will work
-     * //Command: ls -d * /
-     *
+     * Command:   ls -d * /
      */
     @Test
     void testParseAndEvaluateForBugReportNum27() throws Exception {
@@ -262,7 +261,6 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 32 where echo should expand to all files in subdirectories in the current directory
      * Command:
-     *
      */
     @Test
     void testParseAndEvaluateForBugReportNum32() throws Exception {
