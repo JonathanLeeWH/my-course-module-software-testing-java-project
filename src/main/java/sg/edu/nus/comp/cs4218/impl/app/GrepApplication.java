@@ -277,9 +277,6 @@ public class GrepApplication implements GrepInterface {
                 inputFiles.add(s);
             } else {
                 if (!s.isEmpty() && arg[0] == CHAR_FLAG_PREFIX) {
-                    if (arg.length > 2) {
-                        throw new GrepException(ERR_INVALID_FLAG);
-                    }
                     arg = Arrays.copyOfRange(arg, 1, arg.length);
                     for (char c : arg) {
                         switch (c) {

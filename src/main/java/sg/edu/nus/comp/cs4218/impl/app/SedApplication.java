@@ -130,11 +130,11 @@ public class SedApplication implements SedInterface {
             if (replacementIndex == 1) {
                 builder.append(line.replaceFirst(regexp, replacement));
                 output.append(builder.toString()).append(STRING_NEWLINE);
-            } else if (replacementIndex <= input.length){
+            } else {
                 builder.append(replaceString(line, regexp, replacement, replacementIndex));
                 output.append(builder.toString()).append(STRING_NEWLINE);
             }
-            if (regexp.isEmpty() || replacementIndex > input.length) {
+            if (regexp.isEmpty()) {
                 StringBuilder stringBuilder = new StringBuilder();
                 for(int i = 0; i < input.length; i++) {
                     if (i != 0) {

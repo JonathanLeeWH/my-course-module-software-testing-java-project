@@ -8,7 +8,10 @@ import sg.edu.nus.comp.cs4218.impl.util.IOUtils;
 import sg.edu.nus.comp.cs4218.impl.util.StringUtils;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
@@ -35,8 +38,7 @@ public class DiffApplication implements DiffInterface { //NOPMD
             }
             String fileFormat = files.get(0).substring(files.get(0).length()-3);
             if ("bin".equals(fileFormat) || "bmp".equals(fileFormat)) {
-                output = compareBinaryFiles(files.get(0), files.get(1)).concat(STRING_NEWLINE);
-                stdout.write(output.getBytes());
+                output = compareBinaryFiles(files.get(0), files.get(1), diffArguments.isShowIdenticalMessage());
             } else if (!file.isDirectory() && !diffArguments.isStdin()) { //NOPMD
                 if (files.size() > 2) {
                     throw new DiffException(ERR_MORE_THAN_TWO_FILES);
@@ -389,33 +391,18 @@ public class DiffApplication implements DiffInterface { //NOPMD
         return isEmpty;
     }
 
-    private String compareBinaryFiles(String firstBin, String secondBin) throws Exception {
+    private String compareBinaryFiles(String firstBin, String secondBin, boolean isShowSame) throws Exception {
         File firstFile = new File(convertToAbsolutePath(firstBin));
         File secondFile = new File(convertToAbsolutePath(secondBin));
-        String firstBinContents = readBinaryFileIntoList(firstFile);
-        String secondBinContents = readBinaryFileIntoList(secondFile);
-        if (firstBinContents.equals(secondBinContents)) {
+        boolean binSame = Arrays.equals(Files.readAllBytes(Paths.get(String.valueOf(firstFile))), Files.readAllBytes(Paths.get(String.valueOf(secondFile))));
+        if (binSame && isShowSame) {
+            return "Binary files " + firstFile.getParentFile().getName() + "/" + firstFile.getName() + CHAR_SPACE
+                    + secondFile.getParentFile().getName() + "/" + secondFile.getName() + " are identical";
+        } else if (binSame) {
             return "";
         } else {
             return "Binary files " + firstFile.getParentFile().getName() + "/" + firstFile.getName() + CHAR_SPACE
                     + secondFile.getParentFile().getName() + "/" + secondFile.getName() + DIFFER;
         }
-    }
-    private String readBinaryFileIntoList(File bin) {
-        String output = "";
-        try (
-                InputStream inputStream = new BufferedInputStream(new FileInputStream(bin));
-                OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(bin));
-        ) {
-            byte[] buffer = new byte[BUFFER_SIZE];
-
-            while (inputStream.read(buffer) != -1) {
-                outputStream.write(buffer);
-            }
-            output = outputStream.toString();
-        } catch (IOException e) {
-            e.getMessage();
-        }
-        return output;
     }
 }

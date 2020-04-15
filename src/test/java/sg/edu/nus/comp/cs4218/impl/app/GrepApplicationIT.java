@@ -165,24 +165,6 @@ public class GrepApplicationIT {
     }
 
     @Test
-    void runInvalidDashWithDoubleIGrepArgumentShouldThrowGrepException() throws FileNotFoundException {
-        String[] args = {"-ii", "-c", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
-        assertThrows(GrepException.class, () -> {
-            grepApplication.run(args, inputStream, outputStream);
-        });
-    }
-
-    @Test
-    void runInvalidDashWithDoubleCCGrepArgumentShouldThrowGrepException() throws FileNotFoundException {
-        String[] args = {"-i", "-cc", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
-        assertThrows(GrepException.class, () -> {
-            grepApplication.run(args, inputStream, outputStream);
-        });
-    }
-
-    @Test
     void testRunMethodWithInconsistentCasesInPatternWithDashIFlagShouldStillReturnLines() throws FileNotFoundException, AbstractApplicationException {
         String[] args = {"-i", "-c", "LinE", FILE_ONE_NAME + FILE_FORMAT};
         InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
@@ -215,5 +197,29 @@ public class GrepApplicationIT {
         grepApplication.run(args, inputStream, outputStream);
         String expected = ONE_NAME_TEXT + STRING_NEWLINE + ONE_NAME_TEXT + STRING_NEWLINE;
         assertEquals(expected, outputStream.toString());
+    }
+
+    @Test
+    void testRunInvalidDashWithDoubleIFlagForBugReportNum34Part1() throws FileNotFoundException, AbstractApplicationException {
+        String[] args = {"-ii", "-c", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
+        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
+        grepApplication.run(args, inputStream, outputStream);
+        assertEquals(3 + System.lineSeparator(), outputStream.toString());
+    }
+
+    @Test
+    void testRunInvalidDashWithDoubleCFlagForBugReportNum34Part2() throws FileNotFoundException, AbstractApplicationException {
+        String[] args = {"-i", "-cc", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
+        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
+        grepApplication.run(args, inputStream, outputStream);
+        assertEquals(3 + System.lineSeparator(), outputStream.toString());
+    }
+
+    @Test
+    void testRunInvalidDashWithICFlagForBugReportNum34Part3() throws FileNotFoundException, AbstractApplicationException {
+        String[] args = {"-ic", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
+        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
+        grepApplication.run(args, inputStream, outputStream);
+        assertEquals(3 + System.lineSeparator(), outputStream.toString());
     }
 }

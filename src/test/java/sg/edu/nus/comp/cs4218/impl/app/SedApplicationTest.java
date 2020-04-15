@@ -11,6 +11,7 @@ import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
+import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.CHAR_SPACE;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.STRING_NEWLINE;
 
 class SedApplicationTest {
@@ -21,7 +22,7 @@ class SedApplicationTest {
     private static final String ONE_LINE_NAME = "testFileTwo";
     private static final String TEXT_EMPTY_FILE = "";
     private static final String TWO_LINES = "lineTwo" + STRING_NEWLINE + " line twoLine aline";
-    private static final String ONE_LINE = "lineTwo" + "\t" + " line twoLine aline";
+    private static final String ONE_LINE = "lineTwo" + CHAR_SPACE + "line twoLine aline";
     private static final String LINE = "line";
     private static final String REPLACE = "replace";
     private static final String REPLACED_LINE = " replace twoLine aline";
@@ -72,7 +73,7 @@ class SedApplicationTest {
      */
     @Test
     void runStdinUsingSingleLineFileShouldReplaceWithReplacementTextInTheReplacementIndex() throws Exception {
-        String expectedOutput = REPLACE_TWO + "\t line twoLine aline" + STRING_NEWLINE;
+        String expectedOutput = REPLACE_TWO + " line twoLine aline" + STRING_NEWLINE;
         int replacementIndex = 1;
         try(InputStream stdin = new FileInputStream(fileWithOneLine.toPath().toString())) {
           assertEquals(expectedOutput,
@@ -104,7 +105,7 @@ class SedApplicationTest {
      */
     @Test
     void runFileNameUsingSingleLineFileShouldReplaceWithReplacementTextInTheReplacementIndex() throws Exception {
-        String expectedOutput = "replaceTwo\t line twoLine aline" + STRING_NEWLINE;
+        String expectedOutput = "replaceTwo line twoLine aline" + STRING_NEWLINE;
         int replacementIndex = 1;
         assertEquals(expectedOutput, sedApplication.replaceSubstringInFile
                 (LINE, REPLACE, replacementIndex, fileWithOneLine.toPath().toString()));
@@ -184,7 +185,7 @@ class SedApplicationTest {
     @Test
     void runReplacementIndexTwoInReplaceSubstringInStdinShouldPrintFileContentsWithReplacements() throws Exception {
         try (InputStream stdinTwo = new FileInputStream(fileWithOneLine.toPath().toString())) {
-            assertEquals(ONE_LINE + STRING_NEWLINE,
+            assertEquals("lineTwo replace twoLine aline" + STRING_NEWLINE,
                     sedApplication.replaceSubstringInStdin("line", "replace", 2, stdinTwo));
         } catch (Exception e) {
             e.printStackTrace();
