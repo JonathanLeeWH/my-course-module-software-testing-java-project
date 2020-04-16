@@ -120,7 +120,7 @@ public class ShellImplIT {
 
     /**
      * Tests Bug Report 1 for the multi-dash feature.
-     * Command: paste - - < file1.txt (Note: the full path of the file should be provided instead)
+     * Command:     paste - - < file1.txt (Note: the full path of the file should be provided instead)
      * Bug is not fixed, and thus, is expected to fail.
      */
     @Test
@@ -266,7 +266,7 @@ public class ShellImplIT {
 
     /**
      * Test for bug report 13. This test case tests replacement index 2, 3, and 4.
-     * Command: sed s/Z/A/2 file1.txt (Note that the full path of the file should be used instead.)
+     * Command:     sed s/Z/A/2 file1.txt (Note that the full path of the file should be used instead.)
      */
     @Test
     void testParseAndEvaluateForBugReportNum13() throws IOException, AbstractApplicationException, ShellException {
@@ -292,7 +292,7 @@ public class ShellImplIT {
 
     /**
      * Tests Bug Report 14 where special character is used as the regular expression in sed.
-     * Command: sed s/?/./ file3.txt (Note that the full path of the file should be used instead.)
+     * Command:     sed s/?/./ file3.txt (Note that the full path of the file should be used instead.)
      * Expected to fail as this bug is not fixed.
      * @throws Exception
      */
@@ -306,7 +306,7 @@ public class ShellImplIT {
 
     /**
      * Tests Bug Report Number 18 and 19 where binary files are different (DiffApplication)
-     * Command: diff a.bmp b.bmp (note that the full path has to be provided for each filename)
+     * Command:     diff a.bmp b.bmp (note that the full path has to be provided for each filename)
      * There are two cases, one with both binary files identical, while the other, both are different.
      * Observations (Bug fixed): The word "Binary" now appears in the output.
      */
@@ -359,7 +359,7 @@ public class ShellImplIT {
 
     /**
      * Tests Bug Report 22 by providing diff with 2 directories
-     * Command: diff main1 main2
+     * Command:     diff main1 main2
      * Expected to fail, since the bug is not fixed.
      */
     @Test
@@ -406,7 +406,7 @@ public class ShellImplIT {
 
     /**
      * Tests Bug Report 33 where echo should expand to all files in subdirectories in the current directory
-     * Command: paste file3.txt - < file4.txt
+     * Command:     paste file3.txt - < file4.txt
      * Expected to fail as bug not fixed.
      */
     @Test
@@ -421,7 +421,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 34 where concatenation of flags are accepted regardless if there are duplicates or not.
      * This test case tests the flag with double i, double c, and ic.
-     * Command: grep -ii -c a file1.txt
+     * Command:     grep -ii -c a file1.txt
      */
     @Test
     void testParseAndEvaluateForBugReportNum34() throws IOException, AbstractApplicationException, ShellException {
