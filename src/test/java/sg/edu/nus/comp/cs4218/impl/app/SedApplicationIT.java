@@ -250,34 +250,4 @@ public class SedApplicationIT {
         assertEquals(SED_EXCEPTION + ERR_NO_ARGS, thrown.getMessage());
     }
 
-    @Test
-    void testRunWithReplacementIndex2ForBugReportNum13Part1() throws IOException, SedException {
-        String[] args = {"s|line|replace|2"};
-        OutputStream osPrint = new ByteArrayOutputStream();
-        String expected = "lineTwo" + STRING_NEWLINE + " line twoLine areplace" + STRING_NEWLINE;
-        InputStream stdinTwo = new ByteArrayInputStream(TWO_LINES.getBytes());
-        sedApplication.run(args, stdinTwo, osPrint);
-
-        assertEquals(expected, osPrint.toString());
-    }
-
-    @Test
-    void testRunWithReplacementIndex3ForBugReportNum13Part2() throws IOException, SedException {
-        String[] args = {"s|line|replace|3"};
-        OutputStream osPrint = new ByteArrayOutputStream();
-        String expected = "line line replace line line line line line line line" + STRING_NEWLINE;
-        InputStream stdinTwo = new ByteArrayInputStream(LINE_TEN_WORDS.getBytes());
-        sedApplication.run(args, stdinTwo, osPrint);
-        assertEquals(expected, osPrint.toString());
-    }
-
-    @Test
-    void testRunWithReplacementIndex4ForBugReportNum13Part3() throws IOException, SedException {
-        String[] args = {"s|line|replace|4"};
-        OutputStream osPrint = new ByteArrayOutputStream();
-        String expected = "line line line replace line line line line line line" + STRING_NEWLINE;
-        InputStream stdinTwo = new ByteArrayInputStream(LINE_TEN_WORDS.getBytes());
-        sedApplication.run(args, stdinTwo, osPrint);
-        assertEquals(expected, osPrint.toString());
-    }
 }

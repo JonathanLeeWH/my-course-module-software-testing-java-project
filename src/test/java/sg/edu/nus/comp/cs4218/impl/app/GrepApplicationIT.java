@@ -199,27 +199,4 @@ public class GrepApplicationIT {
         assertEquals(expected, outputStream.toString());
     }
 
-    @Test
-    void testRunInvalidDashWithDoubleIFlagForBugReportNum34Part1() throws FileNotFoundException, AbstractApplicationException {
-        String[] args = {"-ii", "-c", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
-        grepApplication.run(args, inputStream, outputStream);
-        assertEquals(3 + System.lineSeparator(), outputStream.toString());
-    }
-
-    @Test
-    void testRunInvalidDashWithDoubleCFlagForBugReportNum34Part2() throws FileNotFoundException, AbstractApplicationException {
-        String[] args = {"-i", "-cc", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
-        grepApplication.run(args, inputStream, outputStream);
-        assertEquals(3 + System.lineSeparator(), outputStream.toString());
-    }
-
-    @Test
-    void testRunInvalidDashWithICFlagForBugReportNum34Part3() throws FileNotFoundException, AbstractApplicationException {
-        String[] args = {"-ic", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
-        grepApplication.run(args, inputStream, outputStream);
-        assertEquals(3 + System.lineSeparator(), outputStream.toString());
-    }
 }
