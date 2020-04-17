@@ -33,7 +33,7 @@ The goal of the project is to implement and test a shell and a set of applicatio
 3. Applications raise exceptions instead of writing to stderr and returning non-zero exit code in case of errors, as shown in Figure 4.
 
 ## Information for teaching team
-The test cases for bugs found in Hackathon is located in `test` > `java` > `Hackathon` directory.
+The test cases for bugs found in Hackathon is located in `src` > `test` > `java` > `Hackathon` directory as Maven requires `Junit` test files to be located in `src` > `test` directory
 
 The `Junit` test cases are located in the `ShellImplIT.java` file of the `Hackathon` directory.
 
