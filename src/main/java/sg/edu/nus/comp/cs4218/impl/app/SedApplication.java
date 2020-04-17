@@ -80,7 +80,7 @@ public class SedApplication implements SedInterface {
     @Override
     public String replaceSubstringInFile(String regexp, String replacement, int replacementIndex,
                                          String fileName) throws Exception {
-        if (fileName == null) {
+        if (fileName == null || regexp == null || regexp.isEmpty() || replacement == null || replacement.isEmpty()) {
             throw new Exception(ERR_NULL_ARGS);
         }
         File node = IOUtils.resolveFilePath(fileName).toFile();
@@ -115,6 +115,9 @@ public class SedApplication implements SedInterface {
                                           InputStream stdin) throws Exception {
         if (stdin == null) {
             throw new Exception(ERR_NULL_STREAMS);
+        }
+        if (regexp == null || regexp.isEmpty() || replacement == null || replacement.isEmpty()) {
+            throw new Exception(ERR_NULL_ARGS);
         }
         List<String> stdinContents = IOUtils.getLinesFromInputStream(stdin);
         String[] contentArray = new String[stdinContents.size()];

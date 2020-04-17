@@ -18,33 +18,33 @@ class DiffApplicationTest {
     private static final String DIFF_EXCEPTION = "diff: ";
     private static final String IDENTICAL = " are identical";
     private static final String FILES = "Files ";
-    private static final String DIFFFOLDER = "DiffTestFolder/";
+    private static final String DIFFFOLDER = "DiffTestFolder" + File.separator;
     private static final String ORIGINAL_DIR = EnvironmentHelper.currentDirectory;
     private static final Path DIRECTORY = Paths.get("src", "test", "java", "sg", "edu", "nus", "comp", "cs4218", "testdata", "DiffTestFolder");
     private static final String ABSOLUTE_PATH = DIRECTORY.toFile().getAbsolutePath();
     private static OutputStream stdout;
 
-    private static final String DIFF1_FILE = ABSOLUTE_PATH + "/diff1.txt";
+    private static final String DIFF1_FILE = ABSOLUTE_PATH + File.separator + "diff1.txt";
     private static final String DIFF1_FILENAME = "diff1.txt";
-    private static final String DIFF1_IDENTICAL_FILE = ABSOLUTE_PATH + "/diff1-identical.txt"; // NOPMD
+    private static final String DIFF1_IDENTICAL_FILE = ABSOLUTE_PATH + File.separator + "diff1-identical.txt"; // NOPMD
     private static final String DIFF1_IDENTICAL_FILENAME = "diff1-identical.txt"; // NOPMD
-    private static final String DIFF1_BLANK_LINES_FILE = ABSOLUTE_PATH + "/diff1-blank-lines.txt"; // NOPMD
+    private static final String DIFF1_BLANK_LINES_FILE = ABSOLUTE_PATH + File.separator + "diff1-blank-lines.txt"; // NOPMD
     private static final String DIFF1_BLANK_LINES_FILENAME = "diff1-blank-lines.txt"; // NOPMD
-    private static final String DIFF2_FILE = ABSOLUTE_PATH + "/diff2.txt";
+    private static final String DIFF2_FILE = ABSOLUTE_PATH + File.separator + "diff2.txt";
     private static final String DIFF2_FILENAME = "diff2.txt";
 
-    private static final String DIFFDIR1 = ABSOLUTE_PATH + "/diffDir1";
+    private static final String DIFFDIR1 = ABSOLUTE_PATH + File.separator + "diffDir1";
     private static final String DIFFDIR1NAME = "diffDir1";
-    private static final String DIFFDIR1_IDENTICAL = ABSOLUTE_PATH + "/diffDir1-identical"; // NOPMD
+    private static final String DIFFDIR1_IDENTICAL = ABSOLUTE_PATH + File.separator + "diffDir1-identical"; // NOPMD
     private static final String DIFFDIR1NAME_IDENTICAL = "diffDir1-identical"; // NOPMD
-    private static final String DIFFDIR2 = ABSOLUTE_PATH + "/diffDir2";
+    private static final String DIFFDIR2 = ABSOLUTE_PATH + File.separator + "diffDir2";
     private static final String DIFFDIR2NAME = "diffDir2";
 
-    private static final String DIFFBIN1 = ABSOLUTE_PATH + "/diff1Bin.bin";
+    private static final String DIFFBIN1 = ABSOLUTE_PATH + File.separator + "diff1Bin.bin";
     private static final String DIFFBIN1NAME = "diff1Bin.bin";
-    private static final String DIFFBIN2 = ABSOLUTE_PATH + "/diff2Bin.bin";
+    private static final String DIFFBIN2 = ABSOLUTE_PATH + File.separator + "diff2Bin.bin";
     private static final String DIFFBIN2NAME = "diff2Bin.bin";
-    private static final String DIFFBIN3 = ABSOLUTE_PATH + "/diff3Bin.bin";
+    private static final String DIFFBIN3 = ABSOLUTE_PATH + File.separator + "diff3Bin.bin";
     private static final String DIFFBIN3NAME = "diff3Bin.bin";
 
     @BeforeEach
@@ -245,7 +245,7 @@ class DiffApplicationTest {
     void testDiffTwoDirMethodWithTwoDirectoriesThatAreDifferentWithIsShowSame() throws DiffException {
         String expected = "Only in diffDir1: diff1-identical.txt" + STRING_NEWLINE +
                 "Only in diffDir2: diff2.txt";
-        String expectedTwo = FILES + DIFFDIR1NAME + "/" +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR2NAME + "/" + DIFF1_FILENAME + IDENTICAL;;
+        String expectedTwo = FILES + DIFFDIR1NAME + File.separator +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR2NAME + File.separator + DIFF1_FILENAME + IDENTICAL;;
         String actualOutput = diffApp.diffTwoDir(DIFFDIR1, DIFFDIR2, true, true, true);
         assertTrue(actualOutput.contains(expected));
         assertTrue(actualOutput.contains(expectedTwo));

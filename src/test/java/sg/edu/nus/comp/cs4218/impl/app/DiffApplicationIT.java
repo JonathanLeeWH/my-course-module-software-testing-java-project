@@ -22,7 +22,7 @@ public class DiffApplicationIT {
     private static final String DIFF_EXCEPTION = "diff: ";
     private static final String IDENTICAL = " are identical";
     private static final String FILES = "Files ";
-    private static final String DIFFFOLDER = "DiffTestFolder/";
+    private static final String DIFFFOLDER = "DiffTestFolder" + File.separator;
     private static final String ORIGINAL_DIR = EnvironmentHelper.currentDirectory;
     private static final Path DIRECTORY = Paths.get("src", "test", "java", "sg", "edu", "nus","comp", "cs4218", "testdata", "DiffTestFolder");
     private static final String ABSOLUTE_PATH = DIRECTORY.toFile().getAbsolutePath();
@@ -400,7 +400,7 @@ public class DiffApplicationIT {
             diffApp.run(args, inputStream, stdout);
             String expected = "Only in diffDir1: diff1-identical.txt" + STRING_NEWLINE +
                     "Only in diffDir2: diff2.txt";
-            String expectedTwo = FILES + DIFFDIR1NAME + "/" +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR2NAME + "/" + DIFF1_FILENAME + IDENTICAL;;
+            String expectedTwo = FILES + DIFFDIR1NAME + File.separator +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR2NAME + File.separator + DIFF1_FILENAME + IDENTICAL;;
             assertTrue(stdout.toString().contains(expected));
             assertTrue(stdout.toString().contains(expectedTwo));
         } catch (Exception e) {
@@ -428,8 +428,8 @@ public class DiffApplicationIT {
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            String expected = FILES + DIFFDIR1NAME + "/" +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR1NAME_IDENTICAL + "/" + DIFF1_FILENAME + IDENTICAL;
-            String expectedTwo = FILES + DIFFDIR1NAME + "/" + DIFF1_IDENTICAL_FILENAME + CHAR_SPACE + DIFFDIR1NAME_IDENTICAL + "/" + DIFF1_IDENTICAL_FILENAME + IDENTICAL;
+            String expected = FILES + DIFFDIR1NAME + File.separator +  DIFF1_FILENAME + CHAR_SPACE + DIFFDIR1NAME_IDENTICAL + File.separator + DIFF1_FILENAME + IDENTICAL;
+            String expectedTwo = FILES + DIFFDIR1NAME + File.separator + DIFF1_IDENTICAL_FILENAME + CHAR_SPACE + DIFFDIR1NAME_IDENTICAL + File.separator + DIFF1_IDENTICAL_FILENAME + IDENTICAL;
             assertTrue(stdout.toString().contains(expected));
             assertTrue(stdout.toString().contains(expectedTwo));
         } catch(Exception e) {

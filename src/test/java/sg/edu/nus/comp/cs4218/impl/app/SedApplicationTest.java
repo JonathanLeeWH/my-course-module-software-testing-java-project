@@ -131,7 +131,7 @@ class SedApplicationTest {
     void runDirectoryInsteadOfFileNameInReplaceSubstringInFileMethodShouldThrowException() {
         Exception thrown = assertThrows(Exception.class, () -> {
             sedApplication.replaceSubstringInFile
-                    ("", REPLACEMENT, 1, EnvironmentHelper.currentDirectory);
+                    ("ok", REPLACEMENT, 1, EnvironmentHelper.currentDirectory);
         });
         assertEquals(ERR_IS_DIR, thrown.getMessage());
     }
