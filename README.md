@@ -2,6 +2,7 @@
 
 ## Table of Contents
   * [Overview](#overview)
+  * [Information for teaching team](#information-for-teaching-team)
   * [Technologies used](#technologies-used)
   * [Instructions to setup project](#instructions-to-setup-project)
   * [Instructions to run the Shell program](#instructions-to-run-the-shell-program)
@@ -30,6 +31,11 @@ The goal of the project is to implement and test a shell and a set of applicatio
 1. JVM is used instead of OS Kernel / drivers to provide required services.
 2. Shell and all applications are run inside the same process.
 3. Applications raise exceptions instead of writing to stderr and returning non-zero exit code in case of errors, as shown in Figure 4.
+
+## Information for teaching team
+The test cases for bugs found in Hackathon is located in `test` > `java` > `Hackathon` directory.
+
+The `Junit` test cases are located in the `ShellImplIT.java` file of the `Hackathon` directory.
 
 ## Technologies used
 - Java 8
