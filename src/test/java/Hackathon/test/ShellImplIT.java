@@ -239,7 +239,9 @@ public class ShellImplIT {
 
     /**
      * Tests Bug Report 9 where file path has bug regarding move
-     * Command:    cd main1; mv file1.txt sub1/file3.txt
+     * Command:    cd main1; mv file1.txt sub1/file1_moved.txt
+     * Note: We used file1_moved.txt instead of file3 shown in the bug report 9 steps to reproduce as file3.txt is used by diff bug report
+     * This is to maintain the file structure and should not affect expected behaviour as it is just a changed in the file name used.
      * Bug Fix Status: Fixed
      */
     @Test
@@ -254,14 +256,14 @@ public class ShellImplIT {
             EnvironmentHelper.currentDirectory = TestUtil.resolveFilePath(path).toString();
         }
 
-        String input = "cd main1; mv file1.txt sub1/file3.txt";
+        String input = "cd main1; mv file1.txt sub1/file1_moved.txt";
         shell.parseAndEvaluate(input, outputStream);
 
-        File file = new File(path + File.separator + "main1" + File.separator + "sub1" + File.separator + "file3.txt");
+        File file = new File(path + File.separator + "main1" + File.separator + "sub1" + File.separator + "file1_moved.txt");
         assertTrue(file.exists());
 
 
-        String inputPutBack = "cd sub1; mv file3.txt " + "\"" + path + File.separator + "main1" + File.separator + "file1.txt\"";
+        String inputPutBack = "cd sub1; mv file1_moved.txt " + "\"" + path + File.separator + "main1" + File.separator + "file1.txt\"";
         shell.parseAndEvaluate(inputPutBack, outputStream);
 
     }
