@@ -21,6 +21,7 @@ public class SedApplicationIT {
     private static final String TEXT_EMPTY_FILE = "";
     private static final String TWO_LINES = "lineTwo" + STRING_NEWLINE + " line twoLine aline";
     private static final String ONE_LINE = "lineTwo" + "\t" + " line twoLine aline";
+    private static final String LINE_TEN_WORDS = "line line line line line line line line line line";
     private static final String LINE = "line";
     private static final String REPLACE = "replace";
     private static final String REPLACED_LINE = " replace twoLine aline";
@@ -28,10 +29,8 @@ public class SedApplicationIT {
     private static final String SED_EXCEPTION = "sed: ";
     private static final String REPLACE_TWO = "replaceTwo";
     private static final String REPLACEMENT = "replacement";
-    private static File emptyFile;
-    private static File fileWithTwoLines;
-    private static File fileWithOneLine;
-    private static OutputStream outputStreamZero, outputStreamOne, outputStreamTwo;
+    private static File emptyFile, fileWithOneLine, fileWithTwoLines, fileWithTenSameWordsInOneLine;
+    private static OutputStream outputStreamZero, outputStreamOne, outputStreamTwo, outputStreamThree;
 
     @BeforeAll
     static void setupBeforeTest() {
@@ -40,12 +39,15 @@ public class SedApplicationIT {
             emptyFile = File.createTempFile(EMPTY_FILE, TEST_FILE_TYPE);
             fileWithTwoLines = File.createTempFile(TWO_LINES_NAME, TEST_FILE_TYPE);
             fileWithOneLine = File.createTempFile(ONE_LINE_NAME, TEST_FILE_TYPE);
+            fileWithTenSameWordsInOneLine =  File.createTempFile(ONE_LINE_NAME, TEST_FILE_TYPE);
             outputStreamZero = new FileOutputStream(emptyFile);
             outputStreamOne = new FileOutputStream(fileWithTwoLines);
             outputStreamTwo = new FileOutputStream(fileWithOneLine);
+            outputStreamThree = new FileOutputStream(fileWithTenSameWordsInOneLine);
             outputStreamZero.write(TEXT_EMPTY_FILE.getBytes());
             outputStreamOne.write(TWO_LINES.getBytes());
             outputStreamTwo.write(ONE_LINE.getBytes());
+            outputStreamThree.write(LINE_TEN_WORDS.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,10 +58,12 @@ public class SedApplicationIT {
         emptyFile.deleteOnExit();
         fileWithTwoLines.deleteOnExit();
         fileWithOneLine.deleteOnExit();
+        fileWithTenSameWordsInOneLine.deleteOnExit();
         try {
             outputStreamZero.close();
             outputStreamOne.close();
             outputStreamTwo.close();
+            outputStreamThree.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -245,4 +249,5 @@ public class SedApplicationIT {
         });
         assertEquals(SED_EXCEPTION + ERR_NO_ARGS, thrown.getMessage());
     }
+
 }

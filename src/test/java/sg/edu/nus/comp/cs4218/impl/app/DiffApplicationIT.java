@@ -44,12 +44,12 @@ public class DiffApplicationIT {
     private static final String DIFFDIR2 = ABSOLUTE_PATH + "/diffDir2";
     private static final String DIFFDIR2NAME = "diffDir2";
 
-    private static final String DIFFBIN1 = ABSOLUTE_PATH + "/diff1Bin.bin";
-    private static final String DIFFBIN1NAME = "diff1Bin.bin";
-    private static final String DIFFBIN2 = ABSOLUTE_PATH + "/diff2Bin.bin";
-    private static final String DIFFBIN2NAME = "diff2Bin.bin";
-    private static final String DIFFBIN3 = ABSOLUTE_PATH + "/diff3Bin.bin";
-    private static final String DIFFBIN3NAME = "diff3Bin.bin";
+    private static final String DIFFBMP1 = ABSOLUTE_PATH + "/diff1Bmp.bmp";
+    private static final String DIFFBMP1NAME = "diff1Bmp.bmp";
+    private static final String DIFFBMP2 = ABSOLUTE_PATH + "/diff2Bmp.bmp";
+    private static final String DIFFBMP2NAME = "diff2Bmp.bmp";
+    private static final String DIFFBMP3 = ABSOLUTE_PATH + "/diff3Bmp.bmp";
+    private static final String DIFFBMP3NAME = "diff3Bmp.bmp";
     
     @BeforeEach
     void setUp() throws Exception {
@@ -438,12 +438,12 @@ public class DiffApplicationIT {
     }
     
     @Test
-    void testRunWithBinaryFilesWithDifference() {
-        String[] args = {DIFFBIN1, DIFFBIN2};
+    void testRunWithBinaryFilesForBugReportNum18And19Part1() {
+        String[] args = {DIFFBMP1, DIFFBMP3};
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            String expected = "Binary" + " files " + DIFFFOLDER +  DIFFBIN1NAME + CHAR_SPACE + DIFFFOLDER + DIFFBIN2NAME + " differ";
+            String expected = "Binary" + " files " + DIFFFOLDER +  DIFFBMP1NAME + CHAR_SPACE + DIFFFOLDER + DIFFBMP3NAME + " differ";
             assertTrue(stdout.toString().contains(expected));
         } catch(Exception e) {
             fail("should not fail: " + e.getMessage());
@@ -451,12 +451,13 @@ public class DiffApplicationIT {
     }
 
     @Test
-    void testRunWithBinaryFilesWithNoDifference() {
-        String[] args = {DIFFBIN1, DIFFBIN3};
+    void testRunWithBinaryFilesForBugReportNum18And19Part2() {
+        String[] args = {DIFFBMP1, DIFFBMP2};
         try {
             InputStream inputStream = new FileInputStream(new File(DIFF1_FILE)); //NOPMD
             diffApp.run(args, inputStream, stdout);
-            assertTrue(stdout.toString().contains(STRING_NEWLINE));
+            System.out.println(stdout.toString());
+            assertEquals("", stdout.toString());
         } catch(Exception e) {
             fail("should not fail: " + e.getMessage());
         }

@@ -165,24 +165,6 @@ public class GrepApplicationIT {
     }
 
     @Test
-    void runInvalidDashWithDoubleIGrepArgumentShouldThrowGrepException() throws FileNotFoundException {
-        String[] args = {"-ii", "-c", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
-        assertThrows(GrepException.class, () -> {
-            grepApplication.run(args, inputStream, outputStream);
-        });
-    }
-
-    @Test
-    void runInvalidDashWithDoubleCCGrepArgumentShouldThrowGrepException() throws FileNotFoundException {
-        String[] args = {"-i", "-cc", LOWER_LINE, FILE_ONE_NAME + FILE_FORMAT};
-        InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
-        assertThrows(GrepException.class, () -> {
-            grepApplication.run(args, inputStream, outputStream);
-        });
-    }
-
-    @Test
     void testRunMethodWithInconsistentCasesInPatternWithDashIFlagShouldStillReturnLines() throws FileNotFoundException, AbstractApplicationException {
         String[] args = {"-i", "-c", "LinE", FILE_ONE_NAME + FILE_FORMAT};
         InputStream inputStream = new FileInputStream(FILE_ONE_NAME + FILE_FORMAT);
@@ -216,4 +198,5 @@ public class GrepApplicationIT {
         String expected = ONE_NAME_TEXT + STRING_NEWLINE + ONE_NAME_TEXT + STRING_NEWLINE;
         assertEquals(expected, outputStream.toString());
     }
+
 }

@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 import static sg.edu.nus.comp.cs4218.impl.util.StringUtils.*;
@@ -119,53 +121,36 @@ public class SedApplication implements SedInterface {
         for (int i = 0; i < stdinContents.size(); i++) {
             contentArray[i] = stdinContents.get(i);
         }
-
         return replacementHandler(contentArray, regexp, replacement, replacementIndex);
     }
 
     private String replacementHandler(String[] input, String regexp, String replacement, int replacementIndex) {
+        Pattern pattern = Pattern.compile(regexp);
         StringBuilder output = new StringBuilder();
-        for (String line : input) {
+        for (String currentLine : input) { // Loop through the lines in the input, since sed replaces with the replacement index for every line
+            boolean matched = false; // use this boolean flag to indicate that a match has been found at the replacement index
+            Matcher matcher = pattern.matcher(currentLine);
             StringBuilder builder = new StringBuilder();
-            if (replacementIndex == 1) {
-                builder.append(line.replaceFirst(regexp, replacement));
-                output.append(builder.toString()).append(STRING_NEWLINE);
-            } else if (replacementIndex <= input.length){
-                builder.append(replaceString(line, regexp, replacement, replacementIndex));
-                output.append(builder.toString()).append(STRING_NEWLINE);
-            }
-            if (regexp.isEmpty() || replacementIndex > input.length) {
-                StringBuilder stringBuilder = new StringBuilder();
-                for(int i = 0; i < input.length; i++) {
-                    if (i != 0) {
-                        stringBuilder.append(STRING_NEWLINE);
-                    }
-                    stringBuilder.append(input[i]);
+            int index = 1;
+            while (matcher.find()) {
+                if (index == replacementIndex) {
+                    matched = true;
+                    break;
                 }
-                String returnString = stringBuilder.toString();
-                return returnString + STRING_NEWLINE;
-            }
-        }
-        return output.toString();
-    }
-    private String replaceString(String line, String regexp, String replacement, int replacementIndex) {
-        int index = 0;
-        String space = " ";
-        String[] words = line.split("\\s+", 0);
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < words.length; i++) {
-            if (words[i].contains(regexp)) {
                 index++;
-                if(index == replacementIndex) {
-                    words[i] = words[i].replace(regexp, replacement);
+            }
+            if (matched) {
+                builder.append(currentLine, 0, matcher.start()); //append everything from start of the line to the starting point that the match is found.
+                builder.append(replacement); // then add in the replacement
+                if (matcher.end() < currentLine.length()) {
+                    builder.append(currentLine, matcher.end(), currentLine.length()); // add in those characters that are after the end of match.
                 }
+            } else {
+                builder.append(currentLine);
             }
-            stringBuilder.append(words[i]);
-            if (i!= words.length-1) {
-                stringBuilder.append(space);
-            }
+            output.append(builder.toString()).append(STRING_NEWLINE); // add a newline to separate every lines.
         }
-        return stringBuilder.toString();
+        return output.toString().trim() + STRING_NEWLINE; //Trim away excess newlines at the end of file.
     }
 
     private String[] getFileContents(File file) throws SedException {
