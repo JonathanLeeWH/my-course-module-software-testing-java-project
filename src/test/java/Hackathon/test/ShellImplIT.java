@@ -45,11 +45,11 @@ public class ShellImplIT {
     private static final String FILE_1_PARTIAL = "abc" + STRING_NEWLINE + "def" + STRING_NEWLINE  + "geh"
             + STRING_NEWLINE  + "ijk" + STRING_NEWLINE + "lmn" + STRING_NEWLINE ;
     private static final String PARENT_FOLDER = "sub1\\";
-    private static final String BMP_1_FILE = ABSOLUTE_PATH + "/a.bmp";
-    private static final String BMP_2_FILE = ABSOLUTE_PATH + "/b.bmp";
-    private static final String FILE_1_PATH = ABSOLUTE_PATH + "/file1.txt";
-    private static final String FILE_3_PATH = ABSOLUTE_PATH + "/file3.txt";
-    private static final String FILE_4_PATH = ABSOLUTE_PATH + "/file4.txt";
+    private static final String BMP_1_FILE = ABSOLUTE_PATH + File.separator + "a.bmp";
+    private static final String BMP_2_FILE = ABSOLUTE_PATH + File.separator +"b.bmp";
+    private static final String FILE_1_PATH = ABSOLUTE_PATH + File.separator + "file1.txt";
+    private static final String FILE_3_PATH = ABSOLUTE_PATH + File.separator + "file3.txt";
+    private static final String FILE_4_PATH = ABSOLUTE_PATH + File.separator + "file4.txt";
     private static final String SUB_3_SUB_DIR = MAIN_3_DIR + File.separator + "sub3";
     private static final String RESOURCE_DIR = "src" + File.separator + "test" + File.separator + "java" + File.separator + "Hackathon" + File.separator + "resource";
     private static final String KEEP_FILE = ".keep";
@@ -121,7 +121,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 1 for the multi-dash feature.
      * Command:     paste - - < file1.txt (Note: the full path of the file should be provided instead)
-     * Bug is not fixed, and thus, is expected to fail.
+     * Bug Fix Status: Not Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum1() throws AbstractApplicationException, ShellException {
@@ -134,6 +134,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 2 where LS prints new line in empty file
      * Command:     ls main2
+     * Bug Fix Status: Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum2() throws Exception {
@@ -154,6 +155,11 @@ public class ShellImplIT {
         assertEquals(expectedResult, outputStream.toString());
     }
 
+    /**
+     * Tests Bug Report 3
+     * Command:     cd main3/`ls main3`"
+     * Bug Fix Status: Fixed
+     */
     @Test
     void testParseAndEvaluateForBugReportNum3() throws Exception {
         String input = "cd main3/`ls main3`";
@@ -175,6 +181,7 @@ public class ShellImplIT {
      * ArgumentResolver does not workcorrectly with backticks within
      * double quotes, expecting an error with missing closing backtick.
      * Command:     echo “a`a”
+     * Bug Fix Status: Not Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum6() throws Exception {
@@ -187,6 +194,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 7 where moving folder to same location
      * Command:    mv main3 .
+     * Bug Fix Status: Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum7() throws Exception {
@@ -209,6 +217,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 8 where moving folder to same location
      * Command:  mv main3 main3/sub3
+     * Bug Fix Status: Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum8() throws Exception {
@@ -231,6 +240,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 9 where file path has bug regarding move
      * Command:    cd main1; mv file1.txt sub1/file3.txt
+     * Bug Fix Status: Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum9() throws Exception {
@@ -256,6 +266,10 @@ public class ShellImplIT {
 
     }
 
+    /**
+     * Tests Bug Report 11
+     * Bug Fix Status: Fixed
+     */
     @Test
     void testParseAndEvaluateForBugReportNum11() {
         String input = "cut -b 1,3-5 file1.txt";
@@ -267,6 +281,7 @@ public class ShellImplIT {
     /**
      * Test for bug report 13. This test case tests replacement index 2, 3, and 4.
      * Command:     sed s/Z/A/2 file1.txt (Note that the full path of the file should be used instead.)
+     * Bug Fix Status: Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum13() throws IOException, AbstractApplicationException, ShellException {
@@ -293,8 +308,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 14 where special character is used as the regular expression in sed.
      * Command:     sed s/?/./ file3.txt (Note that the full path of the file should be used instead.)
-     * Expected to fail as this bug is not fixed.
-     * @throws Exception
+     * Bug Fix Status: Not Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum14() throws Exception {
@@ -309,6 +323,7 @@ public class ShellImplIT {
      * Command:     diff a.bmp b.bmp (note that the full path has to be provided for each filename)
      * There are two cases, one with both binary files identical, while the other, both are different.
      * Observations (Bug fixed): The word "Binary" now appears in the output.
+     * Bug Fix Status: Fixed
      */
     @Test
     void testRunWithBinaryFilesForBugReportNum18And19() {
@@ -335,6 +350,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 27 where windows throws error “Illegal char <*> at index” Unix systems will work
      * Command:   ls -d * /
+     * Bug Fix Status: Not Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum27() throws Exception {
@@ -360,7 +376,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 22 by providing diff with 2 directories
      * Command:     diff main1 main2
-     * Expected to fail, since the bug is not fixed.
+     * Bug Fix Status: Not Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum22() throws Exception {
@@ -384,6 +400,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 32 where echo should expand to all files in subdirectories in the current directory
      * Command:
+     * Bug Fix Status: Not Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum32() throws Exception {
@@ -407,7 +424,7 @@ public class ShellImplIT {
     /**
      * Tests Bug Report 33 where echo should expand to all files in subdirectories in the current directory
      * Command:     paste file3.txt - < file4.txt
-     * Expected to fail as bug not fixed.
+     * Bug Fix Status: Not Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum33() throws FileNotFoundException, AbstractApplicationException, ShellException {
@@ -422,6 +439,7 @@ public class ShellImplIT {
      * Tests Bug Report 34 where concatenation of flags are accepted regardless if there are duplicates or not.
      * This test case tests the flag with double i, double c, and ic.
      * Command:     grep -ii -c a file1.txt
+     * Bug Fix Status: Fixed
      */
     @Test
     void testParseAndEvaluateForBugReportNum34() throws IOException, AbstractApplicationException, ShellException {
