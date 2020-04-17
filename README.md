@@ -51,7 +51,7 @@ Step 5: **The exclusion of PMD checks for test sources** Go to `IntelliJ Setting
 
 An example image of exclusion of pmd checks for test sources is shown below:
 
-![PMD Skip Test Sources](PMDSettings.png)
+![PMD Skip Test Sources](PMDSettings.PNG)
 
 ## Instructions to run the Shell program
 **Option 1: Run using IntellJIdea** (Recommended)
