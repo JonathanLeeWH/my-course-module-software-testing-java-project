@@ -12,6 +12,7 @@ import java.io.*;
 import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static sg.edu.nus.comp.cs4218.impl.util.ErrorConstants.*;
 
 class SedApplicationTest {
@@ -81,7 +82,7 @@ class SedApplicationTest {
         String pattern = ">";
         String replacement = "";
         int replacementIndex = 1;
-        assertEquals(TEXT1, sedApplication.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
+        assertThrows(Exception.class, () -> sedApplication.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
     }
 
     @Test
@@ -105,16 +106,16 @@ class SedApplicationTest {
         String pattern = "Hello";
         String replacement = "";
         int replacementIndex = 1;
-        assertEquals(DELETE_TEXT, sedApplication.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
+        assertThrows(Exception.class, () -> sedApplication.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
     }
 
 
     @Test
-    public void testEmptyRegexFile() throws Exception {
+    public void testEmptyRegexFile() {
         String pattern = "";
         String replacement = "> ";
         int replacementIndex = 1;
-        assertEquals(TEXT1, sedApplication.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+        assertThrows(Exception.class, () -> sedApplication.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
     }
 
     @Test
@@ -131,7 +132,7 @@ class SedApplicationTest {
         String pattern = ">";
         String replacement = "";
         int replacementIndex = 1;
-        assertEquals(TEXT1, sedApplication.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+        assertThrows(Exception.class, () -> sedApplication.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
     }
 
     @Test
@@ -155,17 +156,17 @@ class SedApplicationTest {
         String pattern = "Hello";
         String replacement = "";
         int replacementIndex = 1;
-        assertEquals(DELETE_TEXT, sedApplication.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+        assertThrows(Exception.class, () -> sedApplication.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
     }
 
     @Test
     public void testFileNotExists() throws Exception {
         try {
             String pattern = "Hello";
-            String replacement = "";
-            int replacementIndex = 0;
+            String replacement = "ok";
+            int replacementIndex = 1;
             sedApplication.replaceSubstringInFile(pattern, replacement, replacementIndex, "sedFile3.txt");
-        }catch (Exception expected){
+        } catch (Exception expected){
             assertEquals(String.format(ERR_FILE_NOT_FOUND), expected.getMessage());
         }
     }
@@ -174,8 +175,8 @@ class SedApplicationTest {
     public void testFileIsDirectory() throws Exception {
         try {
             String pattern = "is";
-            String replacement = "";
-            int replacementIndex = 0;
+            String replacement = "ok";
+            int replacementIndex = 1;
             sedApplication.replaceSubstringInFile(pattern, replacement, replacementIndex, dir.toString());
         }catch (Exception expected){
             assertEquals(String.format(ERR_IS_DIR), expected.getMessage());

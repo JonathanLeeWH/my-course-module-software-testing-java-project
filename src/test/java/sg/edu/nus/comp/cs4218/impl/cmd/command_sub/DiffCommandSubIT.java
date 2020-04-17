@@ -52,7 +52,7 @@ public class DiffCommandSubIT {
         List<String> args = Arrays.asList("diff", "`echo src/main src/test`");
         CallCommand callCommand = new CallCommand(args, applicationRunner, argumentResolver);
         callCommand.evaluate(ourTestStdin, ourTestStdout);
-        String expectedResult = "Common subdirectories: main/java and test/java" + System.lineSeparator();
+        String expectedResult = "Common subdirectories: main" + File.separator + "java and test" + File.separator + "java" + System.lineSeparator();
         assertEquals(expectedResult, ourTestStdout.toString());
     }
 
